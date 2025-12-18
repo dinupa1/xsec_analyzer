@@ -8,6 +8,7 @@
 #include <type_traits>
 #include <variant>
 #include <vector>
+#include <string>
 
 // ROOT includes
 #include "TClass.h"
@@ -98,6 +99,8 @@ using MyVariant = std::variant<
   MyPointer< std::vector< float > >,
   MyPointer< std::vector< double > >,
   MyPointer< std::vector< std::vector< double > > >,
+  MyPointer< std::vector< std::vector<float>>>,
+  MyPointer< std::vector<std::string>>,
   MyPointer< std::vector< TVector3 > >,
   MyPointer< std::map< std::string, std::vector< double > > >
 >;
