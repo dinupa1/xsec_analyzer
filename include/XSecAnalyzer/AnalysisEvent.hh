@@ -7,6 +7,7 @@
 
 #include <vector>
 #include <map>
+#include <string>
 
 #include "TVector3.h"
 
@@ -15,187 +16,389 @@ public:
   AnalysisEvent() {}
   ~AnalysisEvent() {}
 
-  // Event scores needed for numu CC selection
-  float topological_score_ = BOGUS;
-  float cosmic_impact_parameter_ = BOGUS;
+  Int_t           run = BOGUS_INT;
+  Int_t           subrun = BOGUS_INT;
+  Int_t           event = BOGUS_INT;
+  Int_t           evt_gen_nc1p = BOGUS_INT;
+  Int_t           evt_gen_nce = BOGUS_INT;
 
-  // Variables needed for nue CC selection
-  float contained_fraction_ = BOGUS;
-  
-  // Backtracked purity and completeness of hits (MC only)
-  float nu_completeness_from_pfp_ = BOGUS;
-  float nu_purity_from_pfp_ = BOGUS;
+  Float_t         evt_gen_nc1p_q2_gen = BOGUS;
+  Float_t         evt_gen_nc1p_q2_ke = BOGUS;
+  Float_t         evt_gen_nc1p_stx = BOGUS;
+  Float_t         evt_gen_nc1p_sty = BOGUS;
+  Float_t         evt_gen_nc1p_stz = BOGUS;
+  Float_t         evt_gen_nc1p_endx = BOGUS;
+  Float_t         evt_gen_nc1p_endy = BOGUS;
+  Float_t         evt_gen_nc1p_endz = BOGUS;
+  Float_t         evt_gen_nc1p_costheta = BOGUS;
+  Float_t         evt_gen_nc1p_phi = BOGUS;
+  Float_t         evt_gen_nc1p_mom = BOGUS;
+  Float_t         evt_gen_nc1p_ke = BOGUS;
 
-  // Reco PDG code of the neutrino candidate
-  int nu_pdg_ = BOGUS_INT;
+  Int_t           evt_gen_nc1p_contained = BOGUS_INT;
+  Int_t           evt_gen_nc1p_inFV = BOGUS_INT;
+  Int_t           evt_reco_1p_nu = BOGUS_INT;
+  Int_t           evt_reco_1p_non_nu = BOGUS_INT;
+  Int_t           evt_reco_1p = BOGUS_INT;
+  Int_t           evt_reco_1mu1p = BOGUS_INT;
+  Int_t           nflashes = BOGUS_INT;
+  Int_t           evt_n_pfp = BOGUS_INT;
+  Int_t           evt_n_trk = BOGUS_INT;
+  Int_t           evt_n_shower = BOGUS_INT;
+  Int_t           evt_n_nu = BOGUS_INT;
+  Int_t           evt_n_nu_pfp = BOGUS_INT;
+  Int_t           evt_nu_PDG = BOGUS_INT;
 
-  // Number of neutrino slices identified by the SliceID. Allowed values
-  // are zero or one.
-  int nslice_ = BOGUS_INT;
 
-  // Reco neutrino vertex coordinates (cm). Space charge corrections have
-  // been applied for these.
-  float nu_vx_ = BOGUS;
-  float nu_vy_ = BOGUS;
-  float nu_vz_ = BOGUS;
+  MyPointer <std::vector<float>>   flash_Ywidth;
+  MyPointer <std::vector<float>>   flash_Zwidth;
+  MyPointer <std::vector<float>>   flash_Twidth;
+  MyPointer <std::vector<float>>   flash_Ycenter;
+  MyPointer <std::vector<float>>   flash_Zcenter;
+  MyPointer <std::vector<float>>   flash_Time;
+  MyPointer <std::vector<float>>   flash_CRThit;
+  MyPointer <<std::vector<bool>>    flash_CRTveto;
+  MyPointer <std::vector<float>>   flash_TotalPE;
 
-  // Reconstructed object counts
-  int num_pf_particles_ = BOGUS_INT;
-  int num_tracks_ = BOGUS_INT;
-  int num_showers_ = BOGUS_INT;
+  Float_t         flash_brightest_Ywidth = BOGUS;
+  Float_t         flash_brightest_Zwidth = BOGUS;
+  Float_t         flash_brightest_Twidth = BOGUS;
+  Float_t         flash_brightest_Ycenter = BOGUS;
+  Float_t         flash_brightest_Zcenter = BOGUS;
+  Float_t         flash_brightest_Time = BOGUS;
+  Float_t         flash_brightest_CRThit = BOGUS;
+  Bool_t          flash_brightest_CRTveto = BOGUS;
+  Float_t         flash_brightest_TotalPE = BOGUS;
 
-  // PFParticle properties
-  MyPointer< std::vector<unsigned int> > pfp_generation_;
-  MyPointer< std::vector<unsigned int> > pfp_trk_daughters_count_;
-  MyPointer< std::vector<unsigned int> > pfp_shr_daughters_count_;
+  MyPointer <std::vector<std::vector<float>>> flash_PE_Per_PMT;
 
-  MyPointer< std::vector<float> > pfp_track_score_;
+  Int_t           mc_ccnc = BOGUS_INT;
+  Int_t           mc_mode = BOGUS_INT;
+  Int_t           mc_interactiontype = BOGUS_INT;
+  Int_t           mc_hitnuc = BOGUS_INT;
+  Int_t           mc_hitnuc11 = BOGUS_INT;
 
-  // Reco PDG code assigned by Pandora
-  MyPointer< std::vector<int> > pfp_reco_pdg_;
+  Float_t         mc_hitnuc11_p = BOGUS;
+  Float_t         mc_hitnuc11_px = BOGUS;
+  Float_t         mc_hitnuc11_py = BOGUS;
+  Float_t         mc_hitnuc11_pz = BOGUS;
 
-  // Total number of wire plane hits associated with each PFParticle
-  MyPointer< std::vector<int> > pfp_hits_;
+  Int_t           mc_hitnuc11_nuwro = BOGUS_INT;
 
-  // Number of hits on the three individual planes
-  // (Y is the collection plane)
-  MyPointer< std::vector<int> > pfp_hitsU_;
-  MyPointer< std::vector<int> > pfp_hitsV_;
-  MyPointer< std::vector<int> > pfp_hitsY_;
+  Float_t         mc_hitnuc11_nuwro_p = BOGUS;
+  Float_t         mc_hitnuc11_nuwro_px = BOGUS;
+  Float_t         mc_hitnuc11_nuwro_py = BOGUS;
+  Float_t         mc_hitnuc11_nuwro_pz = BOGUS;
+  Float_t         mc_q2 = BOGUS;
+  Float_t         mc_nu_vtxx = BOGUS;
+  Float_t         mc_nu_vtxy = BOGUS;
+  Float_t         mc_nu_vtxz = BOGUS;
+  Float_t         mc_nu_vtxx_sce = BOGUS;
+  Float_t         mc_nu_vtxy_sce = BOGUS;
+  Float_t         mc_nu_vtxz_sce = BOGUS;
+  Float_t         mc_enu = BOGUS;
+  Float_t         mc_wgt_v4a = BOGUS;
+  Float_t         mc_wgt_tunedcv = BOGUS;
 
-  // True PDG code found using the backtracker
-  MyPointer< std::vector<int> > pfp_true_pdg_;
+  Int_t           evtwgt_genie_ncel_nfunc = BOGUS_INT;
 
-  // True 4-momentum components found using the backtracker
-  MyPointer< std::vector<float> > pfp_true_E_;
-  MyPointer< std::vector<float> > pfp_true_px_;
-  MyPointer< std::vector<float> > pfp_true_py_;
-  MyPointer< std::vector<float> > pfp_true_pz_;
+  MyPointer <std::vector<std::string>>            evtwgt_genie_ncel_funcname;
+  MyPointer <std::vector<int>>                    evtwgt_genie_ncel_nweight;
+  MyPointer <std::vector<std::vector<double>>>    evtwgt_genie_ncel_weight;
 
-  // Shower properties
-  MyPointer< std::vector<unsigned long> > shower_pfp_id_;
-  MyPointer< std::vector<float> > shower_startx_;
-  MyPointer< std::vector<float> > shower_starty_;
-  MyPointer< std::vector<float> > shower_startz_;
-  MyPointer< std::vector<float> > shower_start_distance_;
+  Int_t           evtwgt_genie_pm1_nfunc = BOGUS_INT;
 
-  // Primary shower
-  int shr_id_ = BOGUS_INT;
-  float shr_energy_cali_ = BOGUS;
-  float shr_score_ = BOGUS;
-  int shrsubclusters_ = BOGUS_INT;
-  float hits_ratio_ = BOGUS;
-  float shrmoliereavg_ = BOGUS;
-  float shr_distance_ = BOGUS;
-  float shr_tkfit_gap10_dedx_Y_ = BOGUS;
-  float shr_tkfit_2cm_dedx_Y_ = BOGUS;
+  MyPointer <std::vector<std::string>>                evtwgt_genie_pm1_funcname;
+  MyPointer <std::vector<int>>                        evtwgt_genie_pm1_nweight;
+  MyPointer <std::vector<std::vector<double>>>        evtwgt_genie_pm1_weight;
 
-  // Track properties
-  MyPointer< std::vector<unsigned long> > track_pfp_id_;
-  MyPointer< std::vector<float> > track_length_;
-  MyPointer< std::vector<float> > track_startx_;
-  MyPointer< std::vector<float> > track_starty_;
-  MyPointer< std::vector<float> > track_startz_;
-  MyPointer< std::vector<float> > track_start_distance_;
-  MyPointer< std::vector<float> > track_endx_;
-  MyPointer< std::vector<float> > track_endy_;
-  MyPointer< std::vector<float> > track_endz_;
-  MyPointer< std::vector<float> > track_dirx_;
-  MyPointer< std::vector<float> > track_diry_;
-  MyPointer< std::vector<float> > track_dirz_;
-  MyPointer< std::vector<float> > track_theta_;
-  MyPointer< std::vector<float> > track_phi_;
+  Int_t           evtwgt_genie_multisim_nfunc = BOGUS_INT;
 
-  // Proton *kinetic* energy using range-based momentum reconstruction
-  MyPointer< std::vector<float> > track_kinetic_energy_p_;
+  MyPointer <std::vector<std::string>>                evtwgt_genie_multisim_funcname;
+  MyPointer <std::vector<int>>                        evtwgt_genie_multisim_nweight;
+  MyPointer <std::vector<std::vector<double>>>        evtwgt_genie_multisim_weight;
 
-  MyPointer< std::vector<float> > track_range_mom_mu_;
-  MyPointer< std::vector<float> > track_mcs_mom_mu_;
-  MyPointer< std::vector<float> > track_chi2_proton_;
 
-  // Log-likelihood ratio particle ID information
+  Int_t           evtwgt_g4_multisim_nfunc = BOGUS_INT;
 
-  // Product of muon/proton log-likelihood ratios from all wire three planes
-  MyPointer< std::vector<float> > track_llr_pid_;
+  MyPointer <std::vector<std::string>>                evtwgt_g4_multisim_funcname;
+  MyPointer <std::vector<int>>                        evtwgt_g4_multisim_nweight;
+  MyPointer <std::vector<std::vector<double>>>        evtwgt_g4_multisim_weight;
 
-  // Individual wire plane muon/proton log-likelihood ratios
-  MyPointer< std::vector<float> > track_llr_pid_U_;
-  MyPointer< std::vector<float> > track_llr_pid_V_;
-  MyPointer< std::vector<float> > track_llr_pid_Y_;
+  Int_t           evtwgt_flux_multisim_nfunc = BOGUS_INT;
 
-  // Rescaled overall PID score (all three planes) that lies
-  // on the interval [-1, 1]
-  MyPointer< std::vector<float> > track_llr_pid_score_;
+  MyPointer <std::vector<std::string>>                evtwgt_flux_multisim_funcname;
+  MyPointer <std::vector<int>>                        evtwgt_flux_multisim_nweight;
+  MyPointer <std::vector<std::vector<double>>>        evtwgt_flux_multisim_weight;
 
-  // True neutrino PDG code
-  int mc_nu_pdg_ = BOGUS_INT;
+  Int_t           mc_nupdg = BOGUS_INT;
+  Int_t           mc_n_muon = BOGUS_INT;
+  Int_t           mc_n_proton = BOGUS_INT;
+  Int_t           mc_n_photon = BOGUS_INT;
+  Int_t           mc_n_pionpm = BOGUS_INT;
+  Int_t           mc_n_pion0 = BOGUS_INT;
+  Int_t           mc_n_electron = BOGUS_INT;
+  Int_t           mc_n_neutron = BOGUS_INT;
+  Int_t           mc_nI_n_photon = BOGUS_INT;
+  Int_t           mc_nI_n_proton = BOGUS_INT;
+  Int_t           mc_nI_n_neutron = BOGUS_INT;
+  Int_t           mc_n_threshold_muon = BOGUS_INT;
+  Int_t           mc_n_threshold_proton = BOGUS_INT;
+  Int_t           mc_n_threshold_pionpm = BOGUS_INT;
+  Int_t           mc_n_threshold_pion0 = BOGUS_INT;
+  Int_t           mc_n_threshold_electron = BOGUS_INT;
+  Int_t           mc_n_threshold_neutron = BOGUS_INT;
 
-  // True neutrino vertex coordinates (cm)
-  float mc_nu_vx_ = BOGUS;
-  float mc_nu_vy_ = BOGUS;
-  float mc_nu_vz_ = BOGUS;
+  MyPointer <std::vector<float>>          mc_g4_mom;
+  MyPointer <std::vector<float>>          mc_g4_E;
+  MyPointer <std::vector<float>>          mc_g4_p;
+  MyPointer <std::vector<float>>          mc_g4_mass;
+  MyPointer <std::vector<float>>          mc_g4_phi;
+  MyPointer <std::vector<float>>          mc_g4_theta;
+  MyPointer <std::vector<int>>            mc_g4_pdg;
+  MyPointer <std::vector<float>>          mc_g4_start_x;
+  MyPointer <std::vector<float>>          mc_g4_start_y;
+  MyPointer <std::vector<float>>          mc_g4_start_z;
+  MyPointer <std::vector<float>>          mc_g4_end_x;
+  MyPointer <std::vector<float>>          mc_g4_end_y;
+  MyPointer <std::vector<float>>          mc_g4_end_z;
+  MyPointer <std::vector<float>>          mc_g4_photon_E;
+  MyPointer <std::vector<float>>          mc_g4_photon_start_x;
+  MyPointer <std::vector<float>>          mc_g4_photon_start_y;
+  MyPointer <std::vector<float>>          mc_g4_photon_start_z;
+  MyPointer <std::vector<float>>          mc_g4_photon_end_x;
+  MyPointer <std::vector<float>>          mc_g4_photon_end_y;
+  MyPointer <std::vector<float>>          mc_g4_photon_end_z;
+  MyPointer <std::vector<float>>          mc_g4_proton_E;
+  MyPointer <std::vector<float>>          mc_g4_proton_start_x;
+  MyPointer <std::vector<float>>          mc_g4_proton_start_y;
+  MyPointer <std::vector<float>>          mc_g4_proton_start_z;
+  MyPointer <std::vector<float>>          mc_g4_proton_end_x;
+  MyPointer <std::vector<float>>          mc_g4_proton_end_y;
+  MyPointer <std::vector<float>>          mc_g4_proton_end_z;
+  MyPointer <std::vector<float>>          mc_g4_neutron_E;
+  MyPointer <std::vector<float>>          mc_g4_neutron_start_x;
+  MyPointer <std::vector<float>>          mc_g4_neutron_start_y;
+  MyPointer <std::vector<float>>          mc_g4_neutron_start_z;
+  MyPointer <std::vector<float>>          mc_g4_neutron_end_x;
+  MyPointer <std::vector<float>>          mc_g4_neutron_end_y;
+  MyPointer <std::vector<float>>          mc_g4_neutron_end_z;
 
-  float mc_nu_sce_vx_ = BOGUS;
-  float mc_nu_sce_vy_ = BOGUS;
-  float mc_nu_sce_vz_ = BOGUS;
+  MyPointer <std::vector<float>>          mc_g4_nI_photon_E;
+  MyPointer <std::vector<float>>          mc_g4_nI_photon_start_x;
+  MyPointer <std::vector<float>>          mc_g4_nI_photon_start_y;
+  MyPointer <std::vector<float>>          mc_g4_nI_photon_start_z;
+  MyPointer <std::vector<float>>          mc_g4_nI_photon_end_x;
+  MyPointer <std::vector<float>>          mc_g4_nI_photon_end_y;
+  MyPointer <std::vector<float>>          mc_g4_nI_photon_end_z;
+  MyPointer <std::vector<float>>          mc_g4_nI_proton_E;
+  MyPointer <std::vector<float>>          mc_g4_nI_proton_start_x;
+  MyPointer <std::vector<float>>          mc_g4_nI_proton_start_y;
+  MyPointer <std::vector<float>>          mc_g4_nI_proton_start_z;
 
-  // True neutrino 4-momentum
-  float mc_nu_energy_ = BOGUS;
+  MyPointer <std::vector<float>>          mc_g4_nI_proton_end_x;
+  MyPointer <std::vector<float>>          mc_g4_nI_proton_end_y;
+  MyPointer <std::vector<float>>          mc_g4_nI_proton_end_z;
+  MyPointer <std::vector<float>>          mc_g4_nI_neutron_E;
+  MyPointer <std::vector<float>>          mc_g4_nI_neutron_start_x;
+  MyPointer <std::vector<float>>          mc_g4_nI_neutron_start_y;
+  MyPointer <std::vector<float>>          mc_g4_nI_neutron_start_z;
+  MyPointer <std::vector<float>>          mc_g4_nI_neutron_end_x;
+  MyPointer <std::vector<float>>          mc_g4_nI_neutron_end_y;
+  MyPointer <std::vector<float>>          mc_g4_nI_neutron_end_z;
 
-  // Whether the event is CC (0) or NC (1)
-  int mc_nu_ccnc_ = false;
+  MyPointer <std::vector<float>>          mc_g4_start_x_sce;
+  MyPointer <std::vector<float>>          mc_g4_start_y_sce;
+  MyPointer <std::vector<float>>          mc_g4_start_z_sce;
+  MyPointer <std::vector<float>>          mc_g4_end_x_sce;
+  MyPointer <std::vector<float>>          mc_g4_end_y_sce;
+  MyPointer <std::vector<float>>          mc_g4_end_z_sce;
+  MyPointer <std::vector<bool>>           is_from_nu_slice;
+  MyPointer <std::vector<bool>>           is_primary;
+  MyPointer <std::vector<bool>>           is_contained;
+  MyPointer <std::vector<bool>>           is_st;
+  MyPointer <std::vector<bool>>           is_nc1p;
+  MyPointer <std::vector<bool>>           is_reco_nc1p;
+  MyPointer <std::vector<int>>            mc_pdg;
+  MyPointer <std::vector<int>>            mc_primary;
+  MyPointer <std::vector<int>>            mc_origin;
+  MyPointer <std::vector<float>>          mc_length;
+  MyPointer <std::vector<float>>          mc_start_x;
+  MyPointer <std::vector<float>>          mc_start_y;
+  MyPointer <std::vector<float>>          mc_start_z;
+  MyPointer <std::vector<float>>          mc_end_x;
+  MyPointer <std::vector<float>>          mc_end_y;
+  MyPointer <std::vector<float>>          mc_end_z;
+  MyPointer <std::vector<float>>          mc_start_x_sce;
+  MyPointer <std::vector<float>>          mc_start_y_sce;
+  MyPointer <std::vector<float>>          mc_start_z_sce;
+  MyPointer <std::vector<float>>          mc_end_x_sce;
+  MyPointer <std::vector<float>>          mc_end_y_sce;
+  MyPointer <std::vector<float>>          mc_end_z_sce;
+  MyPointer <std::vector<float>>          mc_theta;
+  MyPointer <std::vector<float>>          mc_phi;
+  MyPointer <std::vector<float>>          mc_ke;
+  MyPointer <std::vector<float>>          mc_mom;
+  MyPointer <std::vector<int>>            n_pfp;
+  MyPointer <std::vector<int>>            n_trk;
+  MyPointer <std::vector<int>>            id_pfp;
+  MyPointer <std::vector<int>>            isinFV;
+  MyPointer <std::vector<int>>            n_shower;
+  MyPointer <std::vector<int>>            parentPDG;
+  MyPointer <std::vector<float>>          trk_score;
+  MyPointer <std::vector<float>>          KE_len;
+  MyPointer <std::vector<float>>          dislen_ratio;
+  MyPointer <std::vector<float>>          reco_q2;
+  MyPointer <std::vector<float>>          top_score;
+  MyPointer <std::vector<float>>          flash_score;
+  MyPointer <std::vector<int>>            n_daughters;
+  MyPointer <std::vector<bool>>           has_shower;
+  Float_t         reco_nu_vtxx;
+  Float_t         reco_nu_vtxy;
+  Float_t         reco_nu_vtxz;
+  MyPointer <std::vector<float>>          deltaY;
+  MyPointer <std::vector<float>>          deltaZ;
+  MyPointer <std::vector<float>>          deltaYSigma;
+  MyPointer <std::vector<float>>          deltaZSigma;
+  MyPointer <std::vector<float>>          chargeToLightRatio;
+  MyPointer <std::vector<float>>          xclVariable;
+  MyPointer <std::vector<bool>>           flip_0;
+  MyPointer <std::vector<bool>>           flip_1;
+  MyPointer <std::vector<bool>>           flip_2;
+  MyPointer <std::vector<float>>          reco_length;
+  MyPointer <std::vector<float>>          reco_start_x;
+  MyPointer <std::vector<float>>          reco_start_y;
+  MyPointer <std::vector<float>>          reco_start_z;
+  MyPointer <std::vector<float>>          reco_end_x;
+  MyPointer <std::vector<float>>          reco_end_y;
+  MyPointer <std::vector<float>>          reco_end_z;
+  MyPointer <std::vector<float>>          reco_theta;
+  MyPointer <std::vector<float>>          reco_phi;
+  MyPointer <std::vector<float>>          reco_start_x_f2;
+  MyPointer <std::vector<float>>          reco_start_y_f2;
+  MyPointer <std::vector<float>>          reco_start_z_f2;
+  MyPointer <std::vector<float>>          reco_end_x_f2;
+  MyPointer <std::vector<float>>          reco_end_y_f2;
+  MyPointer <std::vector<float>>          reco_end_z_f2;
+  MyPointer <std::vector<float>>          reco_theta_f2;
+  MyPointer <std::vector<float>>          reco_phi_f2;
+  MyPointer <std::vector<float>>          reco_ke;
+  MyPointer <std::vector<float>>          reco_mom;
+  MyPointer <std::vector<float>>          reco_mom_muon;
+  MyPointer <std::vector<float>>          reco_mom_proton;
+  MyPointer <std::vector<float>>          reco_mom_pion;
+  MyPointer <std::vector<int>>            nhits_0;
+  MyPointer <std::vector<int>>            nhits_1;
+  MyPointer <std::vector<int>>            nhits_2;
+  MyPointer <std::vector<float>>          chi2_p_0;
+  MyPointer <std::vector<float>>          chi2_p_1;
+  MyPointer <std::vector<float>>          chi2_p_2;
 
-  // Interaction mode (QE, MEC, etc.)
-  int mc_nu_interaction_type_ = BOGUS_INT;
+  MyPointer <std::vector<float>>          start_dedx_0;
+  MyPointer <std::vector<float>>          start_dedx_1;
+  MyPointer <std::vector<float>>          start_dedx_2;
+  MyPointer <std::vector<float>>          end_dedx_0;
+  MyPointer <std::vector<float>>          end_dedx_1;
+  MyPointer <std::vector<float>>          end_dedx_2;
+  MyPointer <std::vector<float>>          start_dedx_0_f2;
+  MyPointer <std::vector<float>>          start_dedx_1_f2;
+  MyPointer <std::vector<float>>          start_dedx_2_f2;
+  MyPointer <std::vector<float>>          end_dedx_0_f2;
+  MyPointer <std::vector<float>>          end_dedx_1_f2;
+  MyPointer <std::vector<float>>          end_dedx_2_f2;
+  MyPointer <std::vector<float>>          ratio_dedx_0;
+  MyPointer <std::vector<float>>          ratio_dedx_1;
+  MyPointer <std::vector<float>>          ratio_dedx_2;
+  MyPointer <std::vector<float>>          avg_dedx_0;
+  MyPointer <std::vector<float>>          avg_dedx_1;
+  MyPointer <std::vector<float>>          avg_dedx_2;
+  MyPointer <std::vector<float>>          total_dedx_0;
+  MyPointer <std::vector<float>>          total_dedx_1;
+  MyPointer <std::vector<float>>          total_dedx_2;
+  // Not used in the make_tree.h
+  // MyPointer <std::vector<std::vector<float>>>   RR_0;
+  // MyPointer <std::vector<std::vector<float>>>   RR_1;
+  // MyPointer <std::vector<std::vector<float>>>   RR_2;
+  // MyPointer <std::vector<std::vector<float>>>   dEdx_0;
+  // MyPointer <std::vector<std::vector<float>>>   dEdx_1;
+  // MyPointer <std::vector<std::vector<float>>>   dEdx_2;
+  // MyPointer <std::vector<std::vector<float>>>   dQdx_0;
+  // MyPointer <std::vector<std::vector<float>>>   dQdx_1;
+  // MyPointer <std::vector<std::vector<float>>>   dQdx_2;
 
-  // Final-state particle PDG codes and energies (post-FSIs)
-  MyPointer< std::vector<int> > mc_nu_daughter_pdg_;
-  MyPointer< std::vector<float> > mc_nu_daughter_energy_;
-  MyPointer< std::vector<float> > mc_nu_daughter_px_;
-  MyPointer< std::vector<float> > mc_nu_daughter_py_;
-  MyPointer< std::vector<float> > mc_nu_daughter_pz_;
-
-  // General systematic weights
-  MyPointer< std::map< std::string, std::vector<double> > > mc_weights_map_;
-  // Map of pointers used to set output branch addresses for the elements
-  // of the weights map. Hacky, but it works.
-  // TODO: revisit this to make something more elegant
-  std::map< std::string, std::vector<double>* > mc_weights_ptr_map_;
-
-  // GENIE weights
-  float spline_weight_ = DEFAULT_WEIGHT;
-  float tuned_cv_weight_ = DEFAULT_WEIGHT;
-  float ppfx_cv_weight_ = DEFAULT_WEIGHT;
-  float normalisation_weight_ = DEFAULT_WEIGHT;
-
-  // NuMI: beamline geometry weights
-  // beamline variations
-  bool beamlineVarWeightsPresent_ = false;
-  // true nu angle from numi beamline 
-  float nu_angle;
-  // variations
-  std::vector<double> Horn_2kA;
-  std::vector<double> Horn1_x_3mm;
-  std::vector<double> Horn1_y_3mm;
-  std::vector<double> Beam_spot_1_1mm;
-  std::vector<double> Beam_spot_1_5mm;
-  std::vector<double> Horn2_x_3mm;
-  std::vector<double> Horn2_y_3mm;
-  std::vector<double> Horns_0mm_water;
-  std::vector<double> Horns_2mm_water;
-  std::vector<double> Beam_shift_x_1mm;
-  std::vector<double> Beam_shift_y_1mm;
-  std::vector<double> Target_z_7mm;
-
-  // Signal definition requirements
-  bool is_mc_ = false;
-
-  // truth electron information
-  int mc_nelec_ = BOGUS_INT;
-  int mc_npi0_ = BOGUS_INT;
-  float mc_elec_e_ = BOGUS;
-
-  //================================================================================================================
-  // ** Reconstructed observables **
-
+  Int_t           nclusters;
+  Int_t           nclustersps;
+  MyPointer <std::vector<int>>            cluster_ID;
+  MyPointer <std::vector<int>>            cluster_plane;
+  MyPointer <std::vector<float>>          cluster_start_charge;
+  MyPointer <std::vector<float>>          cluster_start_angle;
+  MyPointer <std::vector<float>>          cluster_end_charge;
+  MyPointer <std::vector<float>>          cluster_end_angle;
+  MyPointer <std::vector<float>>          cluster_integral;
+  MyPointer <std::vector<float>>          cluster_integral_average;
+  MyPointer <std::vector<float>>          cluster_summedADC;
+  MyPointer <std::vector<float>>          cluster_summedADC_average;
+  MyPointer <std::vector<float>>          cluster_width;
+  MyPointer <std::vector<int>>            cluster_nhits;
+  MyPointer <std::vector<int>>            cluster_start_wire;
+  MyPointer <std::vector<int>>            cluster_start_tick;
+  MyPointer <std::vector<int>>            cluster_end_wire;
+  MyPointer <std::vector<int>>            cluster_end_tick;
+  MyPointer <std::vector<float>>          cluster_sps_x;
+  MyPointer <std::vector<float>>          cluster_sps_y;
+  MyPointer <std::vector<float>>          cluster_sps_z;
+  Int_t           nblips;
+  MyPointer <std::vector<float>>          blip_x;
+  MyPointer <std::vector<float>>          blip_y;
+  MyPointer <std::vector<float>>          blip_z;
+  MyPointer <std::vector<int>>            blip_plane_0;
+  MyPointer <std::vector<int>>            blip_plane_1;
+  MyPointer <std::vector<int>>            blip_plane_2;
+  MyPointer <std::vector<float>>          blip_charge_0;
+  MyPointer <std::vector<float>>          blip_charge_1;
+  MyPointer <std::vector<float>>          blip_charge_2;
+  MyPointer <std::vector<int>>            blip_ID;
+  MyPointer <std::vector<bool>>           blip_isValid;
+  MyPointer <std::vector<int>>            blip_nplanes;
+  MyPointer <std::vector<float>>          blip_maxdiff;
+  MyPointer <std::vector<int>>            blip_tpc;
+  MyPointer <std::vector<float>>          blip_energy;
+  MyPointer <std::vector<float>>          blip_energy_estar;
+  MyPointer <std::vector<bool>>           blip_incylinder;
+  MyPointer <std::vector<int>>            blip_trkid;
+  MyPointer <std::vector<float>>          blip_trkdist;
+  MyPointer <std::vector<int>>            blip_pdg;
+  MyPointer <std::vector<string>>         blip_process;
+  // MyPointer <std::vector<string>>  *blip_mom_process;
+  // MyPointer <std::vector<int>>     *blip_mom_pdg;
+  // MyPointer <std::vector<string>>  *blip_grandmom_process;
+  // MyPointer <std::vector<int>>     *blip_grandmom_pdg;
+  // MyPointer <std::vector<string>>  *blip_greatgrandmom_process;
+  // MyPointer <std::vector<int>>     *blip_greatgrandmom_pdg;
+  MyPointer <std::vector<float>>          blip_vx;
+  MyPointer <std::vector<float>>          blip_vy;
+  MyPointer <std::vector<float>>          blip_vz;
+  MyPointer <std::vector<float>>          blip_E;
+  MyPointer <std::vector<float>>          blip_mass;
+  MyPointer <std::vector<string>>         blip_mom_process;
+  MyPointer <std::vector<int>>            blip_mom_pdg;
+  MyPointer <std::vector<float>>          blip_mom_vx;
+  MyPointer <std::vector<float>>          blip_mom_vy;
+  MyPointer <std::vector<float>>          blip_mom_vz;
+  MyPointer <std::vector<float>>          blip_mom_E;
+  MyPointer <std::vector<float>>          blip_mom_mass;
+  MyPointer <std::vector<string>>         blip_grandmom_process;
+  MyPointer <std::vector<int>>            blip_grandmom_pdg;
+  MyPointer <std::vector<float>>          blip_grandmom_vx;
+  MyPointer <std::vector<float>>          blip_grandmom_vy;
+  MyPointer <std::vector<float>>          blip_grandmom_vz;
+  MyPointer <std::vector<float>>          blip_grandmom_E;
+  MyPointer <std::vector<float>>          blip_grandmom_mass;
+  MyPointer <std::vector<string>>         blip_greatgrandmom_process;
+  MyPointer <std::vector<int>>            blip_greatgrandmom_pdg;
+  MyPointer <std::vector<float>>          blip_greatgrandmom_vx;
+  MyPointer <std::vector<float>>          blip_greatgrandmom_vy;
+  MyPointer <std::vector<float>>          blip_greatgrandmom_vz;
+  MyPointer <std::vector<float>>          blip_greatgrandmom_E;
+  MyPointer <std::vector<float>>          blip_greatgrandmom_mass;
 };
