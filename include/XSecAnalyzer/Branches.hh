@@ -376,277 +376,367 @@ void set_event_branch_addresses(TTree& etree, AnalysisEvent& ev)
 }
 
 // Helper function to set branch addresses for the output TTree
-void set_event_output_branch_addresses(TTree& out_tree, AnalysisEvent& ev,
-  bool create = false)
+void set_event_output_branch_addresses(TTree& out_tree, AnalysisEvent& ev, bool create = false)
 {
-  // Signal definition flags
-  set_output_branch_address( out_tree, "is_mc", &ev.is_mc_, create, "is_mc/O" );
-
-  // Event weights
-  set_output_branch_address( out_tree, "spline_weight",
-    &ev.spline_weight_, create, "spline_weight/F" );
-
-  set_output_branch_address( out_tree, "tuned_cv_weight",
-    &ev.tuned_cv_weight_, create, "tuned_cv_weight/F" );
-  
-  set_output_branch_address( out_tree, "ppfx_cv_weight",
-    &ev.ppfx_cv_weight_, create, "ppfx_cv_weight/F" );
-
-  if (useNuMI) {
-    set_output_branch_address( out_tree, "normalisation_weight",
-      &ev.normalisation_weight_, create, "normalisation_weight/F" );
-  }
-
-  // If MC weights are available, prepare to store them in the output TTree
-  if ( ev.mc_weights_map_ ) {
-
-    // Make separate branches for the various sets of systematic variation
-    // weights in the map
-    for ( auto& pair : *ev.mc_weights_map_ ) {
-
-      // skip duplicate unecessary weights in NuMI files
-      if (useNuMI) {
-        // BNB flux weights
-        if (pair.first == "flux_all") continue;
-
-        // extra PPFX weights, use multi-sim instead
-        if (pair.first == "ppfx_mippk_PPFXMIPPKaon" ||
-    		  pair.first == "ppfx_mipppi_PPFXMIPPPion" ||
-    		  pair.first == "ppfx_other_PPFXOther" ||
-    		  pair.first == "ppfx_targatt_PPFXTargAtten" ||
-    		  pair.first == "ppfx_think_PPFXThinKaon" ||
-    		  pair.first == "ppfx_thinmes_PPFXThinMeson" ||
-    		  pair.first == "ppfx_thinn_PPFXThinNuc" ||
-    		  pair.first == "ppfx_thinna_PPFXThinNucA" ||
-    		  pair.first == "ppfx_thinnpi_PPFXThinNeutronPion" ||
-    		  pair.first == "ppfx_thinpi_PPFXThinPion" ||
-    		  pair.first == "ppfx_totabs_PPFXTotAbsorp"
-    		) continue;
-      }
-
-      // Prepend "weight_" to the name of the vector of weights in the map
-      std::string weight_branch_name = "weight_" + pair.first;
-
-      // Store a pointer to the vector of weights (needed to set the branch
-      // address properly) in the temporary map of pointers
-      ev.mc_weights_ptr_map_[ weight_branch_name ] = &pair.second;
-
-      // Set the branch address for this vector of weights
-      set_object_output_branch_address< std::vector<double> >( out_tree,
-        weight_branch_name, ev.mc_weights_ptr_map_.at(weight_branch_name),
-        create );
-    }
-  }
-
-  // Backtracked neutrino purity and completeness
-  set_output_branch_address( out_tree, "nu_completeness_from_pfp",
-    &ev.nu_completeness_from_pfp_, create, "nu_completeness_from_pfp/F" );
-
-  set_output_branch_address( out_tree, "nu_purity_from_pfp",
-    &ev.nu_purity_from_pfp_, create, "nu_purity_from_pfp/F" );
-
-  // Number of neutrino slices identified by the SliceID
-  set_output_branch_address( out_tree, "nslice", &ev.nslice_, create,
-    "nslice/I" );
-
-  // *** Branches copied directly from the input ***
-
-  // Cosmic rejection parameters for numu CC inclusive selection
-  set_output_branch_address( out_tree, "topological_score",
-    &ev.topological_score_, create, "topological_score/F" );
-
-  set_output_branch_address( out_tree, "CosmicIP",
-    &ev.cosmic_impact_parameter_, create, "CosmicIP/F" );
-
-  // contained fraction
-  set_output_branch_address( out_tree, "contained_fraction",
-    &ev.contained_fraction_, create, "contained_fraction/F" );
-
-  // Reconstructed neutrino vertex position
-  set_output_branch_address( out_tree, "reco_nu_vtx_sce_x",
-    &ev.nu_vx_, create, "reco_nu_vtx_sce_x/F" );
-
-  set_output_branch_address( out_tree, "reco_nu_vtx_sce_y",
-    &ev.nu_vy_, create, "reco_nu_vtx_sce_y/F" );
-
-  set_output_branch_address( out_tree, "reco_nu_vtx_sce_z",
-    &ev.nu_vz_, create, "reco_nu_vtx_sce_z/F" );
-
-  // MC truth information for the neutrino
-  set_output_branch_address( out_tree, "mc_nu_pdg", &ev.mc_nu_pdg_,
-    create, "mc_nu_pdg/I" );
-
-  set_output_branch_address( out_tree, "mc_nu_vtx_x", &ev.mc_nu_vx_,
-    create, "mc_nu_vtx_x/F" );
-
-  set_output_branch_address( out_tree, "mc_nu_vtx_y", &ev.mc_nu_vy_,
-    create, "mc_nu_vtx_y/F" );
-
-  set_output_branch_address( out_tree, "mc_nu_vtx_z", &ev.mc_nu_vz_,
-    create, "mc_nu_vtx_z/F" );
-
-  set_output_branch_address( out_tree, "mc_nu_energy", &ev.mc_nu_energy_,
-    create, "mc_nu_energy/F" );
-
-  set_output_branch_address( out_tree, "mc_ccnc", &ev.mc_nu_ccnc_,
-    create, "mc_ccnc/I" );
-
-  set_output_branch_address( out_tree, "mc_interaction",
-    &ev.mc_nu_interaction_type_, create, "mc_interaction/I" );
-
-  // PFParticle properties
-  set_object_output_branch_address< std::vector<unsigned int> >( out_tree,
-    "pfp_generation_v", ev.pfp_generation_, create );
-
-  set_object_output_branch_address< std::vector<unsigned int> >( out_tree,
-    "pfp_trk_daughters_v", ev.pfp_trk_daughters_count_, create );
-
-  set_object_output_branch_address< std::vector<unsigned int> >( out_tree,
-    "pfp_shr_daughters_v", ev.pfp_shr_daughters_count_, create );
-
-  set_object_output_branch_address< std::vector<float> >( out_tree,
-    "trk_score_v", ev.pfp_track_score_, create );
-
-  set_object_output_branch_address< std::vector<int> >( out_tree,
-    "pfpdg", ev.pfp_reco_pdg_, create );
-
-  set_object_output_branch_address< std::vector<int> >( out_tree,
-    "pfnhits", ev.pfp_hits_, create );
-
-  set_object_output_branch_address< std::vector<int> >( out_tree,
-    "pfnplanehits_U", ev.pfp_hitsU_, create );
-
-  set_object_output_branch_address< std::vector<int> >( out_tree,
-    "pfnplanehits_V", ev.pfp_hitsV_, create );
-
-  set_object_output_branch_address< std::vector<int> >( out_tree,
-    "pfnplanehits_Y", ev.pfp_hitsY_, create );
-
-  // Backtracked PFParticle properties
-  set_object_output_branch_address< std::vector<int> >( out_tree,
-    "backtracked_pdg", ev.pfp_true_pdg_, create );
-
-  set_object_output_branch_address< std::vector<float> >( out_tree,
-    "backtracked_e", ev.pfp_true_E_, create );
-
-  set_object_output_branch_address< std::vector<float> >( out_tree,
-    "backtracked_px", ev.pfp_true_px_, create );
-
-  set_object_output_branch_address< std::vector<float> >( out_tree,
-    "backtracked_py", ev.pfp_true_py_, create );
-
-  set_object_output_branch_address< std::vector<float> >( out_tree,
-    "backtracked_pz", ev.pfp_true_pz_, create );
-
-  // Shower properties
-  // For some ntuples, reconstructed shower information is excluded.
-  // In such cases, skip writing these branches to the output TTree.
-  if ( ev.shower_startx_ ) {
-    set_object_output_branch_address< std::vector<float> >( out_tree,
-      "shr_start_x_v", ev.shower_startx_, create );
-
-    set_object_output_branch_address< std::vector<float> >( out_tree,
-      "shr_start_y_v", ev.shower_starty_, create );
-
-    set_object_output_branch_address< std::vector<float> >( out_tree,
-      "shr_start_z_v", ev.shower_startz_, create );
-
-    // Shower start distance from reco neutrino vertex (pre-calculated for
-    // convenience)
-    set_object_output_branch_address< std::vector<float> >( out_tree,
-      "shr_dist_v", ev.shower_start_distance_, create );
-  }
-  // primary shower
-  set_output_branch_address( out_tree, "shr_id", &ev.shr_id_, create, "shr_id/I" );
-  set_output_branch_address( out_tree, "shr_score", &ev.shr_score_, create, "shr_score/F" );
-  set_output_branch_address( out_tree, "shr_energy_cali", &ev.shr_energy_cali_, create, "shr_energy_cali/F" );
-  set_output_branch_address( out_tree, "hits_ratio", &ev.hits_ratio_, create, "hits_ratio/F" );
-  set_output_branch_address( out_tree, "shrmoliereavg", &ev.shrmoliereavg_, create, "shrmoliereavg/F" );
-  set_output_branch_address( out_tree, "shr_distance", &ev.shr_distance_, create, "shr_distance/F" );
-  set_output_branch_address( out_tree, "shr_tkfit_gap10_dedx_Y", &ev.shr_tkfit_gap10_dedx_Y_, create, "shr_tkfit_gap10_dedx_Y/F" );
-  set_output_branch_address( out_tree, "shr_tkfit_2cm_dedx_Y", &ev.shr_tkfit_2cm_dedx_Y_, create, "shr_tkfit_2cm_dedx_Y/F" );
-
-  // Track properties
-  set_object_output_branch_address< std::vector<float> >( out_tree,
-    "trk_len_v", ev.track_length_, create );
-
-  set_object_output_branch_address< std::vector<float> >( out_tree,
-    "trk_sce_start_x_v", ev.track_startx_, create );
-
-  set_object_output_branch_address< std::vector<float> >( out_tree,
-    "trk_sce_start_y_v", ev.track_starty_, create );
-
-  set_object_output_branch_address< std::vector<float> >( out_tree,
-    "trk_sce_start_z_v", ev.track_startz_, create );
-
-  // Track start distance from reco neutrino vertex (pre-calculated for
-  // convenience)
-  set_object_output_branch_address< std::vector<float> >( out_tree,
-    "trk_distance_v", ev.track_start_distance_, create );
-
-  set_object_output_branch_address< std::vector<float> >( out_tree,
-    "trk_sce_end_x_v", ev.track_endx_, create );
-
-  set_object_output_branch_address< std::vector<float> >( out_tree,
-    "trk_sce_end_y_v", ev.track_endy_, create );
-
-  set_object_output_branch_address< std::vector<float> >( out_tree,
-    "trk_sce_end_z_v", ev.track_endz_, create );
-
-  set_object_output_branch_address< std::vector<float> >( out_tree,
-    "trk_dir_x_v", ev.track_dirx_, create );
-
-  set_object_output_branch_address< std::vector<float> >( out_tree,
-    "trk_dir_y_v", ev.track_diry_, create );
-
-  set_object_output_branch_address< std::vector<float> >( out_tree,
-    "trk_dir_z_v", ev.track_dirz_, create );
-
-  set_object_output_branch_address< std::vector<float> >( out_tree,
-    "trk_energy_proton_v", ev.track_kinetic_energy_p_, create );
-
-  set_object_output_branch_address< std::vector<float> >( out_tree,
-    "trk_range_muon_mom_v", ev.track_range_mom_mu_, create );
-
-  set_object_output_branch_address< std::vector<float> >( out_tree,
-    "trk_mcs_muon_mom_v", ev.track_mcs_mom_mu_, create );
-
-  // Some ntuples exclude the old chi^2 proton PID score. Only include it in
-  // the output if it is available.
-  if ( ev.track_chi2_proton_ ) {
-    set_object_output_branch_address< std::vector<float> >( out_tree,
-      "trk_pid_chipr_v", ev.track_chi2_proton_, create );
-  }
-
-  // Log-likelihood-based particle ID information
-  set_object_output_branch_address< std::vector<float> >( out_tree,
-    "trk_llr_pid_v", ev.track_llr_pid_, create );
-
-  set_object_output_branch_address< std::vector<float> >( out_tree,
-    "trk_llr_pid_u_v", ev.track_llr_pid_U_, create );
-
-  set_object_output_branch_address< std::vector<float> >( out_tree,
-    "trk_llr_pid_v_v", ev.track_llr_pid_V_, create );
-
-  set_object_output_branch_address< std::vector<float> >( out_tree,
-    "trk_llr_pid_y_v", ev.track_llr_pid_Y_, create );
-
-  set_object_output_branch_address< std::vector<float> >( out_tree,
-    "trk_llr_pid_score_v", ev.track_llr_pid_score_, create );
-
-  // MC truth information for the final-state primary particles
-  set_object_output_branch_address< std::vector<int> >( out_tree, "mc_pdg",
-    ev.mc_nu_daughter_pdg_, create );
-
-  set_object_output_branch_address< std::vector<float> >( out_tree, "mc_E",
-    ev.mc_nu_daughter_energy_, create );
-
-  set_object_output_branch_address< std::vector<float> >( out_tree, "mc_px",
-    ev.mc_nu_daughter_px_, create );
-
-  set_object_output_branch_address< std::vector<float> >( out_tree, "mc_py",
-    ev.mc_nu_daughter_py_, create );
-
-  set_object_output_branch_address< std::vector<float> >( out_tree, "mc_pz",
-    ev.mc_nu_daughter_pz_, create );
+  set_output_branch_address(out_tree, "run", &ev.run, create, "run/I");
+  set_output_branch_address(out_tree, "subrun", &ev.subrun, create, "subrun/I");
+  set_output_branch_address(out_tree, "event", &ev.event, create, "event/I");
+  set_output_branch_address(out_tree, "evt_gen_nc1p", &ev.evt_gen_nc1p, create, "evt_gen_nc1p/I");
+  set_output_branch_address(out_tree, "evt_gen_nce", &ev.evt_gen_nce, create, "evt_gen_nce/I");
+  set_output_branch_address(out_tree, "evt_gen_nc1p_q2_gen", &ev.evt_gen_nc1p_q2_gen, create, "evt_gen_nc1p_q2_gen/F");
+  set_output_branch_address(out_tree, "evt_gen_nc1p_q2_ke", &ev.evt_gen_nc1p_q2_ke, create, "evt_gen_nc1p_q2_ke/F");
+  set_output_branch_address(out_tree, "evt_gen_nc1p_stx", &ev.evt_gen_nc1p_stx, create, "evt_gen_nc1p_stx/F");
+  set_output_branch_address(out_tree, "evt_gen_nc1p_sty", &ev.evt_gen_nc1p_sty, create, "evt_gen_nc1p_sty/F");
+  set_output_branch_address(out_tree, "evt_gen_nc1p_stz", &ev.evt_gen_nc1p_stz, create, "evt_gen_nc1p_stz/F");
+  set_output_branch_address(out_tree, "evt_gen_nc1p_endx", &ev.evt_gen_nc1p_endx, create, "evt_gen_nc1p_endx/F");
+  set_output_branch_address(out_tree, "evt_gen_nc1p_endy", &ev.evt_gen_nc1p_endy, create, "evt_gen_nc1p_endy/F");
+  set_output_branch_address(out_tree, "evt_gen_nc1p_endz", &ev.evt_gen_nc1p_endz, create, "evt_gen_nc1p_endz/F");
+  set_output_branch_address(out_tree, "evt_gen_nc1p_costheta", &ev.evt_gen_nc1p_costheta, create, "evt_gen_nc1p_costheta/F");
+  set_output_branch_address(out_tree, "evt_gen_nc1p_phi", &ev.evt_gen_nc1p_phi, create, "evt_gen_nc1p_phi/F");
+  set_output_branch_address(out_tree, "evt_gen_nc1p_mom", &ev.evt_gen_nc1p_mom, create, "evt_gen_nc1p_mom/F");
+  set_output_branch_address(out_tree, "evt_gen_nc1p_ke", &ev.evt_gen_nc1p_ke, create, "evt_gen_nc1p_ke/F");
+  set_output_branch_address(out_tree, "evt_gen_nc1p_contained", &ev.evt_gen_nc1p_contained, create, "evt_gen_nc1p_contained/I");
+  set_output_branch_address(out_tree, "evt_gen_nc1p_inFV", &ev.evt_gen_nc1p_inFV, create, "evt_gen_nc1p_inFV/I");
+  set_output_branch_address(out_tree, "evt_reco_1p_nu", &ev.evt_reco_1p_nu, create, "evt_reco_1p_nu/I");
+  set_output_branch_address(out_tree, "evt_reco_1p_non_nu", &ev.evt_reco_1p_non_nu, create, "evt_reco_1p_non_nu/I");
+  set_output_branch_address(out_tree, "evt_reco_1p", &ev.evt_reco_1p, create, "evt_reco_1p/I");
+  set_output_branch_address(out_tree, "evt_reco_1mu1p", &ev.evt_reco_1mu1p, create, "evt_reco_1mu1p/I");
+  set_output_branch_address(out_tree, "nflashes", &ev.nflashes, create, "nflashes/I");
+  set_output_branch_address(out_tree, "evt_n_pfp", &ev.evt_n_pfp, create, "evt_n_pfp/I");
+  set_output_branch_address(out_tree, "evt_n_trk", &ev.evt_n_trk, create, "evt_n_trk/I");
+  set_output_branch_address(out_tree, "evt_n_shower", &ev.evt_n_shower, create, "evt_n_shower/I");
+  set_output_branch_address(out_tree, "evt_n_nu", &ev.evt_n_nu, create, "evt_n_nu/I");
+  set_output_branch_address(out_tree, "evt_n_nu_pfp", &ev.evt_n_nu_pfp, create, "evt_n_nu_pfp/I");
+  set_output_branch_address(out_tree, "evt_nu_PDG", &ev.evt_nu_PDG, create, "evt_nu_PDG/I");
+
+  set_object_output_branch_address< std::vector<float> >(out_tree, "flash_Ywidth", ev.flash_Ywidth, create);
+  set_object_output_branch_address< std::vector<float> >(out_tree, "flash_Zwidth", ev.flash_Zwidth, create);
+  set_object_output_branch_address< std::vector<float> >(out_tree, "flash_Twidth", ev.flash_Twidth, create);
+  set_object_output_branch_address< std::vector<float> >(out_tree, "flash_Ycenter", ev.flash_Ycenter, create);
+  set_object_output_branch_address< std::vector<float> >(out_tree, "flash_Zcenter", ev.flash_Zcenter, create);
+  set_object_output_branch_address< std::vector<float> >(out_tree, "flash_Time", ev.flash_Time, create);
+  set_object_output_branch_address< std::vector<float> >(out_tree, "flash_CRThit", ev.flash_CRThit, create);
+  set_object_output_branch_address< std::vector<bool> >(out_tree, "flash_CRTveto", ev.flash_CRTveto, create);
+  set_object_output_branch_address< std::vector<float> >(out_tree, "flash_TotalPE", ev.flash_TotalPE, create);
+
+  set_output_branch_address(out_tree, "flash_brightest_Ywidth", &ev.flash_brightest_Ywidth, create, "flash_brightest_Ywidth/F");
+  set_output_branch_address(out_tree, "flash_brightest_Zwidth", &ev.flash_brightest_Zwidth, create, "flash_brightest_Zwidth/F");
+  set_output_branch_address(out_tree, "flash_brightest_Twidth", &ev.flash_brightest_Twidth, create, "flash_brightest_Twidth/F");
+  set_output_branch_address(out_tree, "flash_brightest_Ycenter", &ev.flash_brightest_Ycenter, create, "flash_brightest_Ycenter/F");
+  set_output_branch_address(out_tree, "flash_brightest_Zcenter", &ev.flash_brightest_Zcenter, create, "flash_brightest_Zcenter/F");
+  set_output_branch_address(out_tree, "flash_brightest_Time", &ev.flash_brightest_Time, create, "flash_brightest_Time/F");
+  set_output_branch_address(out_tree, "flash_brightest_CRThit", &ev.flash_brightest_CRThit, create, "flash_brightest_CRThit/F");
+  set_output_branch_address(out_tree, "flash_brightest_CRTveto", &ev.flash_brightest_CRTveto, create, "flash_brightest_CRTveto/O");
+  set_output_branch_address(out_tree, "flash_brightest_TotalPE", &ev.flash_brightest_TotalPE, create, "flash_brightest_TotalPE/F");
+
+  set_object_output_branch_address< std::vector<std::vector<float>> >(out_tree, "flash_PE_Per_PMT", ev.flash_PE_Per_PMT, create);
+
+  set_output_branch_address(out_tree, "mc_ccnc", &ev.mc_ccnc, create, "mc_ccnc/I");
+  set_output_branch_address(out_tree, "mc_mode", &ev.mc_mode, create, "mc_mode/I");
+  set_output_branch_address(out_tree, "mc_interactiontype", &ev.mc_interactiontype, create, "mc_interactiontype/I");
+  set_output_branch_address(out_tree, "mc_hitnuc", &ev.mc_hitnuc, create, "mc_hitnuc/I");
+  set_output_branch_address(out_tree, "mc_hitnuc11", &ev.mc_hitnuc11, create, "mc_hitnuc11/I");
+  set_output_branch_address(out_tree, "mc_hitnuc11_p", &ev.mc_hitnuc11_p, create, "mc_hitnuc11_p/F");
+  set_output_branch_address(out_tree, "mc_hitnuc11_px", &ev.mc_hitnuc11_px, create, "mc_hitnuc11_px/F");
+  set_output_branch_address(out_tree, "mc_hitnuc11_py", &ev.mc_hitnuc11_py, create, "mc_hitnuc11_py/F");
+  set_output_branch_address(out_tree, "mc_hitnuc11_pz", &ev.mc_hitnuc11_pz, create, "mc_hitnuc11_pz/F");
+  set_output_branch_address(out_tree, "mc_hitnuc11_nuwro", &ev.mc_hitnuc11_nuwro, create, "mc_hitnuc11_nuwro/I");
+  set_output_branch_address(out_tree, "mc_hitnuc11_nuwro_p", &ev.mc_hitnuc11_nuwro_p, create, "mc_hitnuc11_nuwro_p/F");
+  set_output_branch_address(out_tree, "mc_hitnuc11_nuwro_px", &ev.mc_hitnuc11_nuwro_px, create, "mc_hitnuc11_nuwro_px/F");
+  set_output_branch_address(out_tree, "mc_hitnuc11_nuwro_py", &ev.mc_hitnuc11_nuwro_py, create, "mc_hitnuc11_nuwro_py/F");
+  set_output_branch_address(out_tree, "mc_hitnuc11_nuwro_pz", &ev.mc_hitnuc11_nuwro_pz, create, "mc_hitnuc11_nuwro_pz/F");
+  set_output_branch_address(out_tree, "mc_q2", &ev.mc_q2, create, "mc_q2/F");
+  set_output_branch_address(out_tree, "mc_nu_vtxx", &ev.mc_nu_vtxx, create, "mc_nu_vtxx/F");
+  set_output_branch_address(out_tree, "mc_nu_vtxy", &ev.mc_nu_vtxy, create, "mc_nu_vtxy/F");
+  set_output_branch_address(out_tree, "mc_nu_vtxz", &ev.mc_nu_vtxz, create, "mc_nu_vtxz/F");
+  set_output_branch_address(out_tree, "mc_nu_vtxx_sce", &ev.mc_nu_vtxx_sce, create, "mc_nu_vtxx_sce/F");
+  set_output_branch_address(out_tree, "mc_nu_vtxy_sce", &ev.mc_nu_vtxy_sce, create, "mc_nu_vtxy_sce/F");
+  set_output_branch_address(out_tree, "mc_nu_vtxz_sce", &ev.mc_nu_vtxz_sce, create, "mc_nu_vtxz_sce/F");
+  set_output_branch_address(out_tree, "mc_enu", &ev.mc_enu, create, "mc_enu/F");
+  set_output_branch_address(out_tree, "mc_wgt_v4a", &ev.mc_wgt_v4a, create, "mc_wgt_v4a/F");
+  set_output_branch_address(out_tree, "mc_wgt_tunedcv", &ev.mc_wgt_tunedcv, create, "mc_wgt_tunedcv/F");
+
+  set_output_branch_address(out_tree, "evtwgt_genie_ncel_nfunc", &ev.evtwgt_genie_ncel_nfunc, create, "evtwgt_genie_ncel_nfunc/I");
+
+  set_object_output_branch_address< std::vector<std::string> >(out_tree, "evtwgt_genie_ncel_funcname", ev.evtwgt_genie_ncel_funcname, create);
+  set_object_output_branch_address< std::vector<int> >(out_tree, "evtwgt_genie_ncel_nweight", ev.evtwgt_genie_ncel_nweight, create);
+  set_object_output_branch_address< std::vector<std::vector<double>> >(out_tree, "evtwgt_genie_ncel_weight", ev.evtwgt_genie_ncel_weight, create);
+
+  set_output_branch_address(out_tree, "evtwgt_genie_pm1_nfunc", &ev.evtwgt_genie_pm1_nfunc, create, "evtwgt_genie_pm1_nfunc/I");
+
+  set_object_output_branch_address< std::vector<std::string> >(out_tree, "evtwgt_genie_pm1_funcname", ev.evtwgt_genie_pm1_funcname, create);
+  set_object_output_branch_address< std::vector<int> >(out_tree, "evtwgt_genie_pm1_nweight", ev.evtwgt_genie_pm1_nweight, create);
+  set_object_output_branch_address< std::vector<std::vector<double>> >(out_tree, "evtwgt_genie_pm1_weight", ev.evtwgt_genie_pm1_weight, create);
+
+  set_output_branch_address(out_tree, "evtwgt_genie_multisim_nfunc", &ev.evtwgt_genie_multisim_nfunc, create, "evtwgt_genie_multisim_nfunc/I");
+
+  set_object_output_branch_address< std::vector<std::string> >(out_tree, "evtwgt_genie_multisim_funcname", ev.evtwgt_genie_multisim_funcname, create);
+  set_object_output_branch_address< std::vector<int> >(out_tree, "evtwgt_genie_multisim_nweight", ev.evtwgt_genie_multisim_nweight, create);
+  set_object_output_branch_address< std::vector<std::vector<double>> >(out_tree, "evtwgt_genie_multisim_weight", ev.evtwgt_genie_multisim_weight, create);
+
+  set_output_branch_address(out_tree, "evtwgt_g4_multisim_nfunc", &ev.evtwgt_g4_multisim_nfunc, create, "evtwgt_g4_multisim_nfunc/I");
+
+  set_object_output_branch_address< std::vector<std::string> >(out_tree, "evtwgt_g4_multisim_funcname", ev.evtwgt_g4_multisim_funcname, create);
+  set_object_output_branch_address< std::vector<int> >(out_tree, "evtwgt_g4_multisim_nweight", ev.evtwgt_g4_multisim_nweight, create);
+  set_object_output_branch_address< std::vector<std::vector<double>> >(out_tree, "evtwgt_g4_multisim_weight", ev.evtwgt_g4_multisim_weight, create);
+
+  set_output_branch_address(out_tree, "evtwgt_flux_multisim_nfunc", &ev.evtwgt_flux_multisim_nfunc, create, "evtwgt_flux_multisim_nfunc/I");
+
+  set_object_output_branch_address< std::vector<std::string> >(out_tree, "evtwgt_flux_multisim_funcname", ev.evtwgt_flux_multisim_funcname, create);
+  set_object_output_branch_address< std::vector<int> >(out_tree, "evtwgt_flux_multisim_nweight", ev.evtwgt_flux_multisim_nweight, create);
+  set_object_output_branch_address< std::vector<std::vector<double>> >(out_tree, "evtwgt_flux_multisim_weight", ev.evtwgt_flux_multisim_weight, create);
+
+  set_output_branch_address(out_tree, "mc_nupdg", &ev.mc_nupdg, create, "mc_nupdg/I");
+  set_output_branch_address(out_tree, "mc_n_muon", &ev.mc_n_muon, create, "mc_n_muon/I");
+  set_output_branch_address(out_tree, "mc_n_proton", &ev.mc_n_proton, create, "mc_n_proton/I");
+  set_output_branch_address(out_tree, "mc_n_photon", &ev.mc_n_photon, create, "mc_n_photon/I");
+  set_output_branch_address(out_tree, "mc_n_pionpm", &ev.mc_n_pionpm, create, "mc_n_pionpm/I");
+  set_output_branch_address(out_tree, "mc_n_pion0", &ev.mc_n_pion0, create, "mc_n_pion0/I");
+  set_output_branch_address(out_tree, "mc_n_electron", &ev.mc_n_electron, create, "mc_n_electron/I");
+  set_output_branch_address(out_tree, "mc_n_neutron", &ev.mc_n_neutron, create, "mc_n_neutron/I");
+  set_output_branch_address(out_tree, "mc_nI_n_photon", &ev.mc_nI_n_photon, create, "mc_nI_n_photon/I");
+  set_output_branch_address(out_tree, "mc_nI_n_proton", &ev.mc_nI_n_proton, create, "mc_nI_n_proton/I");
+  set_output_branch_address(out_tree, "mc_nI_n_neutron", &ev.mc_nI_n_neutron, create, "mc_nI_n_neutron/I");
+  set_output_branch_address(out_tree, "mc_n_threshold_muon", &ev.mc_n_threshold_muon, create, "mc_n_threshold_muon/I");
+  set_output_branch_address(out_tree, "mc_n_threshold_proton", &ev.mc_n_threshold_proton, create, "mc_n_threshold_proton/I");
+  set_output_branch_address(out_tree, "mc_n_threshold_pionpm", &ev.mc_n_threshold_pionpm, create, "mc_n_threshold_pionpm/I");
+  set_output_branch_address(out_tree, "mc_n_threshold_pion0", &ev.mc_n_threshold_pion0, create, "mc_n_threshold_pion0/I");
+  set_output_branch_address(out_tree, "mc_n_threshold_electron", &ev.mc_n_threshold_electron, create, "mc_n_threshold_electron/I");
+  set_output_branch_address(out_tree, "mc_n_threshold_neutron", &ev.mc_n_threshold_neutron, create, "mc_n_threshold_neutron/I");
+
+  set_object_output_branch_address< std::vector<float> >(out_tree, "mc_g4_mom", ev.mc_g4_mom, create);
+  set_object_output_branch_address< std::vector<float> >(out_tree, "mc_g4_E", ev.mc_g4_E, create);
+  set_object_output_branch_address< std::vector<float> >(out_tree, "mc_g4_p", ev.mc_g4_p, create);
+  set_object_output_branch_address< std::vector<float> >(out_tree, "mc_g4_mass", ev.mc_g4_mass, create);
+  set_object_output_branch_address< std::vector<float> >(out_tree, "mc_g4_phi", ev.mc_g4_phi, create);
+  set_object_output_branch_address< std::vector<float> >(out_tree, "mc_g4_theta", ev.mc_g4_theta, create);
+  set_object_output_branch_address< std::vector<int> >(out_tree, "mc_g4_pdg", ev.mc_g4_pdg, create);
+  set_object_output_branch_address< std::vector<float> >(out_tree, "mc_g4_start_x", ev.mc_g4_start_x, create);
+  set_object_output_branch_address< std::vector<float> >(out_tree, "mc_g4_start_y", ev.mc_g4_start_y, create);
+  set_object_output_branch_address< std::vector<float> >(out_tree, "mc_g4_start_z", ev.mc_g4_start_z, create);
+  set_object_output_branch_address< std::vector<float> >(out_tree, "mc_g4_end_x", ev.mc_g4_end_x, create);
+  set_object_output_branch_address< std::vector<float> >(out_tree, "mc_g4_end_y", ev.mc_g4_end_y, create);
+  set_object_output_branch_address< std::vector<float> >(out_tree, "mc_g4_end_z", ev.mc_g4_end_z, create);
+  set_object_output_branch_address< std::vector<float> >(out_tree, "mc_g4_photon_E", ev.mc_g4_photon_E, create);
+  set_object_output_branch_address< std::vector<float> >(out_tree, "mc_g4_photon_start_x", ev.mc_g4_photon_start_x, create);
+  set_object_output_branch_address< std::vector<float> >(out_tree, "mc_g4_photon_start_y", ev.mc_g4_photon_start_y, create);
+  set_object_output_branch_address< std::vector<float> >(out_tree, "mc_g4_photon_start_z", ev.mc_g4_photon_start_z, create);
+  set_object_output_branch_address< std::vector<float> >(out_tree, "mc_g4_photon_end_x", ev.mc_g4_photon_end_x, create);
+  set_object_output_branch_address< std::vector<float> >(out_tree, "mc_g4_photon_end_y", ev.mc_g4_photon_end_y, create);
+  set_object_output_branch_address< std::vector<float> >(out_tree, "mc_g4_photon_end_z", ev.mc_g4_photon_end_z, create);
+  set_object_output_branch_address< std::vector<float> >(out_tree, "mc_g4_proton_E", ev.mc_g4_proton_E, create);
+  set_object_output_branch_address< std::vector<float> >(out_tree, "mc_g4_proton_start_x", ev.mc_g4_proton_start_x, create);
+  set_object_output_branch_address< std::vector<float> >(out_tree, "mc_g4_proton_start_y", ev.mc_g4_proton_start_y, create);
+  set_object_output_branch_address< std::vector<float> >(out_tree, "mc_g4_proton_start_z", ev.mc_g4_proton_start_z, create);
+  set_object_output_branch_address< std::vector<float> >(out_tree, "mc_g4_proton_end_x", ev.mc_g4_proton_end_x, create);
+  set_object_output_branch_address< std::vector<float> >(out_tree, "mc_g4_proton_end_y", ev.mc_g4_proton_end_y, create);
+  set_object_output_branch_address< std::vector<float> >(out_tree, "mc_g4_proton_end_z", ev.mc_g4_proton_end_z, create);
+  set_object_output_branch_address< std::vector<float> >(out_tree, "mc_g4_neutron_E", ev.mc_g4_neutron_E, create);
+  set_object_output_branch_address< std::vector<float> >(out_tree, "mc_g4_neutron_start_x", ev.mc_g4_neutron_start_x, create);
+  set_object_output_branch_address< std::vector<float> >(out_tree, "mc_g4_neutron_start_y", ev.mc_g4_neutron_start_y, create);
+  set_object_output_branch_address< std::vector<float> >(out_tree, "mc_g4_neutron_start_z", ev.mc_g4_neutron_start_z, create);
+  set_object_output_branch_address< std::vector<float> >(out_tree, "mc_g4_neutron_end_x", ev.mc_g4_neutron_end_x, create);
+  set_object_output_branch_address< std::vector<float> >(out_tree, "mc_g4_neutron_end_y", ev.mc_g4_neutron_end_y, create);
+  set_object_output_branch_address< std::vector<float> >(out_tree, "mc_g4_neutron_end_z", ev.mc_g4_neutron_end_z, create);
+
+  set_object_output_branch_address< std::vector<float> >(out_tree, "mc_g4_nI_photon_E", ev.mc_g4_nI_photon_E, create);
+  set_object_output_branch_address< std::vector<float> >(out_tree, "mc_g4_nI_photon_start_x", ev.mc_g4_nI_photon_start_x, create);
+  set_object_output_branch_address< std::vector<float> >(out_tree, "mc_g4_nI_photon_start_y", ev.mc_g4_nI_photon_start_y, create);
+  set_object_output_branch_address< std::vector<float> >(out_tree, "mc_g4_nI_photon_start_z", ev.mc_g4_nI_photon_start_z, create);
+  set_object_output_branch_address< std::vector<float> >(out_tree, "mc_g4_nI_photon_end_x", ev.mc_g4_nI_photon_end_x, create);
+  set_object_output_branch_address< std::vector<float> >(out_tree, "mc_g4_nI_photon_end_y", ev.mc_g4_nI_photon_end_y, create);
+  set_object_output_branch_address< std::vector<float> >(out_tree, "mc_g4_nI_photon_end_z", ev.mc_g4_nI_photon_end_z, create);
+  set_object_output_branch_address< std::vector<float> >(out_tree, "mc_g4_nI_proton_E", ev.mc_g4_nI_proton_E, create);
+  set_object_output_branch_address< std::vector<float> >(out_tree, "mc_g4_nI_proton_start_x", ev.mc_g4_nI_proton_start_x, create);
+  set_object_output_branch_address< std::vector<float> >(out_tree, "mc_g4_nI_proton_start_y", ev.mc_g4_nI_proton_start_y, create);
+  set_object_output_branch_address< std::vector<float> >(out_tree, "mc_g4_nI_proton_start_z", ev.mc_g4_nI_proton_start_z, create);
+
+  set_object_output_branch_address< std::vector<float> >(out_tree, "mc_g4_nI_proton_end_x", ev.mc_g4_nI_proton_end_x, create);
+  set_object_output_branch_address< std::vector<float> >(out_tree, "mc_g4_nI_proton_end_y", ev.mc_g4_nI_proton_end_y, create);
+  set_object_output_branch_address< std::vector<float> >(out_tree, "mc_g4_nI_proton_end_z", ev.mc_g4_nI_proton_end_z, create);
+  set_object_output_branch_address< std::vector<float> >(out_tree, "mc_g4_nI_neutron_E", ev.mc_g4_nI_neutron_E, create);
+  set_object_output_branch_address< std::vector<float> >(out_tree, "mc_g4_nI_neutron_start_x", ev.mc_g4_nI_neutron_start_x, create);
+  set_object_output_branch_address< std::vector<float> >(out_tree, "mc_g4_nI_neutron_start_y", ev.mc_g4_nI_neutron_start_y, create);
+  set_object_output_branch_address< std::vector<float> >(out_tree, "mc_g4_nI_neutron_start_z", ev.mc_g4_nI_neutron_start_z, create);
+  set_object_output_branch_address< std::vector<float> >(out_tree, "mc_g4_nI_neutron_end_x", ev.mc_g4_nI_neutron_end_x, create);
+  set_object_output_branch_address< std::vector<float> >(out_tree, "mc_g4_nI_neutron_end_y", ev.mc_g4_nI_neutron_end_y, create);
+  set_object_output_branch_address< std::vector<float> >(out_tree, "mc_g4_nI_neutron_end_z", ev.mc_g4_nI_neutron_end_z, create);
+
+  set_object_output_branch_address< std::vector<float> >(out_tree, "mc_g4_start_x_sce", ev.mc_g4_start_x_sce, create);
+  set_object_output_branch_address< std::vector<float> >(out_tree, "mc_g4_start_y_sce", ev.mc_g4_start_y_sce, create);
+  set_object_output_branch_address< std::vector<float> >(out_tree, "mc_g4_start_z_sce", ev.mc_g4_start_z_sce, create);
+  set_object_output_branch_address< std::vector<float> >(out_tree, "mc_g4_end_x_sce", ev.mc_g4_end_x_sce, create);
+  set_object_output_branch_address< std::vector<float> >(out_tree, "mc_g4_end_y_sce", ev.mc_g4_end_y_sce, create);
+  set_object_output_branch_address< std::vector<float> >(out_tree, "mc_g4_end_z_sce", ev.mc_g4_end_z_sce, create);
+  set_object_output_branch_address< std::vector<bool> >(out_tree, "is_from_nu_slice", ev.is_from_nu_slice, create);
+  set_object_output_branch_address< std::vector<bool> >(out_tree, "is_primary", ev.is_primary, create);
+  set_object_output_branch_address< std::vector<bool> >(out_tree, "is_contained", ev.is_contained, create);
+  set_object_output_branch_address< std::vector<bool> >(out_tree, "is_st", ev.is_st, create);
+  set_object_output_branch_address< std::vector<bool> >(out_tree, "is_nc1p", ev.is_nc1p, create);
+  set_object_output_branch_address< std::vector<bool> >(out_tree, "is_reco_nc1p", ev.is_reco_nc1p, create);
+  set_object_output_branch_address< std::vector<int> >(out_tree, "mc_pdg", ev.mc_pdg, create);
+  set_object_output_branch_address< std::vector<int> >(out_tree, "mc_primary", ev.mc_primary, create);
+  set_object_output_branch_address< std::vector<int> >(out_tree, "mc_origin", ev.mc_origin, create);
+  set_object_output_branch_address< std::vector<float> >(out_tree, "mc_length", ev.mc_length, create);
+  set_object_output_branch_address< std::vector<float> >(out_tree, "mc_start_x", ev.mc_start_x, create);
+  set_object_output_branch_address< std::vector<float> >(out_tree, "mc_start_y", ev.mc_start_y, create);
+  set_object_output_branch_address< std::vector<float> >(out_tree, "mc_start_z", ev.mc_start_z, create);
+  set_object_output_branch_address< std::vector<float> >(out_tree, "mc_end_x", ev.mc_end_x, create);
+  set_object_output_branch_address< std::vector<float> >(out_tree, "mc_end_y", ev.mc_end_y, create);
+  set_object_output_branch_address< std::vector<float> >(out_tree, "mc_end_z", ev.mc_end_z, create);
+  set_object_output_branch_address< std::vector<float> >(out_tree, "mc_start_x_sce", ev.mc_start_x_sce, create);
+  set_object_output_branch_address< std::vector<float> >(out_tree, "mc_start_y_sce", ev.mc_start_y_sce, create);
+  set_object_output_branch_address< std::vector<float> >(out_tree, "mc_start_z_sce", ev.mc_start_z_sce, create);
+  set_object_output_branch_address< std::vector<float> >(out_tree, "mc_end_x_sce", ev.mc_end_x_sce, create);
+  set_object_output_branch_address< std::vector<float> >(out_tree, "mc_end_y_sce", ev.mc_end_y_sce, create);
+  set_object_output_branch_address< std::vector<float> >(out_tree, "mc_end_z_sce", ev.mc_end_z_sce, create);
+  set_object_output_branch_address< std::vector<float> >(out_tree, "mc_theta", ev.mc_theta, create);
+  set_object_output_branch_address< std::vector<float> >(out_tree, "mc_phi", ev.mc_phi, create);
+  set_object_output_branch_address< std::vector<float> >(out_tree, "mc_ke", ev.mc_ke, create);
+  set_object_output_branch_address< std::vector<float> >(out_tree, "mc_mom", ev.mc_mom, create);
+  set_object_output_branch_address< std::vector<int> >(out_tree, "n_pfp", ev.n_pfp, create);
+  set_object_output_branch_address< std::vector<int> >(out_tree, "n_trk", ev.n_trk, create);
+  set_object_output_branch_address< std::vector<int> >(out_tree, "id_pfp", ev.id_pfp, create);
+  set_object_output_branch_address< std::vector<int> >(out_tree, "isinFV", ev.isinFV, create);
+  set_object_output_branch_address< std::vector<int> >(out_tree, "n_shower", ev.n_shower, create);
+  set_object_output_branch_address< std::vector<int> >(out_tree, "parentPDG", ev.parentPDG, create);
+  set_object_output_branch_address< std::vector<float> >(out_tree, "trk_score", ev.trk_score, create);
+  set_object_output_branch_address< std::vector<float> >(out_tree, "KE_len", ev.KE_len, create);
+  set_object_output_branch_address< std::vector<float> >(out_tree, "dislen_ratio", ev.dislen_ratio, create);
+  set_object_output_branch_address< std::vector<float> >(out_tree, "reco_q2", ev.reco_q2, create);
+  set_object_output_branch_address< std::vector<float> >(out_tree, "top_score", ev.top_score, create);
+  set_object_output_branch_address< std::vector<float> >(out_tree, "flash_score", ev.flash_score, create);
+  set_object_output_branch_address< std::vector<int> >(out_tree, "n_daughters", ev.n_daughters, create);
+  set_object_output_branch_address< std::vector<bool> >(out_tree, "has_shower", ev.has_shower, create);
+  set_output_branch_address(out_tree, "reco_nu_vtxx", &ev.reco_nu_vtxx, create, "reco_nu_vtxx/F");
+  set_output_branch_address(out_tree, "reco_nu_vtxy", &ev.reco_nu_vtxy, create, "reco_nu_vtxy/F");
+  set_output_branch_address(out_tree, "reco_nu_vtxz", &ev.reco_nu_vtxz, create, "reco_nu_vtxz/F");
+  set_object_output_branch_address< std::vector<float> >(out_tree, "deltaY", ev.deltaY, create);
+  set_object_output_branch_address< std::vector<float> >(out_tree, "deltaZ", ev.deltaZ, create);
+  set_object_output_branch_address< std::vector<float> >(out_tree, "deltaYSigma", ev.deltaYSigma, create);
+  set_object_output_branch_address< std::vector<float> >(out_tree, "deltaZSigma", ev.deltaZSigma, create);
+  set_object_output_branch_address< std::vector<float> >(out_tree, "chargeToLightRatio", ev.chargeToLightRatio, create);
+  set_object_output_branch_address< std::vector<float> >(out_tree, "xclVariable", ev.xclVariable, create);
+  set_object_output_branch_address< std::vector<bool> >(out_tree, "flip_0", ev.flip_0, create);
+  set_object_output_branch_address< std::vector<bool> >(out_tree, "flip_1", ev.flip_1, create);
+  set_object_output_branch_address< std::vector<bool> >(out_tree, "flip_2", ev.flip_2, create);
+  set_object_output_branch_address< std::vector<float> >(out_tree, "reco_length", ev.reco_length, create);
+  set_object_output_branch_address< std::vector<float> >(out_tree, "reco_start_x", ev.reco_start_x, create);
+  set_object_output_branch_address< std::vector<float> >(out_tree, "reco_start_y", ev.reco_start_y, create);
+  set_object_output_branch_address< std::vector<float> >(out_tree, "reco_start_z", ev.reco_start_z, create);
+  set_object_output_branch_address< std::vector<float> >(out_tree, "reco_end_x", ev.reco_end_x, create);
+  set_object_output_branch_address< std::vector<float> >(out_tree, "reco_end_y", ev.reco_end_y, create);
+  set_object_output_branch_address< std::vector<float> >(out_tree, "reco_end_z", ev.reco_end_z, create);
+  set_object_output_branch_address< std::vector<float> >(out_tree, "reco_theta", ev.reco_theta, create);
+  set_object_output_branch_address< std::vector<float> >(out_tree, "reco_phi", ev.reco_phi, create);
+  set_object_output_branch_address< std::vector<float> >(out_tree, "reco_start_x_f2", ev.reco_start_x_f2, create);
+  set_object_output_branch_address< std::vector<float> >(out_tree, "reco_start_y_f2", ev.reco_start_y_f2, create);
+  set_object_output_branch_address< std::vector<float> >(out_tree, "reco_start_z_f2", ev.reco_start_z_f2, create);
+  set_object_output_branch_address< std::vector<float> >(out_tree, "reco_end_x_f2", ev.reco_end_x_f2, create);
+  set_object_output_branch_address< std::vector<float> >(out_tree, "reco_end_y_f2", ev.reco_end_y_f2, create);
+  set_object_output_branch_address< std::vector<float> >(out_tree, "reco_end_z_f2", ev.reco_end_z_f2, create);
+  set_object_output_branch_address< std::vector<float> >(out_tree, "reco_theta_f2", ev.reco_theta_f2, create);
+  set_object_output_branch_address< std::vector<float> >(out_tree, "reco_phi_f2", ev.reco_phi_f2, create);
+  set_object_output_branch_address< std::vector<float> >(out_tree, "reco_ke", ev.reco_ke, create);
+  set_object_output_branch_address< std::vector<float> >(out_tree, "reco_mom", ev.reco_mom, create);
+  set_object_output_branch_address< std::vector<float> >(out_tree, "reco_mom_muon", ev.reco_mom_muon, create);
+  set_object_output_branch_address< std::vector<float> >(out_tree, "reco_mom_proton", ev.reco_mom_proton, create);
+  set_object_output_branch_address< std::vector<float> >(out_tree, "reco_mom_pion", ev.reco_mom_pion, create);
+  set_object_output_branch_address< std::vector<int> >(out_tree, "nhits_0", ev.nhits_0, create);
+  set_object_output_branch_address< std::vector<int> >(out_tree, "nhits_1", ev.nhits_1, create);
+  set_object_output_branch_address< std::vector<int> >(out_tree, "nhits_2", ev.nhits_2, create);
+  set_object_output_branch_address< std::vector<float> >(out_tree, "chi2_p_0", ev.chi2_p_0, create);
+  set_object_output_branch_address< std::vector<float> >(out_tree, "chi2_p_1", ev.chi2_p_1, create);
+  set_object_output_branch_address< std::vector<float> >(out_tree, "chi2_p_2", ev.chi2_p_2, create);
+
+  set_object_output_branch_address< std::vector<float> >(out_tree, "start_dedx_0", ev.start_dedx_0, create);
+  set_object_output_branch_address< std::vector<float> >(out_tree, "start_dedx_1", ev.start_dedx_1, create);
+  set_object_output_branch_address< std::vector<float> >(out_tree, "start_dedx_2", ev.start_dedx_2, create);
+  set_object_output_branch_address< std::vector<float> >(out_tree, "end_dedx_0", ev.end_dedx_0, create);
+  set_object_output_branch_address< std::vector<float> >(out_tree, "end_dedx_1", ev.end_dedx_1, create);
+  set_object_output_branch_address< std::vector<float> >(out_tree, "end_dedx_2", ev.end_dedx_2, create);
+  set_object_output_branch_address< std::vector<float> >(out_tree, "start_dedx_0_f2", ev.start_dedx_0_f2, create);
+  set_object_output_branch_address< std::vector<float> >(out_tree, "start_dedx_1_f2", ev.start_dedx_1_f2, create);
+  set_object_output_branch_address< std::vector<float> >(out_tree, "start_dedx_2_f2", ev.start_dedx_2_f2, create);
+  set_object_output_branch_address< std::vector<float> >(out_tree, "end_dedx_0_f2", ev.end_dedx_0_f2, create);
+  set_object_output_branch_address< std::vector<float> >(out_tree, "end_dedx_1_f2", ev.end_dedx_1_f2, create);
+  set_object_output_branch_address< std::vector<float> >(out_tree, "end_dedx_2_f2", ev.end_dedx_2_f2, create);
+  set_object_output_branch_address< std::vector<float> >(out_tree, "ratio_dedx_0", ev.ratio_dedx_0, create);
+  set_object_output_branch_address< std::vector<float> >(out_tree, "ratio_dedx_1", ev.ratio_dedx_1, create);
+  set_object_output_branch_address< std::vector<float> >(out_tree, "ratio_dedx_2", ev.ratio_dedx_2, create);
+  set_object_output_branch_address< std::vector<float> >(out_tree, "avg_dedx_0", ev.avg_dedx_0, create);
+  set_object_output_branch_address< std::vector<float> >(out_tree, "avg_dedx_1", ev.avg_dedx_1, create);
+  set_object_output_branch_address< std::vector<float> >(out_tree, "avg_dedx_2", ev.avg_dedx_2, create);
+  set_object_output_branch_address< std::vector<float> >(out_tree, "total_dedx_0", ev.total_dedx_0, create);
+  set_object_output_branch_address< std::vector<float> >(out_tree, "total_dedx_1", ev.total_dedx_1, create);
+  set_object_output_branch_address< std::vector<float> >(out_tree, "total_dedx_2", ev.total_dedx_2, create);
+  set_output_branch_address(out_tree, "nclusters", &ev.nclusters, create, "nclusters/I");
+  set_output_branch_address(out_tree, "nclustersps", &ev.nclustersps, create, "nclustersps/I");
+  set_object_output_branch_address< std::vector<int> >(out_tree, "cluster_ID", ev.cluster_ID, create);
+  set_object_output_branch_address< std::vector<int> >(out_tree, "cluster_plane", ev.cluster_plane, create);
+  set_object_output_branch_address< std::vector<float> >(out_tree, "cluster_start_charge", ev.cluster_start_charge, create);
+  set_object_output_branch_address< std::vector<float> >(out_tree, "cluster_start_angle", ev.cluster_start_angle, create);
+  set_object_output_branch_address< std::vector<float> >(out_tree, "cluster_end_charge", ev.cluster_end_charge, create);
+  set_object_output_branch_address< std::vector<float> >(out_tree, "cluster_end_angle", ev.cluster_end_angle, create);
+  set_object_output_branch_address< std::vector<float> >(out_tree, "cluster_integral", ev.cluster_integral, create);
+  set_object_output_branch_address< std::vector<float> >(out_tree, "cluster_integral_average", ev.cluster_integral_average, create);
+  set_object_output_branch_address< std::vector<float> >(out_tree, "cluster_summedADC", ev.cluster_summedADC, create);
+  set_object_output_branch_address< std::vector<float> >(out_tree, "cluster_summedADC_average", ev.cluster_summedADC_average, create);
+  set_object_output_branch_address< std::vector<float> >(out_tree, "cluster_width", ev.cluster_width, create);
+  set_object_output_branch_address< std::vector<int> >(out_tree, "cluster_nhits", ev.cluster_nhits, create);
+  set_object_output_branch_address< std::vector<int> >(out_tree, "cluster_start_wire", ev.cluster_start_wire, create);
+  set_object_output_branch_address< std::vector<int> >(out_tree, "cluster_start_tick", ev.cluster_start_tick, create);
+  set_object_output_branch_address< std::vector<int> >(out_tree, "cluster_end_wire", ev.cluster_end_wire, create);
+  set_object_output_branch_address< std::vector<int> >(out_tree, "cluster_end_tick", ev.cluster_end_tick, create);
+  set_object_output_branch_address< std::vector<float> >(out_tree, "cluster_sps_x", ev.cluster_sps_x, create);
+  set_object_output_branch_address< std::vector<float> >(out_tree, "cluster_sps_y", ev.cluster_sps_y, create);
+  set_object_output_branch_address< std::vector<float> >(out_tree, "cluster_sps_z", ev.cluster_sps_z, create);
+  set_output_branch_address(out_tree, "nblips", &ev.nblips, create, "nblips/I");
+  set_object_output_branch_address< std::vector<float> >(out_tree, "blip_x", ev.blip_x, create);
+  set_object_output_branch_address< std::vector<float> >(out_tree, "blip_y", ev.blip_y, create);
+  set_object_output_branch_address< std::vector<float> >(out_tree, "blip_z", ev.blip_z, create);
+  set_object_output_branch_address< std::vector<int> >(out_tree, "blip_plane_0", ev.blip_plane_0, create);
+  set_object_output_branch_address< std::vector<int> >(out_tree, "blip_plane_1", ev.blip_plane_1, create);
+  set_object_output_branch_address< std::vector<int> >(out_tree, "blip_plane_2", ev.blip_plane_2, create);
+  set_object_output_branch_address< std::vector<float> >(out_tree, "blip_charge_0", ev.blip_charge_0, create);
+  set_object_output_branch_address< std::vector<float> >(out_tree, "blip_charge_1", ev.blip_charge_1, create);
+  set_object_output_branch_address< std::vector<float> >(out_tree, "blip_charge_2", ev.blip_charge_2, create);
+  set_object_output_branch_address< std::vector<int> >(out_tree, "blip_ID", ev.blip_ID, create);
+  set_object_output_branch_address< std::vector<bool> >(out_tree, "blip_isValid", ev.blip_isValid, create);
+  set_object_output_branch_address< std::vector<int> >(out_tree, "blip_nplanes", ev.blip_nplanes, create);
+  set_object_output_branch_address< std::vector<float> >(out_tree, "blip_maxdiff", ev.blip_maxdiff, create);
+  set_object_output_branch_address< std::vector<int> >(out_tree, "blip_tpc", ev.blip_tpc, create);
+  set_object_output_branch_address< std::vector<float> >(out_tree, "blip_energy", ev.blip_energy, create);
+  set_object_output_branch_address< std::vector<float> >(out_tree, "blip_energy_estar", ev.blip_energy_estar, create);
+  set_object_output_branch_address< std::vector<bool> >(out_tree, "blip_incylinder", ev.blip_incylinder, create);
+  set_object_output_branch_address< std::vector<int> >(out_tree, "blip_trkid", ev.blip_trkid, create);
+  set_object_output_branch_address< std::vector<float> >(out_tree, "blip_trkdist", ev.blip_trkdist, create);
+  set_object_output_branch_address< std::vector<int> >(out_tree, "blip_pdg", ev.blip_pdg, create);
+  set_object_output_branch_address< std::vector<std::string> >(out_tree, "blip_process", ev.blip_process, create);
+  set_object_output_branch_address< std::vector<float> >(out_tree, "blip_vx", ev.blip_vx, create);
+  set_object_output_branch_address< std::vector<float> >(out_tree, "blip_vy", ev.blip_vy, create);
+  set_object_output_branch_address< std::vector<float> >(out_tree, "blip_vz", ev.blip_vz, create);
+  set_object_output_branch_address< std::vector<float> >(out_tree, "blip_E", ev.blip_E, create);
+  set_object_output_branch_address< std::vector<float> >(out_tree, "blip_mass", ev.blip_mass, create);
+  set_object_output_branch_address< std::vector<std::string> >(out_tree, "blip_mom_process", ev.blip_mom_process, create);
+  set_object_output_branch_address< std::vector<int> >(out_tree, "blip_mom_pdg", ev.blip_mom_pdg, create);
+  set_object_output_branch_address< std::vector<float> >(out_tree, "blip_mom_vx", ev.blip_mom_vx, create);
+  set_object_output_branch_address< std::vector<float> >(out_tree, "blip_mom_vy", ev.blip_mom_vy, create);
+  set_object_output_branch_address< std::vector<float> >(out_tree, "blip_mom_vz", ev.blip_mom_vz, create);
+  set_object_output_branch_address< std::vector<float> >(out_tree, "blip_mom_E", ev.blip_mom_E, create);
+  set_object_output_branch_address< std::vector<float> >(out_tree, "blip_mom_mass", ev.blip_mom_mass, create);
+  set_object_output_branch_address< std::vector<std::string> >(out_tree, "blip_grandmom_process", ev.blip_grandmom_process, create);
+  set_object_output_branch_address< std::vector<int> >(out_tree, "blip_grandmom_pdg", ev.blip_grandmom_pdg, create);
+  set_object_output_branch_address< std::vector<float> >(out_tree, "blip_grandmom_vx", ev.blip_grandmom_vx, create);
+  set_object_output_branch_address< std::vector<float> >(out_tree, "blip_grandmom_vy", ev.blip_grandmom_vy, create);
+  set_object_output_branch_address< std::vector<float> >(out_tree, "blip_grandmom_vz", ev.blip_grandmom_vz, create);
+  set_object_output_branch_address< std::vector<float> >(out_tree, "blip_grandmom_E", ev.blip_grandmom_E, create);
+  set_object_output_branch_address< std::vector<float> >(out_tree, "blip_grandmom_mass", ev.blip_grandmom_mass, create);
+  set_object_output_branch_address< std::vector<std::string> >(out_tree, "blip_greatgrandmom_process", ev.blip_greatgrandmom_process, create);
+  set_object_output_branch_address< std::vector<int> >(out_tree, "blip_greatgrandmom_pdg", ev.blip_greatgrandmom_pdg, create);
+  set_object_output_branch_address< std::vector<float> >(out_tree, "blip_greatgrandmom_vx", ev.blip_greatgrandmom_vx, create);
+  set_object_output_branch_address< std::vector<float> >(out_tree, "blip_greatgrandmom_vy", ev.blip_greatgrandmom_vy, create);
+  set_object_output_branch_address< std::vector<float> >(out_tree, "blip_greatgrandmom_vz", ev.blip_greatgrandmom_vz, create);
+  set_object_output_branch_address< std::vector<float> >(out_tree, "blip_greatgrandmom_E", ev.blip_greatgrandmom_E, create);
+  set_object_output_branch_address< std::vector<float> >(out_tree, "blip_greatgrandmom_mass", ev.blip_greatgrandmom_mass, create);
 }
