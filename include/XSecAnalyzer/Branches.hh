@@ -13,252 +13,252 @@ void SetBranchAddress(TTree& etree, std::string BranchName, void* Variable) {
 void set_event_branch_addresses(TTree& etree, AnalysisEvent& ev)
 {
 
-  SetBranchAddress(etree, "run", &ev.run);
-  SetBranchAddress(etree, "subrun", &ev.subrun);
-  SetBranchAddress(etree, "event", &ev.event);
-  SetBranchAddress(etree, "evt_gen_nc1p", &ev.evt_gen_nc1p);
-  SetBranchAddress(etree, "evt_gen_nce", &ev.evt_gen_nce);
-  SetBranchAddress(etree, "evt_gen_nc1p_q2_gen", &ev.evt_gen_nc1p_q2_gen);
-  SetBranchAddress(etree, "evt_gen_nc1p_q2_ke", &ev.evt_gen_nc1p_q2_ke);
-  SetBranchAddress(etree, "evt_gen_nc1p_stx", &ev.evt_gen_nc1p_stx);
-  SetBranchAddress(etree, "evt_gen_nc1p_sty", &ev.evt_gen_nc1p_sty);
-  SetBranchAddress(etree, "evt_gen_nc1p_stz", &ev.evt_gen_nc1p_stz);
-  SetBranchAddress(etree, "evt_gen_nc1p_endx", &ev.evt_gen_nc1p_endx);
-  SetBranchAddress(etree, "evt_gen_nc1p_endy", &ev.evt_gen_nc1p_endy);
-  SetBranchAddress(etree, "evt_gen_nc1p_endz", &ev.evt_gen_nc1p_endz);
-  SetBranchAddress(etree, "evt_gen_nc1p_costheta", &ev.evt_gen_nc1p_costheta);
-  SetBranchAddress(etree, "evt_gen_nc1p_phi", &ev.evt_gen_nc1p_phi);
-  SetBranchAddress(etree, "evt_gen_nc1p_mom", &ev.evt_gen_nc1p_mom);
-  SetBranchAddress(etree, "evt_gen_nc1p_ke", &ev.evt_gen_nc1p_ke);
-  SetBranchAddress(etree, "evt_gen_nc1p_contained", &ev.evt_gen_nc1p_contained);
-  SetBranchAddress(etree, "evt_gen_nc1p_inFV", &ev.evt_gen_nc1p_inFV);
-  SetBranchAddress(etree, "evt_reco_1p_nu", &ev.evt_reco_1p_nu);
-  SetBranchAddress(etree, "evt_reco_1p_non_nu", &ev.evt_reco_1p_non_nu);
-  SetBranchAddress(etree, "evt_reco_1p", &ev.evt_reco_1p);
-  SetBranchAddress(etree, "evt_reco_1mu1p", &ev.evt_reco_1mu1p);
-  SetBranchAddress(etree, "nflashes", &ev.nflashes);
-  SetBranchAddress(etree, "evt_n_pfp", &ev.evt_n_pfp);
-  SetBranchAddress(etree, "evt_n_trk", &ev.evt_n_trk);
-  SetBranchAddress(etree, "evt_n_shower", &ev.evt_n_shower);
-  SetBranchAddress(etree, "evt_n_nu", &ev.evt_n_nu);
-  SetBranchAddress(etree, "evt_n_nu_pfp", &ev.evt_n_nu_pfp);
-  SetBranchAddress(etree, "evt_nu_PDG", &ev.evt_nu_PDG);
+  if(etree.GetBranch("run") != nullptr) {SetBranchAddress(etree, "run", &ev.run);}
+  if(etree.GetBranch("subrun") != nullptr) {SetBranchAddress(etree, "subrun", &ev.subrun);}
+  if(etree.GetBranch("event") != nullptr) {SetBranchAddress(etree, "event", &ev.event);}
+  if(etree.GetBranch("evt_gen_nc1p") != nullptr) {SetBranchAddress(etree, "evt_gen_nc1p", &ev.evt_gen_nc1p);}
+  if(etree.GetBranch("evt_gen_nce") != nullptr) {SetBranchAddress(etree, "evt_gen_nce", &ev.evt_gen_nce);}
+  if(etree.GetBranch("evt_gen_nc1p_q2_gen") != nullptr) {SetBranchAddress(etree, "evt_gen_nc1p_q2_gen", &ev.evt_gen_nc1p_q2_gen);}
+  if(etree.GetBranch("evt_gen_nc1p_q2_ke") != nullptr) {SetBranchAddress(etree, "evt_gen_nc1p_q2_ke", &ev.evt_gen_nc1p_q2_ke);}
+  if(etree.GetBranch("evt_gen_nc1p_stx") != nullptr) {SetBranchAddress(etree, "evt_gen_nc1p_stx", &ev.evt_gen_nc1p_stx);}
+  if(etree.GetBranch("evt_gen_nc1p_sty") != nullptr) {SetBranchAddress(etree, "evt_gen_nc1p_sty", &ev.evt_gen_nc1p_sty);}
+  if(etree.GetBranch("evt_gen_nc1p_stz") != nullptr) {SetBranchAddress(etree, "evt_gen_nc1p_stz", &ev.evt_gen_nc1p_stz);}
+  if(etree.GetBranch("evt_gen_nc1p_endx") != nullptr) {SetBranchAddress(etree, "evt_gen_nc1p_endx", &ev.evt_gen_nc1p_endx);}
+  if(etree.GetBranch("evt_gen_nc1p_endy") != nullptr) {SetBranchAddress(etree, "evt_gen_nc1p_endy", &ev.evt_gen_nc1p_endy);}
+  if(etree.GetBranch("evt_gen_nc1p_endz") != nullptr) {SetBranchAddress(etree, "evt_gen_nc1p_endz", &ev.evt_gen_nc1p_endz);}
+  if(etree.GetBranch("evt_gen_nc1p_costheta") != nullptr) {SetBranchAddress(etree, "evt_gen_nc1p_costheta", &ev.evt_gen_nc1p_costheta);}
+  if(etree.GetBranch("evt_gen_nc1p_phi") != nullptr) {SetBranchAddress(etree, "evt_gen_nc1p_phi", &ev.evt_gen_nc1p_phi);}
+  if(etree.GetBranch("evt_gen_nc1p_mom") != nullptr) {SetBranchAddress(etree, "evt_gen_nc1p_mom", &ev.evt_gen_nc1p_mom);}
+  if(etree.GetBranch("evt_gen_nc1p_ke") != nullptr) {SetBranchAddress(etree, "evt_gen_nc1p_ke", &ev.evt_gen_nc1p_ke);}
+  if(etree.GetBranch("evt_gen_nc1p_contained") != nullptr) {SetBranchAddress(etree, "evt_gen_nc1p_contained", &ev.evt_gen_nc1p_contained);}
+  if(etree.GetBranch("evt_gen_nc1p_inFV") != nullptr) {SetBranchAddress(etree, "evt_gen_nc1p_inFV", &ev.evt_gen_nc1p_inFV);}
+  if(etree.GetBranch("evt_reco_1p_nu") != nullptr) {SetBranchAddress(etree, "evt_reco_1p_nu", &ev.evt_reco_1p_nu);}
+  if(etree.GetBranch("evt_reco_1p_non_nu") != nullptr) {SetBranchAddress(etree, "evt_reco_1p_non_nu", &ev.evt_reco_1p_non_nu);}
+  if(etree.GetBranch("evt_reco_1p") != nullptr) {SetBranchAddress(etree, "evt_reco_1p", &ev.evt_reco_1p);}
+  if(etree.GetBranch("evt_reco_1mu1p") != nullptr) {SetBranchAddress(etree, "evt_reco_1mu1p", &ev.evt_reco_1mu1p);}
+  if(etree.GetBranch("nflashes") != nullptr) {SetBranchAddress(etree, "nflashes", &ev.nflashes);}
+  if(etree.GetBranch("evt_n_pfp") != nullptr) {SetBranchAddress(etree, "evt_n_pfp", &ev.evt_n_pfp);}
+  if(etree.GetBranch("evt_n_trk") != nullptr) {SetBranchAddress(etree, "evt_n_trk", &ev.evt_n_trk);}
+  if(etree.GetBranch("evt_n_shower") != nullptr) {SetBranchAddress(etree, "evt_n_shower", &ev.evt_n_shower);}
+  if(etree.GetBranch("evt_n_nu") != nullptr) {SetBranchAddress(etree, "evt_n_nu", &ev.evt_n_nu);}
+  if(etree.GetBranch("evt_n_nu_pfp") != nullptr) {SetBranchAddress(etree, "evt_n_nu_pfp", &ev.evt_n_nu_pfp);}
+  if(etree.GetBranch("evt_nu_PDG") != nullptr) {SetBranchAddress(etree, "evt_nu_PDG", &ev.evt_nu_PDG);}
 
-  set_object_input_branch_address(etree, "flash_Ywidth", ev.flash_Ywidth);
-  set_object_input_branch_address(etree, "flash_Zwidth", ev.flash_Zwidth);
-  set_object_input_branch_address(etree, "flash_Twidth", ev.flash_Twidth);
-  set_object_input_branch_address(etree, "flash_Ycenter", ev.flash_Ycenter);
-  set_object_input_branch_address(etree, "flash_Zcenter", ev.flash_Zcenter);
-  set_object_input_branch_address(etree, "flash_Time", ev.flash_Time);
-  set_object_input_branch_address(etree, "flash_CRThit", ev.flash_CRThit);
-  set_object_input_branch_address(etree, "flash_CRTveto", ev.flash_CRTveto);
-  set_object_input_branch_address(etree, "flash_TotalPE", ev.flash_TotalPE);
+  if(etree.GetBranch("flash_Ywidth") != nullptr) set_object_input_branch_address(etree, "flash_Ywidth", ev.flash_Ywidth);
+  if(etree.GetBranch("flash_Zwidth") != nullptr) set_object_input_branch_address(etree, "flash_Zwidth", ev.flash_Zwidth);
+  if(etree.GetBranch("flash_Twidth") != nullptr) set_object_input_branch_address(etree, "flash_Twidth", ev.flash_Twidth);
+  if(etree.GetBranch("flash_Ycenter") != nullptr) set_object_input_branch_address(etree, "flash_Ycenter", ev.flash_Ycenter);
+  if(etree.GetBranch("flash_Zcenter") != nullptr) set_object_input_branch_address(etree, "flash_Zcenter", ev.flash_Zcenter);
+  if(etree.GetBranch("flash_Time") != nullptr) set_object_input_branch_address(etree, "flash_Time", ev.flash_Time);
+  if(etree.GetBranch("flash_CRThit") != nullptr) set_object_input_branch_address(etree, "flash_CRThit", ev.flash_CRThit);
+  if(etree.GetBranch("flash_CRTveto") != nullptr) set_object_input_branch_address(etree, "flash_CRTveto", ev.flash_CRTveto);
+  if(etree.GetBranch("flash_TotalPE") != nullptr) set_object_input_branch_address(etree, "flash_TotalPE", ev.flash_TotalPE);
 
-  SetBranchAddress(etree, "flash_brightest_Ywidth", &ev.flash_brightest_Ywidth);
-  SetBranchAddress(etree, "flash_brightest_Zwidth", &ev.flash_brightest_Zwidth);
-  SetBranchAddress(etree, "flash_brightest_Twidth", &ev.flash_brightest_Twidth);
-  SetBranchAddress(etree, "flash_brightest_Ycenter", &ev.flash_brightest_Ycenter);
-  SetBranchAddress(etree, "flash_brightest_Zcenter", &ev.flash_brightest_Zcenter);
-  SetBranchAddress(etree, "flash_brightest_Time", &ev.flash_brightest_Time);
-  SetBranchAddress(etree, "flash_brightest_CRThit", &ev.flash_brightest_CRThit);
-  SetBranchAddress(etree, "flash_brightest_CRTveto", &ev.flash_brightest_CRTveto);
-  SetBranchAddress(etree, "flash_brightest_TotalPE", &ev.flash_brightest_TotalPE);
+  if(etree.GetBranch("flash_brightest_Ywidth") != nullptr) SetBranchAddress(etree, "flash_brightest_Ywidth", &ev.flash_brightest_Ywidth);
+  if(etree.GetBranch("flash_brightest_Zwidth") != nullptr) SetBranchAddress(etree, "flash_brightest_Zwidth", &ev.flash_brightest_Zwidth);
+  if(etree.GetBranch("flash_brightest_Twidth") != nullptr) SetBranchAddress(etree, "flash_brightest_Twidth", &ev.flash_brightest_Twidth);
+  if(etree.GetBranch("flash_brightest_Ycenter") != nullptr) SetBranchAddress(etree, "flash_brightest_Ycenter", &ev.flash_brightest_Ycenter);
+  if(etree.GetBranch("flash_brightest_Zcenter") != nullptr) SetBranchAddress(etree, "flash_brightest_Zcenter", &ev.flash_brightest_Zcenter);
+  if(etree.GetBranch("flash_brightest_Time") != nullptr) SetBranchAddress(etree, "flash_brightest_Time", &ev.flash_brightest_Time);
+  if(etree.GetBranch("flash_brightest_CRThit") != nullptr) SetBranchAddress(etree, "flash_brightest_CRThit", &ev.flash_brightest_CRThit);
+  if(etree.GetBranch("flash_brightest_CRTveto") != nullptr) SetBranchAddress(etree, "flash_brightest_CRTveto", &ev.flash_brightest_CRTveto);
+  if(etree.GetBranch("flash_brightest_TotalPE") != nullptr) SetBranchAddress(etree, "flash_brightest_TotalPE", &ev.flash_brightest_TotalPE);
 
-  set_object_input_branch_address(etree, "flash_PE_Per_PMT", ev.flash_PE_Per_PMT);
+  if(etree.GetBranch("flash_PE_Per_PMT") != nullptr) set_object_input_branch_address(etree, "flash_PE_Per_PMT", ev.flash_PE_Per_PMT);
 
-  SetBranchAddress(etree, "mc_ccnc", &ev.mc_ccnc);
-  SetBranchAddress(etree, "mc_mode", &ev.mc_mode);
-  SetBranchAddress(etree, "mc_interactiontype", &ev.mc_interactiontype);
-  SetBranchAddress(etree, "mc_hitnuc", &ev.mc_hitnuc);
-  SetBranchAddress(etree, "mc_hitnuc11", &ev.mc_hitnuc11);
-  SetBranchAddress(etree, "mc_hitnuc11_p", &ev.mc_hitnuc11_p);
-  SetBranchAddress(etree, "mc_hitnuc11_px", &ev.mc_hitnuc11_px);
-  SetBranchAddress(etree, "mc_hitnuc11_py", &ev.mc_hitnuc11_py);
-  SetBranchAddress(etree, "mc_hitnuc11_pz", &ev.mc_hitnuc11_pz);
-  SetBranchAddress(etree, "mc_hitnuc11_nuwro", &ev.mc_hitnuc11_nuwro);
-  SetBranchAddress(etree, "mc_hitnuc11_nuwro_p", &ev.mc_hitnuc11_nuwro_p);
-  SetBranchAddress(etree, "mc_hitnuc11_nuwro_px", &ev.mc_hitnuc11_nuwro_px);
-  SetBranchAddress(etree, "mc_hitnuc11_nuwro_py", &ev.mc_hitnuc11_nuwro_py);
-  SetBranchAddress(etree, "mc_hitnuc11_nuwro_pz", &ev.mc_hitnuc11_nuwro_pz);
-  SetBranchAddress(etree, "mc_q2", &ev.mc_q2);
-  SetBranchAddress(etree, "mc_nu_vtxx", &ev.mc_nu_vtxx);
-  SetBranchAddress(etree, "mc_nu_vtxy", &ev.mc_nu_vtxy);
-  SetBranchAddress(etree, "mc_nu_vtxz", &ev.mc_nu_vtxz);
-  SetBranchAddress(etree, "mc_nu_vtxx_sce", &ev.mc_nu_vtxx_sce);
-  SetBranchAddress(etree, "mc_nu_vtxy_sce", &ev.mc_nu_vtxy_sce);
-  SetBranchAddress(etree, "mc_nu_vtxz_sce", &ev.mc_nu_vtxz_sce);
-  SetBranchAddress(etree, "mc_enu", &ev.mc_enu);
-  SetBranchAddress(etree, "mc_wgt_v4a", &ev.mc_wgt_v4a);
-  SetBranchAddress(etree, "mc_wgt_tunedcv", &ev.mc_wgt_tunedcv);
+  if(etree.GetBranch("mc_ccnc") != nullptr) SetBranchAddress(etree, "mc_ccnc", &ev.mc_ccnc);
+  if(etree.GetBranch("mc_mode") != nullptr) SetBranchAddress(etree, "mc_mode", &ev.mc_mode);
+  if(etree.GetBranch("mc_interactiontype") != nullptr) SetBranchAddress(etree, "mc_interactiontype", &ev.mc_interactiontype);
+  if(etree.GetBranch("mc_hitnuc") != nullptr) SetBranchAddress(etree, "mc_hitnuc", &ev.mc_hitnuc);
+  if(etree.GetBranch("mc_hitnuc11") != nullptr) SetBranchAddress(etree, "mc_hitnuc11", &ev.mc_hitnuc11);
+  if(etree.GetBranch("mc_hitnuc11_p") != nullptr) SetBranchAddress(etree, "mc_hitnuc11_p", &ev.mc_hitnuc11_p);
+  if(etree.GetBranch("mc_hitnuc11_px") != nullptr) SetBranchAddress(etree, "mc_hitnuc11_px", &ev.mc_hitnuc11_px);
+  if(etree.GetBranch("mc_hitnuc11_py") != nullptr) SetBranchAddress(etree, "mc_hitnuc11_py", &ev.mc_hitnuc11_py);
+  if(etree.GetBranch("mc_hitnuc11_pz") != nullptr) SetBranchAddress(etree, "mc_hitnuc11_pz", &ev.mc_hitnuc11_pz);
+  if(etree.GetBranch("mc_hitnuc11_nuwro") != nullptr) SetBranchAddress(etree, "mc_hitnuc11_nuwro", &ev.mc_hitnuc11_nuwro);
+  if(etree.GetBranch("mc_hitnuc11_nuwro_p") != nullptr) SetBranchAddress(etree, "mc_hitnuc11_nuwro_p", &ev.mc_hitnuc11_nuwro_p);
+  if(etree.GetBranch("mc_hitnuc11_nuwro_px") != nullptr) SetBranchAddress(etree, "mc_hitnuc11_nuwro_px", &ev.mc_hitnuc11_nuwro_px);
+  if(etree.GetBranch("mc_hitnuc11_nuwro_py") != nullptr) SetBranchAddress(etree, "mc_hitnuc11_nuwro_py", &ev.mc_hitnuc11_nuwro_py);
+  if(etree.GetBranch("mc_hitnuc11_nuwro_pz") != nullptr) SetBranchAddress(etree, "mc_hitnuc11_nuwro_pz", &ev.mc_hitnuc11_nuwro_pz);
+  if(etree.GetBranch("mc_q2") != nullptr) SetBranchAddress(etree, "mc_q2", &ev.mc_q2);
+  if(etree.GetBranch("mc_nu_vtxx") != nullptr) SetBranchAddress(etree, "mc_nu_vtxx", &ev.mc_nu_vtxx);
+  if(etree.GetBranch("mc_nu_vtxy") != nullptr) SetBranchAddress(etree, "mc_nu_vtxy", &ev.mc_nu_vtxy);
+  if(etree.GetBranch("mc_nu_vtxz") != nullptr) SetBranchAddress(etree, "mc_nu_vtxz", &ev.mc_nu_vtxz);
+  if(etree.GetBranch("mc_nu_vtxx_sce") != nullptr) SetBranchAddress(etree, "mc_nu_vtxx_sce", &ev.mc_nu_vtxx_sce);
+  if(etree.GetBranch("mc_nu_vtxy_sce") != nullptr) SetBranchAddress(etree, "mc_nu_vtxy_sce", &ev.mc_nu_vtxy_sce);
+  if(etree.GetBranch("mc_nu_vtxz_sce") != nullptr) SetBranchAddress(etree, "mc_nu_vtxz_sce", &ev.mc_nu_vtxz_sce);
+  if(etree.GetBranch("mc_enu") != nullptr) SetBranchAddress(etree, "mc_enu", &ev.mc_enu);
+  if(etree.GetBranch("mc_wgt_v4a") != nullptr) SetBranchAddress(etree, "mc_wgt_v4a", &ev.mc_wgt_v4a);
+  if(etree.GetBranch("mc_wgt_tunedcv") != nullptr) SetBranchAddress(etree, "mc_wgt_tunedcv", &ev.mc_wgt_tunedcv);
 
-  SetBranchAddress(etree, "evtwgt_genie_ncel_nfunc", &ev.evtwgt_genie_ncel_nfunc);
+  if(etree.GetBranch("evtwgt_genie_ncel_nfunc") != nullptr) SetBranchAddress(etree, "evtwgt_genie_ncel_nfunc", &ev.evtwgt_genie_ncel_nfunc);
 
-  set_object_input_branch_address(etree, "evtwgt_genie_ncel_funcname", ev.evtwgt_genie_ncel_funcname);
-  set_object_input_branch_address(etree, "evtwgt_genie_ncel_nweight", ev.evtwgt_genie_ncel_nweight);
-  set_object_input_branch_address(etree, "evtwgt_genie_ncel_weight", ev.evtwgt_genie_ncel_weight);
+  if(etree.GetBranch("evtwgt_genie_ncel_funcname") != nullptr) set_object_input_branch_address(etree, "evtwgt_genie_ncel_funcname", ev.evtwgt_genie_ncel_funcname);
+  if(etree.GetBranch("evtwgt_genie_ncel_nweight") != nullptr) set_object_input_branch_address(etree, "evtwgt_genie_ncel_nweight", ev.evtwgt_genie_ncel_nweight);
+  if(etree.GetBranch("evtwgt_genie_ncel_weight") != nullptr) set_object_input_branch_address(etree, "evtwgt_genie_ncel_weight", ev.evtwgt_genie_ncel_weight);
 
-  SetBranchAddress(etree, "evtwgt_genie_pm1_nfunc", &ev.evtwgt_genie_pm1_nfunc);
+  if(etree.GetBranch("evtwgt_genie_pm1_nfunc") != nullptr) SetBranchAddress(etree, "evtwgt_genie_pm1_nfunc", &ev.evtwgt_genie_pm1_nfunc);
 
-  set_object_input_branch_address(etree, "evtwgt_genie_pm1_funcname", ev.evtwgt_genie_pm1_funcname);
-  set_object_input_branch_address(etree, "evtwgt_genie_pm1_nweight", ev.evtwgt_genie_pm1_nweight);
-  set_object_input_branch_address(etree, "evtwgt_genie_pm1_weight", ev.evtwgt_genie_pm1_weight);
+  if(etree.GetBranch("evtwgt_genie_pm1_funcname") != nullptr) set_object_input_branch_address(etree, "evtwgt_genie_pm1_funcname", ev.evtwgt_genie_pm1_funcname);
+  if(etree.GetBranch("evtwgt_genie_pm1_nweight") != nullptr) set_object_input_branch_address(etree, "evtwgt_genie_pm1_nweight", ev.evtwgt_genie_pm1_nweight);
+  if(etree.GetBranch("evtwgt_genie_pm1_weight") != nullptr) set_object_input_branch_address(etree, "evtwgt_genie_pm1_weight", ev.evtwgt_genie_pm1_weight);
 
-  SetBranchAddress(etree, "evtwgt_genie_multisim_nfunc", &ev.evtwgt_genie_multisim_nfunc);
+  if(etree.GetBranch("evtwgt_genie_multisim_nfunc") != nullptr) SetBranchAddress(etree, "evtwgt_genie_multisim_nfunc", &ev.evtwgt_genie_multisim_nfunc);
 
-  set_object_input_branch_address(etree, "evtwgt_genie_multisim_funcname", ev.evtwgt_genie_multisim_funcname);
-  set_object_input_branch_address(etree, "evtwgt_genie_multisim_nweight", ev.evtwgt_genie_multisim_nweight);
-  set_object_input_branch_address(etree, "evtwgt_genie_multisim_weight", ev.evtwgt_genie_multisim_weight);
+  if(etree.GetBranch("evtwgt_genie_multisim_funcname") != nullptr) set_object_input_branch_address(etree, "evtwgt_genie_multisim_funcname", ev.evtwgt_genie_multisim_funcname);
+  if(etree.GetBranch("evtwgt_genie_multisim_nweight") != nullptr) set_object_input_branch_address(etree, "evtwgt_genie_multisim_nweight", ev.evtwgt_genie_multisim_nweight);
+  if(etree.GetBranch("evtwgt_genie_multisim_weight") != nullptr) set_object_input_branch_address(etree, "evtwgt_genie_multisim_weight", ev.evtwgt_genie_multisim_weight);
 
-  SetBranchAddress(etree, "evtwgt_g4_multisim_nfunc", &ev.evtwgt_g4_multisim_nfunc);
+  if(etree.GetBranch("evtwgt_g4_multisim_nfunc") != nullptr) SetBranchAddress(etree, "evtwgt_g4_multisim_nfunc", &ev.evtwgt_g4_multisim_nfunc);
 
-  set_object_input_branch_address(etree, "evtwgt_g4_multisim_funcname", ev.evtwgt_g4_multisim_funcname);
-  set_object_input_branch_address(etree, "evtwgt_g4_multisim_nweight", ev.evtwgt_g4_multisim_nweight);
-  set_object_input_branch_address(etree, "evtwgt_g4_multisim_weight", ev.evtwgt_g4_multisim_weight);
+  if(etree.GetBranch("evtwgt_g4_multisim_funcname") != nullptr) set_object_input_branch_address(etree, "evtwgt_g4_multisim_funcname", ev.evtwgt_g4_multisim_funcname);
+  if(etree.GetBranch("evtwgt_g4_multisim_nweight") != nullptr) set_object_input_branch_address(etree, "evtwgt_g4_multisim_nweight", ev.evtwgt_g4_multisim_nweight);
+  if(etree.GetBranch("evtwgt_g4_multisim_weight") != nullptr) set_object_input_branch_address(etree, "evtwgt_g4_multisim_weight", ev.evtwgt_g4_multisim_weight);
 
-  SetBranchAddress(etree, "evtwgt_flux_multisim_nfunc", &ev.evtwgt_flux_multisim_nfunc);
+  if(etree.GetBranch("evtwgt_flux_multisim_nfunc") != nullptr) SetBranchAddress(etree, "evtwgt_flux_multisim_nfunc", &ev.evtwgt_flux_multisim_nfunc);
 
-  set_object_input_branch_address(etree, "evtwgt_flux_multisim_funcname", ev.evtwgt_flux_multisim_funcname);
-  set_object_input_branch_address(etree, "evtwgt_flux_multisim_nweight", ev.evtwgt_flux_multisim_nweight);
-  set_object_input_branch_address(etree, "evtwgt_flux_multisim_weight", ev.evtwgt_flux_multisim_weight);
+  if(etree.GetBranch("evtwgt_flux_multisim_funcname") != nullptr) set_object_input_branch_address(etree, "evtwgt_flux_multisim_funcname", ev.evtwgt_flux_multisim_funcname);
+  if(etree.GetBranch("evtwgt_flux_multisim_nweight") != nullptr) set_object_input_branch_address(etree, "evtwgt_flux_multisim_nweight", ev.evtwgt_flux_multisim_nweight);
+  if(etree.GetBranch("evtwgt_flux_multisim_weight") != nullptr) set_object_input_branch_address(etree, "evtwgt_flux_multisim_weight", ev.evtwgt_flux_multisim_weight);
 
-  SetBranchAddress(etree, "mc_nupdg", &ev.mc_nupdg);
-  SetBranchAddress(etree, "mc_n_muon", &ev.mc_n_muon);
-  SetBranchAddress(etree, "mc_n_proton", &ev.mc_n_proton);
-  SetBranchAddress(etree, "mc_n_photon", &ev.mc_n_photon);
-  SetBranchAddress(etree, "mc_n_pionpm", &ev.mc_n_pionpm);
-  SetBranchAddress(etree, "mc_n_pion0", &ev.mc_n_pion0);
-  SetBranchAddress(etree, "mc_n_electron", &ev.mc_n_electron);
-  SetBranchAddress(etree, "mc_n_neutron", &ev.mc_n_neutron);
-  SetBranchAddress(etree, "mc_nI_n_photon", &ev.mc_nI_n_photon);
-  SetBranchAddress(etree, "mc_nI_n_proton", &ev.mc_nI_n_proton);
-  SetBranchAddress(etree, "mc_nI_n_neutron", &ev.mc_nI_n_neutron);
-  SetBranchAddress(etree, "mc_n_threshold_muon", &ev.mc_n_threshold_muon);
-  SetBranchAddress(etree, "mc_n_threshold_proton", &ev.mc_n_threshold_proton);
-  SetBranchAddress(etree, "mc_n_threshold_pionpm", &ev.mc_n_threshold_pionpm);
-  SetBranchAddress(etree, "mc_n_threshold_pion0", &ev.mc_n_threshold_pion0);
-  SetBranchAddress(etree, "mc_n_threshold_electron", &ev.mc_n_threshold_electron);
-  SetBranchAddress(etree, "mc_n_threshold_neutron", &ev.mc_n_threshold_neutron);
+  if(etree.GetBranch("mc_nupdg") != nullptr) SetBranchAddress(etree, "mc_nupdg", &ev.mc_nupdg);
+  if(etree.GetBranch("mc_n_muon") != nullptr) SetBranchAddress(etree, "mc_n_muon", &ev.mc_n_muon);
+  if(etree.GetBranch("mc_n_proton") != nullptr) SetBranchAddress(etree, "mc_n_proton", &ev.mc_n_proton);
+  if(etree.GetBranch("mc_n_photon") != nullptr) SetBranchAddress(etree, "mc_n_photon", &ev.mc_n_photon);
+  if(etree.GetBranch("mc_n_pionpm") != nullptr) SetBranchAddress(etree, "mc_n_pionpm", &ev.mc_n_pionpm);
+  if(etree.GetBranch("mc_n_pion0") != nullptr) SetBranchAddress(etree, "mc_n_pion0", &ev.mc_n_pion0);
+  if(etree.GetBranch("mc_n_electron") != nullptr) SetBranchAddress(etree, "mc_n_electron", &ev.mc_n_electron);
+  if(etree.GetBranch("mc_n_neutron") != nullptr) SetBranchAddress(etree, "mc_n_neutron", &ev.mc_n_neutron);
+  if(etree.GetBranch("mc_nI_n_photon") != nullptr) SetBranchAddress(etree, "mc_nI_n_photon", &ev.mc_nI_n_photon);
+  if(etree.GetBranch("mc_nI_n_proton") != nullptr) SetBranchAddress(etree, "mc_nI_n_proton", &ev.mc_nI_n_proton);
+  if(etree.GetBranch("mc_nI_n_neutron") != nullptr) SetBranchAddress(etree, "mc_nI_n_neutron", &ev.mc_nI_n_neutron);
+  if(etree.GetBranch("mc_n_threshold_muon") != nullptr) SetBranchAddress(etree, "mc_n_threshold_muon", &ev.mc_n_threshold_muon);
+  if(etree.GetBranch("mc_n_threshold_proton") != nullptr) SetBranchAddress(etree, "mc_n_threshold_proton", &ev.mc_n_threshold_proton);
+  if(etree.GetBranch("mc_n_threshold_pionpm") != nullptr) SetBranchAddress(etree, "mc_n_threshold_pionpm", &ev.mc_n_threshold_pionpm);
+  if(etree.GetBranch("mc_n_threshold_pion0") != nullptr) SetBranchAddress(etree, "mc_n_threshold_pion0", &ev.mc_n_threshold_pion0);
+  if(etree.GetBranch("mc_n_threshold_electron") != nullptr) SetBranchAddress(etree, "mc_n_threshold_electron", &ev.mc_n_threshold_electron);
+  if(etree.GetBranch("mc_n_threshold_neutron") != nullptr) SetBranchAddress(etree, "mc_n_threshold_neutron", &ev.mc_n_threshold_neutron);
 
-  set_object_input_branch_address(etree, "mc_g4_mom", ev.mc_g4_mom);
-  set_object_input_branch_address(etree, "mc_g4_E", ev.mc_g4_E);
-  set_object_input_branch_address(etree, "mc_g4_p", ev.mc_g4_p);
-  set_object_input_branch_address(etree, "mc_g4_mass", ev.mc_g4_mass);
-  set_object_input_branch_address(etree, "mc_g4_phi", ev.mc_g4_phi);
-  set_object_input_branch_address(etree, "mc_g4_theta", ev.mc_g4_theta);
-  set_object_input_branch_address(etree, "mc_g4_pdg", ev.mc_g4_pdg);
-  set_object_input_branch_address(etree, "mc_g4_start_x", ev.mc_g4_start_x);
-  set_object_input_branch_address(etree, "mc_g4_start_y", ev.mc_g4_start_y);
-  set_object_input_branch_address(etree, "mc_g4_start_z", ev.mc_g4_start_z);
-  set_object_input_branch_address(etree, "mc_g4_end_x", ev.mc_g4_end_x);
-  set_object_input_branch_address(etree, "mc_g4_end_y", ev.mc_g4_end_y);
-  set_object_input_branch_address(etree, "mc_g4_end_z", ev.mc_g4_end_z);
-  set_object_input_branch_address(etree, "mc_g4_photon_E", ev.mc_g4_photon_E);
-  set_object_input_branch_address(etree, "mc_g4_photon_start_x", ev.mc_g4_photon_start_x);
-  set_object_input_branch_address(etree, "mc_g4_photon_start_y", ev.mc_g4_photon_start_y);
-  set_object_input_branch_address(etree, "mc_g4_photon_start_z", ev.mc_g4_photon_start_z);
-  set_object_input_branch_address(etree, "mc_g4_photon_end_x", ev.mc_g4_photon_end_x);
-  set_object_input_branch_address(etree, "mc_g4_photon_end_y", ev.mc_g4_photon_end_y);
-  set_object_input_branch_address(etree, "mc_g4_photon_end_z", ev.mc_g4_photon_end_z);
-  set_object_input_branch_address(etree, "mc_g4_proton_E", ev.mc_g4_proton_E);
-  set_object_input_branch_address(etree, "mc_g4_proton_start_x", ev.mc_g4_proton_start_x);
-  set_object_input_branch_address(etree, "mc_g4_proton_start_y", ev.mc_g4_proton_start_y);
-  set_object_input_branch_address(etree, "mc_g4_proton_start_z", ev.mc_g4_proton_start_z);
-  set_object_input_branch_address(etree, "mc_g4_proton_end_x", ev.mc_g4_proton_end_x);
-  set_object_input_branch_address(etree, "mc_g4_proton_end_y", ev.mc_g4_proton_end_y);
-  set_object_input_branch_address(etree, "mc_g4_proton_end_z", ev.mc_g4_proton_end_z);
-  set_object_input_branch_address(etree, "mc_g4_neutron_E", ev.mc_g4_neutron_E);
-  set_object_input_branch_address(etree, "mc_g4_neutron_start_x", ev.mc_g4_neutron_start_x);
-  set_object_input_branch_address(etree, "mc_g4_neutron_start_y", ev.mc_g4_neutron_start_y);
-  set_object_input_branch_address(etree, "mc_g4_neutron_start_z", ev.mc_g4_neutron_start_z);
-  set_object_input_branch_address(etree, "mc_g4_neutron_end_x", ev.mc_g4_neutron_end_x);
-  set_object_input_branch_address(etree, "mc_g4_neutron_end_y", ev.mc_g4_neutron_end_y);
-  set_object_input_branch_address(etree, "mc_g4_neutron_end_z", ev.mc_g4_neutron_end_z);
+  if(etree.GetBranch("mc_g4_mom") != nullptr) set_object_input_branch_address(etree, "mc_g4_mom", ev.mc_g4_mom);
+  if(etree.GetBranch("mc_g4_E") != nullptr) set_object_input_branch_address(etree, "mc_g4_E", ev.mc_g4_E);
+  if(etree.GetBranch("mc_g4_p") != nullptr) set_object_input_branch_address(etree, "mc_g4_p", ev.mc_g4_p);
+  if(etree.GetBranch("mc_g4_mass") != nullptr) set_object_input_branch_address(etree, "mc_g4_mass", ev.mc_g4_mass);
+  if(etree.GetBranch("mc_g4_phi") != nullptr) set_object_input_branch_address(etree, "mc_g4_phi", ev.mc_g4_phi);
+  if(etree.GetBranch("mc_g4_theta") != nullptr) set_object_input_branch_address(etree, "mc_g4_theta", ev.mc_g4_theta);
+  if(etree.GetBranch("mc_g4_pdg") != nullptr) set_object_input_branch_address(etree, "mc_g4_pdg", ev.mc_g4_pdg);
+  if(etree.GetBranch("mc_g4_start_x") != nullptr) set_object_input_branch_address(etree, "mc_g4_start_x", ev.mc_g4_start_x);
+  if(etree.GetBranch("mc_g4_start_y") != nullptr) set_object_input_branch_address(etree, "mc_g4_start_y", ev.mc_g4_start_y);
+  if(etree.GetBranch("mc_g4_start_z") != nullptr) set_object_input_branch_address(etree, "mc_g4_start_z", ev.mc_g4_start_z);
+  if(etree.GetBranch("mc_g4_end_x") != nullptr) set_object_input_branch_address(etree, "mc_g4_end_x", ev.mc_g4_end_x);
+  if(etree.GetBranch("mc_g4_end_y") != nullptr) set_object_input_branch_address(etree, "mc_g4_end_y", ev.mc_g4_end_y);
+  if(etree.GetBranch("mc_g4_end_z") != nullptr) set_object_input_branch_address(etree, "mc_g4_end_z", ev.mc_g4_end_z);
+  if(etree.GetBranch("mc_g4_photon_E") != nullptr) set_object_input_branch_address(etree, "mc_g4_photon_E", ev.mc_g4_photon_E);
+  if(etree.GetBranch("mc_g4_photon_start_x") != nullptr) set_object_input_branch_address(etree, "mc_g4_photon_start_x", ev.mc_g4_photon_start_x);
+  if(etree.GetBranch("mc_g4_photon_start_y") != nullptr) set_object_input_branch_address(etree, "mc_g4_photon_start_y", ev.mc_g4_photon_start_y);
+  if(etree.GetBranch("mc_g4_photon_start_z") != nullptr) set_object_input_branch_address(etree, "mc_g4_photon_start_z", ev.mc_g4_photon_start_z);
+  if(etree.GetBranch("mc_g4_photon_end_x") != nullptr) set_object_input_branch_address(etree, "mc_g4_photon_end_x", ev.mc_g4_photon_end_x);
+  if(etree.GetBranch("mc_g4_photon_end_y") != nullptr) set_object_input_branch_address(etree, "mc_g4_photon_end_y", ev.mc_g4_photon_end_y);
+  if(etree.GetBranch("mc_g4_photon_end_z") != nullptr) set_object_input_branch_address(etree, "mc_g4_photon_end_z", ev.mc_g4_photon_end_z);
+  if(etree.GetBranch("mc_g4_proton_E") != nullptr) set_object_input_branch_address(etree, "mc_g4_proton_E", ev.mc_g4_proton_E);
+  if(etree.GetBranch("mc_g4_proton_start_x") != nullptr) set_object_input_branch_address(etree, "mc_g4_proton_start_x", ev.mc_g4_proton_start_x);
+  if(etree.GetBranch("mc_g4_proton_start_y") != nullptr) set_object_input_branch_address(etree, "mc_g4_proton_start_y", ev.mc_g4_proton_start_y);
+  if(etree.GetBranch("mc_g4_proton_start_z") != nullptr) set_object_input_branch_address(etree, "mc_g4_proton_start_z", ev.mc_g4_proton_start_z);
+  if(etree.GetBranch("mc_g4_proton_end_x") != nullptr) set_object_input_branch_address(etree, "mc_g4_proton_end_x", ev.mc_g4_proton_end_x);
+  if(etree.GetBranch("mc_g4_proton_end_y") != nullptr) set_object_input_branch_address(etree, "mc_g4_proton_end_y", ev.mc_g4_proton_end_y);
+  if(etree.GetBranch("mc_g4_proton_end_z") != nullptr) set_object_input_branch_address(etree, "mc_g4_proton_end_z", ev.mc_g4_proton_end_z);
+  if(etree.GetBranch("mc_g4_neutron_E") != nullptr) set_object_input_branch_address(etree, "mc_g4_neutron_E", ev.mc_g4_neutron_E);
+  if(etree.GetBranch("mc_g4_neutron_start_x") != nullptr) set_object_input_branch_address(etree, "mc_g4_neutron_start_x", ev.mc_g4_neutron_start_x);
+  if(etree.GetBranch("mc_g4_neutron_start_y") != nullptr) set_object_input_branch_address(etree, "mc_g4_neutron_start_y", ev.mc_g4_neutron_start_y);
+  if(etree.GetBranch("mc_g4_neutron_start_z") != nullptr) set_object_input_branch_address(etree, "mc_g4_neutron_start_z", ev.mc_g4_neutron_start_z);
+  if(etree.GetBranch("mc_g4_neutron_end_x") != nullptr) set_object_input_branch_address(etree, "mc_g4_neutron_end_x", ev.mc_g4_neutron_end_x);
+  if(etree.GetBranch("mc_g4_neutron_end_y") != nullptr) set_object_input_branch_address(etree, "mc_g4_neutron_end_y", ev.mc_g4_neutron_end_y);
+  if(etree.GetBranch("mc_g4_neutron_end_z") != nullptr) set_object_input_branch_address(etree, "mc_g4_neutron_end_z", ev.mc_g4_neutron_end_z);
 
-  set_object_input_branch_address(etree, "mc_g4_nI_photon_E", ev.mc_g4_nI_photon_E);
-  set_object_input_branch_address(etree, "mc_g4_nI_photon_start_x", ev.mc_g4_nI_photon_start_x);
-  set_object_input_branch_address(etree, "mc_g4_nI_photon_start_y", ev.mc_g4_nI_photon_start_y);
-  set_object_input_branch_address(etree, "mc_g4_nI_photon_start_z", ev.mc_g4_nI_photon_start_z);
-  set_object_input_branch_address(etree, "mc_g4_nI_photon_end_x", ev.mc_g4_nI_photon_end_x);
-  set_object_input_branch_address(etree, "mc_g4_nI_photon_end_y", ev.mc_g4_nI_photon_end_y);
-  set_object_input_branch_address(etree, "mc_g4_nI_photon_end_z", ev.mc_g4_nI_photon_end_z);
-  set_object_input_branch_address(etree, "mc_g4_nI_proton_E", ev.mc_g4_nI_proton_E);
-  set_object_input_branch_address(etree, "mc_g4_nI_proton_start_x", ev.mc_g4_nI_proton_start_x);
-  set_object_input_branch_address(etree, "mc_g4_nI_proton_start_y", ev.mc_g4_nI_proton_start_y);
-  set_object_input_branch_address(etree, "mc_g4_nI_proton_start_z", ev.mc_g4_nI_proton_start_z);
+  if(etree.GetBranch("mc_g4_nI_photon_E") != nullptr) set_object_input_branch_address(etree, "mc_g4_nI_photon_E", ev.mc_g4_nI_photon_E);
+  if(etree.GetBranch("mc_g4_nI_photon_start_x") != nullptr) set_object_input_branch_address(etree, "mc_g4_nI_photon_start_x", ev.mc_g4_nI_photon_start_x);
+  if(etree.GetBranch("mc_g4_nI_photon_start_y") != nullptr) set_object_input_branch_address(etree, "mc_g4_nI_photon_start_y", ev.mc_g4_nI_photon_start_y);
+  if(etree.GetBranch("mc_g4_nI_photon_start_z") != nullptr) set_object_input_branch_address(etree, "mc_g4_nI_photon_start_z", ev.mc_g4_nI_photon_start_z);
+  if(etree.GetBranch("mc_g4_nI_photon_end_x") != nullptr) set_object_input_branch_address(etree, "mc_g4_nI_photon_end_x", ev.mc_g4_nI_photon_end_x);
+  if(etree.GetBranch("mc_g4_nI_photon_end_y") != nullptr) set_object_input_branch_address(etree, "mc_g4_nI_photon_end_y", ev.mc_g4_nI_photon_end_y);
+  if(etree.GetBranch("mc_g4_nI_photon_end_z") != nullptr) set_object_input_branch_address(etree, "mc_g4_nI_photon_end_z", ev.mc_g4_nI_photon_end_z);
+  if(etree.GetBranch("mc_g4_nI_proton_E") != nullptr) set_object_input_branch_address(etree, "mc_g4_nI_proton_E", ev.mc_g4_nI_proton_E);
+  if(etree.GetBranch("mc_g4_nI_proton_start_x") != nullptr) set_object_input_branch_address(etree, "mc_g4_nI_proton_start_x", ev.mc_g4_nI_proton_start_x);
+  if(etree.GetBranch("mc_g4_nI_proton_start_y") != nullptr) set_object_input_branch_address(etree, "mc_g4_nI_proton_start_y", ev.mc_g4_nI_proton_start_y);
+  if(etree.GetBranch("mc_g4_nI_proton_start_z") != nullptr) set_object_input_branch_address(etree, "mc_g4_nI_proton_start_z", ev.mc_g4_nI_proton_start_z);
 
-  set_object_input_branch_address(etree, "mc_g4_nI_proton_end_x", ev.mc_g4_nI_proton_end_x);
-  set_object_input_branch_address(etree, "mc_g4_nI_proton_end_y", ev.mc_g4_nI_proton_end_y);
-  set_object_input_branch_address(etree, "mc_g4_nI_proton_end_z", ev.mc_g4_nI_proton_end_z);
-  set_object_input_branch_address(etree, "mc_g4_nI_neutron_E", ev.mc_g4_nI_neutron_E);
-  set_object_input_branch_address(etree, "mc_g4_nI_neutron_start_x", ev.mc_g4_nI_neutron_start_x);
-  set_object_input_branch_address(etree, "mc_g4_nI_neutron_start_y", ev.mc_g4_nI_neutron_start_y);
-  set_object_input_branch_address(etree, "mc_g4_nI_neutron_start_z", ev.mc_g4_nI_neutron_start_z);
-  set_object_input_branch_address(etree, "mc_g4_nI_neutron_end_x", ev.mc_g4_nI_neutron_end_x);
-  set_object_input_branch_address(etree, "mc_g4_nI_neutron_end_y", ev.mc_g4_nI_neutron_end_y);
-  set_object_input_branch_address(etree, "mc_g4_nI_neutron_end_z", ev.mc_g4_nI_neutron_end_z);
+  if(etree.GetBranch("mc_g4_nI_proton_end_x") != nullptr) set_object_input_branch_address(etree, "mc_g4_nI_proton_end_x", ev.mc_g4_nI_proton_end_x);
+  if(etree.GetBranch("mc_g4_nI_proton_end_y") != nullptr) set_object_input_branch_address(etree, "mc_g4_nI_proton_end_y", ev.mc_g4_nI_proton_end_y);
+  if(etree.GetBranch("mc_g4_nI_proton_end_z") != nullptr) set_object_input_branch_address(etree, "mc_g4_nI_proton_end_z", ev.mc_g4_nI_proton_end_z);
+  if(etree.GetBranch("mc_g4_nI_neutron_E") != nullptr) set_object_input_branch_address(etree, "mc_g4_nI_neutron_E", ev.mc_g4_nI_neutron_E);
+  if(etree.GetBranch("mc_g4_nI_neutron_start_x") != nullptr) set_object_input_branch_address(etree, "mc_g4_nI_neutron_start_x", ev.mc_g4_nI_neutron_start_x);
+  if(etree.GetBranch("mc_g4_nI_neutron_start_y") != nullptr) set_object_input_branch_address(etree, "mc_g4_nI_neutron_start_y", ev.mc_g4_nI_neutron_start_y);
+  if(etree.GetBranch("mc_g4_nI_neutron_start_z") != nullptr) set_object_input_branch_address(etree, "mc_g4_nI_neutron_start_z", ev.mc_g4_nI_neutron_start_z);
+  if(etree.GetBranch("mc_g4_nI_neutron_end_x") != nullptr) set_object_input_branch_address(etree, "mc_g4_nI_neutron_end_x", ev.mc_g4_nI_neutron_end_x);
+  if(etree.GetBranch("mc_g4_nI_neutron_end_y") != nullptr) set_object_input_branch_address(etree, "mc_g4_nI_neutron_end_y", ev.mc_g4_nI_neutron_end_y);
+  if(etree.GetBranch("mc_g4_nI_neutron_end_z") != nullptr) set_object_input_branch_address(etree, "mc_g4_nI_neutron_end_z", ev.mc_g4_nI_neutron_end_z);
 
-  set_object_input_branch_address(etree, "mc_g4_start_x_sce", ev.mc_g4_start_x_sce);
-  set_object_input_branch_address(etree, "mc_g4_start_y_sce", ev.mc_g4_start_y_sce);
-  set_object_input_branch_address(etree, "mc_g4_start_z_sce", ev.mc_g4_start_z_sce);
-  set_object_input_branch_address(etree, "mc_g4_end_x_sce", ev.mc_g4_end_x_sce);
-  set_object_input_branch_address(etree, "mc_g4_end_y_sce", ev.mc_g4_end_y_sce);
-  set_object_input_branch_address(etree, "mc_g4_end_z_sce", ev.mc_g4_end_z_sce);
-  set_object_input_branch_address(etree, "is_from_nu_slice", ev.is_from_nu_slice);
-  set_object_input_branch_address(etree, "is_primary", ev.is_primary);
-  set_object_input_branch_address(etree, "is_contained", ev.is_contained);
-  set_object_input_branch_address(etree, "is_st", ev.is_st);
-  set_object_input_branch_address(etree, "is_nc1p", ev.is_nc1p);
-  set_object_input_branch_address(etree, "is_reco_nc1p", ev.is_reco_nc1p);
-  set_object_input_branch_address(etree, "mc_pdg", ev.mc_pdg);
-  set_object_input_branch_address(etree, "mc_primary", ev.mc_primary);
-  set_object_input_branch_address(etree, "mc_origin", ev.mc_origin);
-  set_object_input_branch_address(etree, "mc_length", ev.mc_length);
-  set_object_input_branch_address(etree, "mc_start_x", ev.mc_start_x);
-  set_object_input_branch_address(etree, "mc_start_y", ev.mc_start_y);
-  set_object_input_branch_address(etree, "mc_start_z", ev.mc_start_z);
-  set_object_input_branch_address(etree, "mc_end_x", ev.mc_end_x);
-  set_object_input_branch_address(etree, "mc_end_y", ev.mc_end_y);
-  set_object_input_branch_address(etree, "mc_end_z", ev.mc_end_z);
-  set_object_input_branch_address(etree, "mc_start_x_sce", ev.mc_start_x_sce);
-  set_object_input_branch_address(etree, "mc_start_y_sce", ev.mc_start_y_sce);
-  set_object_input_branch_address(etree, "mc_start_z_sce", ev.mc_start_z_sce);
-  set_object_input_branch_address(etree, "mc_end_x_sce", ev.mc_end_x_sce);
-  set_object_input_branch_address(etree, "mc_end_y_sce", ev.mc_end_y_sce);
-  set_object_input_branch_address(etree, "mc_end_z_sce", ev.mc_end_z_sce);
-  set_object_input_branch_address(etree, "mc_theta", ev.mc_theta);
-  set_object_input_branch_address(etree, "mc_phi", ev.mc_phi);
-  set_object_input_branch_address(etree, "mc_ke", ev.mc_ke);
-  set_object_input_branch_address(etree, "mc_mom", ev.mc_mom);
-  set_object_input_branch_address(etree, "n_pfp", ev.n_pfp);
-  set_object_input_branch_address(etree, "n_trk", ev.n_trk);
-  set_object_input_branch_address(etree, "id_pfp", ev.id_pfp);
-  set_object_input_branch_address(etree, "isinFV", ev.isinFV);
-  set_object_input_branch_address(etree, "n_shower", ev.n_shower);
-  set_object_input_branch_address(etree, "parentPDG", ev.parentPDG);
-  set_object_input_branch_address(etree, "trk_score", ev.trk_score);
-  set_object_input_branch_address(etree, "KE_len", ev.KE_len);
-  set_object_input_branch_address(etree, "dislen_ratio", ev.dislen_ratio);
-  set_object_input_branch_address(etree, "reco_q2", ev.reco_q2);
-  set_object_input_branch_address(etree, "top_score", ev.top_score);
-  set_object_input_branch_address(etree, "flash_score", ev.flash_score);
-  set_object_input_branch_address(etree, "n_daughters", ev.n_daughters);
-  set_object_input_branch_address(etree, "has_shower", ev.has_shower);
-  SetBranchAddress(etree, "reco_nu_vtxx", &ev.reco_nu_vtxx);
-  SetBranchAddress(etree, "reco_nu_vtxy", &ev.reco_nu_vtxy);
-  SetBranchAddress(etree, "reco_nu_vtxz", &ev.reco_nu_vtxz);
-  set_object_input_branch_address(etree, "deltaY", ev.deltaY);
-  set_object_input_branch_address(etree, "deltaZ", ev.deltaZ);
-  set_object_input_branch_address(etree, "deltaYSigma", ev.deltaYSigma);
-  set_object_input_branch_address(etree, "deltaZSigma", ev.deltaZSigma);
-  set_object_input_branch_address(etree, "chargeToLightRatio", ev.chargeToLightRatio);
-  set_object_input_branch_address(etree, "xclVariable", ev.xclVariable);
-  set_object_input_branch_address(etree, "flip_0", ev.flip_0);
-  set_object_input_branch_address(etree, "flip_1", ev.flip_1);
-  set_object_input_branch_address(etree, "flip_2", ev.flip_2);
-  set_object_input_branch_address(etree, "reco_length", ev.reco_length);
-  set_object_input_branch_address(etree, "reco_start_x", ev.reco_start_x);
-  set_object_input_branch_address(etree, "reco_start_y", ev.reco_start_y);
-  set_object_input_branch_address(etree, "reco_start_z", ev.reco_start_z);
+  if(etree.GetBranch("mc_g4_start_x_sce") != nullptr) set_object_input_branch_address(etree, "mc_g4_start_x_sce", ev.mc_g4_start_x_sce);
+  if(etree.GetBranch("mc_g4_start_y_sce") != nullptr) set_object_input_branch_address(etree, "mc_g4_start_y_sce", ev.mc_g4_start_y_sce);
+  if(etree.GetBranch("mc_g4_start_z_sce") != nullptr) set_object_input_branch_address(etree, "mc_g4_start_z_sce", ev.mc_g4_start_z_sce);
+  if(etree.GetBranch("mc_g4_end_x_sce") != nullptr) set_object_input_branch_address(etree, "mc_g4_end_x_sce", ev.mc_g4_end_x_sce);
+  if(etree.GetBranch("mc_g4_end_y_sce") != nullptr) set_object_input_branch_address(etree, "mc_g4_end_y_sce", ev.mc_g4_end_y_sce);
+  if(etree.GetBranch("mc_g4_end_z_sce") != nullptr) set_object_input_branch_address(etree, "mc_g4_end_z_sce", ev.mc_g4_end_z_sce);
+  if(etree.GetBranch("is_from_nu_slice") != nullptr) set_object_input_branch_address(etree, "is_from_nu_slice", ev.is_from_nu_slice);
+  if(etree.GetBranch("is_primary") != nullptr) set_object_input_branch_address(etree, "is_primary", ev.is_primary);
+  if(etree.GetBranch("is_contained") != nullptr) set_object_input_branch_address(etree, "is_contained", ev.is_contained);
+  if(etree.GetBranch("is_st") != nullptr) set_object_input_branch_address(etree, "is_st", ev.is_st);
+  if(etree.GetBranch("is_nc1p") != nullptr) set_object_input_branch_address(etree, "is_nc1p", ev.is_nc1p);
+  if(etree.GetBranch("is_reco_nc1p") != nullptr) set_object_input_branch_address(etree, "is_reco_nc1p", ev.is_reco_nc1p);
+  if(etree.GetBranch("mc_pdg") != nullptr) set_object_input_branch_address(etree, "mc_pdg", ev.mc_pdg);
+  if(etree.GetBranch("mc_primary") != nullptr) set_object_input_branch_address(etree, "mc_primary", ev.mc_primary);
+  if(etree.GetBranch("mc_origin") != nullptr) set_object_input_branch_address(etree, "mc_origin", ev.mc_origin);
+  if(etree.GetBranch("mc_length") != nullptr) set_object_input_branch_address(etree, "mc_length", ev.mc_length);
+  if(etree.GetBranch("mc_start_x") != nullptr) set_object_input_branch_address(etree, "mc_start_x", ev.mc_start_x);
+  if(etree.GetBranch("mc_start_y") != nullptr) set_object_input_branch_address(etree, "mc_start_y", ev.mc_start_y);
+  if(etree.GetBranch("mc_start_z") != nullptr) set_object_input_branch_address(etree, "mc_start_z", ev.mc_start_z);
+  if(etree.GetBranch("mc_end_x") != nullptr) set_object_input_branch_address(etree, "mc_end_x", ev.mc_end_x);
+  if(etree.GetBranch("mc_end_y") != nullptr) set_object_input_branch_address(etree, "mc_end_y", ev.mc_end_y);
+  if(etree.GetBranch("mc_end_z") != nullptr)set_object_input_branch_address(etree, "mc_end_z", ev.mc_end_z);
+  if(etree.GetBranch("mc_start_x_sce") != nullptr) set_object_input_branch_address(etree, "mc_start_x_sce", ev.mc_start_x_sce);
+  if(etree.GetBranch("mc_start_y_sce") != nullptr) set_object_input_branch_address(etree, "mc_start_y_sce", ev.mc_start_y_sce);
+  if(etree.GetBranch("mc_start_z_sce") != nullptr) set_object_input_branch_address(etree, "mc_start_z_sce", ev.mc_start_z_sce);
+  if(etree.GetBranch("mc_end_x_sce") != nullptr) set_object_input_branch_address(etree, "mc_end_x_sce", ev.mc_end_x_sce);
+  if(etree.GetBranch("mc_end_y_sce") != nullptr) set_object_input_branch_address(etree, "mc_end_y_sce", ev.mc_end_y_sce);
+  if(etree.GetBranch("mc_end_z_sce") != nullptr) set_object_input_branch_address(etree, "mc_end_z_sce", ev.mc_end_z_sce);
+  if(etree.GetBranch("mc_theta") != nullptr) set_object_input_branch_address(etree, "mc_theta", ev.mc_theta);
+  if(etree.GetBranch("mc_phi") != nullptr) set_object_input_branch_address(etree, "mc_phi", ev.mc_phi);
+  if(etree.GetBranch("mc_ke") != nullptr) set_object_input_branch_address(etree, "mc_ke", ev.mc_ke);
+  if(etree.GetBranch("mc_mom") != nullptr) set_object_input_branch_address(etree, "mc_mom", ev.mc_mom);
+  if(etree.GetBranch("n_pfp") != nullptr) set_object_input_branch_address(etree, "n_pfp", ev.n_pfp);
+  if(etree.GetBranch("n_trk") != nullptr) set_object_input_branch_address(etree, "n_trk", ev.n_trk);
+  if(etree.GetBranch("id_pfp") != nullptr) set_object_input_branch_address(etree, "id_pfp", ev.id_pfp);
+  if(etree.GetBranch("isinFV") != nullptr) set_object_input_branch_address(etree, "isinFV", ev.isinFV);
+  if(etree.GetBranch("n_shower") != nullptr) set_object_input_branch_address(etree, "n_shower", ev.n_shower);
+  if(etree.GetBranch("parentPDG") != nullptr) set_object_input_branch_address(etree, "parentPDG", ev.parentPDG);
+  if(etree.GetBranch("trk_score") != nullptr) set_object_input_branch_address(etree, "trk_score", ev.trk_score);
+  if(etree.GetBranch("KE_len") != nullptr) set_object_input_branch_address(etree, "KE_len", ev.KE_len);
+  if(etree.GetBranch("dislen_ratio") != nullptr) set_object_input_branch_address(etree, "dislen_ratio", ev.dislen_ratio);
+  if(etree.GetBranch("reco_q2") != nullptr) set_object_input_branch_address(etree, "reco_q2", ev.reco_q2);
+  if(etree.GetBranch("top_score") != nullptr) set_object_input_branch_address(etree, "top_score", ev.top_score);
+  if(etree.GetBranch("flash_score") != nullptr) set_object_input_branch_address(etree, "flash_score", ev.flash_score);
+  if(etree.GetBranch("n_daughters") != nullptr) set_object_input_branch_address(etree, "n_daughters", ev.n_daughters);
+  if(etree.GetBranch("has_shower") != nullptr) set_object_input_branch_address(etree, "has_shower", ev.has_shower);
+  if(etree.GetBranch("reco_nu_vtxx") != nullptr) SetBranchAddress(etree, "reco_nu_vtxx", &ev.reco_nu_vtxx);
+  if(etree.GetBranch("reco_nu_vtxy") != nullptr) SetBranchAddress(etree, "reco_nu_vtxy", &ev.reco_nu_vtxy);
+  if(etree.GetBranch("reco_nu_vtxz") != nullptr) SetBranchAddress(etree, "reco_nu_vtxz", &ev.reco_nu_vtxz);
+  if(etree.GetBranch("deltaY") != nullptr) set_object_input_branch_address(etree, "deltaY", ev.deltaY);
+  if(etree.GetBranch("deltaZ") != nullptr) set_object_input_branch_address(etree, "deltaZ", ev.deltaZ);
+  if(etree.GetBranch("deltaYSigma") != nullptr) set_object_input_branch_address(etree, "deltaYSigma", ev.deltaYSigma);
+  if(etree.GetBranch("deltaZSigma") != nullptr) set_object_input_branch_address(etree, "deltaZSigma", ev.deltaZSigma);
+  if(etree.GetBranch("chargeToLightRatio") != nullptr) set_object_input_branch_address(etree, "chargeToLightRatio", ev.chargeToLightRatio);
+  if(etree.GetBranch("xclVariable") != nullptr) set_object_input_branch_address(etree, "xclVariable", ev.xclVariable);
+  if(etree.GetBranch("flip_0") != nullptr) set_object_input_branch_address(etree, "flip_0", ev.flip_0);
+  if(etree.GetBranch("flip_1") != nullptr) set_object_input_branch_address(etree, "flip_1", ev.flip_1);
+  if(etree.GetBranch("flip_2") != nullptr) set_object_input_branch_address(etree, "flip_2", ev.flip_2);
+  if(etree.GetBranch("reco_length") != nullptr) set_object_input_branch_address(etree, "reco_length", ev.reco_length);
+  if(etree.GetBranch("reco_start_x") != nullptr) set_object_input_branch_address(etree, "reco_start_x", ev.reco_start_x);
+  if(etree.GetBranch("reco_start_y") != nullptr) set_object_input_branch_address(etree, "reco_start_y", ev.reco_start_y);
+  if(etree.GetBranch("reco_start_z") != nullptr) set_object_input_branch_address(etree, "reco_start_z", ev.reco_start_z);
   set_object_input_branch_address(etree, "reco_end_x", ev.reco_end_x);
   set_object_input_branch_address(etree, "reco_end_y", ev.reco_end_y);
   set_object_input_branch_address(etree, "reco_end_z", ev.reco_end_z);
@@ -376,6 +376,27 @@ void set_event_branch_addresses(TTree& etree, AnalysisEvent& ev)
 }
 
 // Helper function to set branch addresses for the output TTree
+void set_event_output_branch_addresses(TTree& out_tree, AnalysisEvent& ev, bool create = false) {
+
+  set_output_branch_address(out_tree, "reco_proton_ke", &ev.reco_proton_ke_, create, "reco_proton_ke/D");
+  set_output_branch_address(out_tree, "reco_q2", &ev.reco_q2_, create, "reco_q2/D");
+  set_output_branch_address(out_tree, "reco_proton_mom", &ev.reco_proton_mom_, create, "reco_proton_mom/D");
+  set_output_branch_address(out_tree, "reco_costheta", &ev.reco_costheta_, create, "reco_costheta/D");
+  set_output_branch_address(out_tree, "reco_bdt_score", &ev.reco_bdt_score_, create, "reco_bdt_score/D");
+  set_output_branch_address(out_tree, "computed_weight", &ev.computed_weight_, create, "computed_weight/D");
+  set_output_branch_address(out_tree, "true_proton_ke", &ev.true_proton_ke_, create, "true_proton_ke/D");
+  set_output_branch_address(out_tree, "true_costheta", &ev.true_costheta_, create, "true_costheta/D");
+  set_output_branch_address(out_tree, "true_q2", &ev.true_q2_, create, "true_q2/D");
+  set_output_branch_address(out_tree, "is_mc", &ev.is_mc_, create, "is_mc/D");
+  set_output_branch_address(out_tree, "sig_is_nc", &ev.sig_is_nc_, create, "sig_is_nc/O");
+  set_output_branch_address(out_tree, "sel_reco_1p", &ev.sel_reco_1p_, create, "sel_reco_1p/O");
+  set_output_branch_address(out_tree, "sel_bdt_cut", &ev.sel_bdt_cut_, create, "sel_bdt_cut/O");
+  set_output_branch_address(out_tree, "sel_blip_cut", &ev.sel_blip_cut_, create, "sel_blip_cut/O");
+  set_output_branch_address(out_tree, "reco_nblip_upstream", &ev.reco_nblip_upstream_, create, "reco_nblip_upstream/I");
+  set_output_branch_address(out_tree, "reco_trk_dis", &ev.reco_trk_dis_, create, "reco_trk_dis/F"); //is_mc_
+}
+
+/*
 void set_event_output_branch_addresses(TTree& out_tree, AnalysisEvent& ev, bool create = false)
 {
   set_output_branch_address(out_tree, "run", &ev.run, create, "run/I");
@@ -740,3 +761,4 @@ void set_event_output_branch_addresses(TTree& out_tree, AnalysisEvent& ev, bool 
   set_object_output_branch_address< std::vector<float> >(out_tree, "blip_greatgrandmom_E", ev.blip_greatgrandmom_E, create);
   set_object_output_branch_address< std::vector<float> >(out_tree, "blip_greatgrandmom_mass", ev.blip_greatgrandmom_mass, create);
 }
+*/

@@ -1,108 +1,225 @@
 #include "XSecAnalyzer/Selections/NC1p.hh"
 #include <iostream>
+#include <cmath>
+#include <unistd.h>
+#include "TColor.h"
 
-NC1p::NC1p() : SelectionBase( "NC1p" ) {
+NC1p::NC1p() : SelectionBase( "NC1p" ){
+
+    // 1. Initialize TMVA Reader
+    bdt_reader_ = new TMVA::Reader( "!Color:!Silent" );
+
+    // 2. Add Variables (Names match XML)
+    bdt_reader_->AddVariable( "reco_length",  &tmva_reco_length_ );
+    bdt_reader_->AddVariable( "reco_theta",   &tmva_reco_theta_ );
+    bdt_reader_->AddVariable( "reco_phi",     &tmva_reco_phi_ );
+    bdt_reader_->AddVariable( "end_dedx_2",   &tmva_end_dedx_2_ );
+    bdt_reader_->AddVariable( "total_dedx_2", &tmva_total_dedx_2_ );
+    bdt_reader_->AddVariable( "reco_start_y", &tmva_reco_start_y_ );
+    bdt_reader_->AddVariable( "reco_start_z", &tmva_reco_start_z_ );
+    bdt_reader_->AddVariable( "reco_end_y",   &tmva_reco_end_y_ );
+    bdt_reader_->AddVariable( "reco_end_z",   &tmva_reco_end_z_ );
+    bdt_reader_->AddVariable( "chi2_p_0",     &tmva_chi2_p_0_ );
+    bdt_reader_->AddVariable( "chi2_p_1",     &tmva_chi2_p_1_ );
+    bdt_reader_->AddVariable( "chi2_p_2",     &tmva_chi2_p_2_ );
+    bdt_reader_->AddVariable( "trk_dis",      &tmva_trk_dis_ );
+
+    current_run_ = -1;
+    // Default fallback
+    sample_type_ = "overlay_genie320_precompound_hadronhp";
+
+    out_file.open(filename, std::ios::out | std::ios::trunc);
+    if (!out_file.is_open()) {
+        std::cerr << " > Error: Could not open file " << filename << std::endl;
+    }
 }
 
-void NC1p::define_constants() {
-    // Define specific constants if needed, or use those from Constants.hh
+NC1p::~NC1p() {
+    if (bdt_reader_) delete bdt_reader_;
+    if(out_file.is_open()) out_file.close();
 }
 
-void NC1p::reset() {
-    // Reset all flags and variables
-    sig_is_nc_ = false;
-    sig_one_proton_ = false;
-    sig_no_muon_ = false;
-    sig_no_pions_ = false;
-    sig_is_nu_pdg_ = false;
-    sig_in_fv_ = false;
+void NC1p::reset(AnalysisEvent* Event) {
+    Event->sig_is_nc_ = false;
+    Event->sig_one_proton_ = false;
+    Event->sig_no_muon_ = false;
+    Event->sig_no_pions_ = false;
+    Event->sig_is_nu_pdg_ = false;
+    Event->sig_in_fv_ = false;
 
-    sel_reco_1p_ = false;
-    sel_in_fv_ = false;
-    sel_containment_ = false;
-    sel_track_quality_ = false;
-    sel_pid_cut_ = false;
-    sel_bdt_cut_ = false;
-    sel_blip_cut_ = false;
+    Event->sel_reco_1p_ = false;
+    Event->sel_in_fv_ = false;
+    Event->sel_containment_ = false;
+    Event->sel_track_quality_ = false;
+    Event->sel_pid_cut_ = false;
+    Event->sel_bdt_cut_ = false;
+    Event->sel_blip_cut_ = false;
 
-    proton_candidate_idx_ = BOGUS_INDEX;
+    Event->proton_candidate_idx_ = BOGUS_INDEX;
+    Event->reco_trk_dis_ = 999.0;
+    Event->reco_nblip_upstream_ = 0;
 
-    reco_proton_ke_ = BOGUS;
-    reco_q2_ = BOGUS;
-    reco_proton_mom_ = BOGUS;
-    reco_costheta_ = BOGUS;
-    reco_length_ = BOGUS;
-    reco_bdt_score_ = BOGUS;
+    Event->reco_proton_ke_ = BOGUS;
+    Event->reco_q2_ = BOGUS;
+    Event->reco_proton_mom_ = BOGUS;
+    Event->reco_costheta_ = BOGUS;
+    Event->reco_length_ = BOGUS;
+    Event->reco_bdt_score_ = BOGUS;
+    Event->computed_weight_ = 1.0;
 
-    true_proton_ke_ = BOGUS;
-    true_q2_ = BOGUS;
-    true_proton_mom_ = BOGUS;
-    true_costheta_ = BOGUS;
+    Event->true_proton_ke_ = BOGUS;
+    Event->true_q2_ = BOGUS;
+    Event->true_proton_mom_ = BOGUS;
+    Event->true_costheta_ = BOGUS;
 }
+
+void NC1p::define_constants() {}
 
 void NC1p::define_category_map() {
-    // Mapping based on make_tree.C FillSubCat logic
-    category_map_[10] = "NC1p Signal";
-    category_map_[8]  = "NC1p NCE Signal";
-    category_map_[9]  = "NC1p Non-NCE Signal";
-    category_map_[7]  = "NC Other";
-    category_map_[4]  = "CC Background"; // mc_ccnc == 0
-    category_map_[5]  = "Non-Proton";
-    category_map_[6]  = "Non-Nu Origin";
-    category_map_[2]  = "NC Out of FV";
+    categ_map_[10] = { "NC1p Signal", kRed };
+    categ_map_[8]  = { "NC1p NCE Signal", kRed + 2 };
+    categ_map_[9]  = { "NC1p Non-NCE Signal", kMagenta };
+    categ_map_[7]  = { "NC Other", kOrange };
+    categ_map_[4]  = { "CC Background", kBlue };
+    categ_map_[3]  = { "NC Background", kCyan };
+    categ_map_[5]  = { "Non-Proton Primary", kGreen };
+    categ_map_[6]  = { "Non-Nu Origin", kGray };
+    categ_map_[2]  = { "NC Out of FV", kYellow };
+}
+
+double NC1p::POTwgt(int ri, std::string type) {
+    double wgt = 1.0;
+    const double pot_overlay_s2[5] = {1, 6.538, 6.523, 7.349, 1};
+    const double pot_overlay_s2_wgt[5] = {1, 6.5379, 6.523879, 7.14304, 1};
+    const double pot_overlay_def[5] = {1, 5.5525, 1, 1, 1};
+    const double pot_overlay_pre[5] = {1, 5.5448, 1, 1, 1};
+    const double pot_overlay_pre_hhp_wgt[5] = {1, 5.307, 5.867, 5.325, 1};
+    const double pot_overlay_pre_hhp[5] = {1, 5.52642, 5.8665, 5.4889, 1};
+    const double pot_dirt_pre_hhp[5] = {1, 1.40837, 1.67329, 1.61019, 1};
+    const double pot_overlay_outtpc_pre_hhp[5] = {1, 2.009894, 1.290968, 2.094839, 1};
+    const double pot_overlay_def_hhp[5] = {1, 5.591, 5.915, 5.476, 1};
+    const double pot_dirt[5] = {1, 3.256179, 9.531478, 3.355448, 1};
+    const double pot_bnb[5] = {1, 1.686, 3.043, 2.218, 1};
+    const double trig_bnb[5]={1,34766141.0,62279349.0,61510773.0,1};
+    const double trig_extbnb[5]={1,34151572.0,151507351.0,166840107.0 ,1};
+
+    if (ri < 0 || ri > 4) return 1.0;
+
+    if (type.find("overlay_s2") != std::string::npos) wgt = pot_bnb[ri] / pot_overlay_s2[ri];
+    else if (type.find("overlay_genie320_default") != std::string::npos && type.find("hadronhp") == std::string::npos) wgt = pot_bnb[ri] / pot_overlay_def[ri];
+    else if (type.find("overlay_genie320_precompound") != std::string::npos && type.find("hadronhp") == std::string::npos) wgt = pot_bnb[ri] / pot_overlay_pre[ri];
+    else if (type.find("overlay_genie320_default_hadronhp") != std::string::npos) wgt = pot_bnb[ri] / pot_overlay_def_hhp[ri];
+    else if (type == "overlay_genie320_precompound_hadronhp") wgt = pot_bnb[ri] / pot_overlay_pre_hhp[ri];
+    else if (type.find("outtpc_overlay") != std::string::npos) wgt = pot_bnb[ri] / pot_overlay_outtpc_pre_hhp[ri];
+    else if (type.find("dirt_genie320_precompound_hadronhp") != std::string::npos) wgt = pot_bnb[ri] / pot_dirt_pre_hhp[ri];
+    else if (type.find("overlay_genie_fsi") != std::string::npos) wgt = pot_bnb[ri] / pot_overlay_s2_wgt[ri];
+    else if (type == "dirt") wgt = pot_bnb[ri] / pot_dirt[ri];
+    else if(type=="extbnb")     wgt = trig_bnb[ri]/trig_extbnb[ri];
+    else if (type == "bnb") wgt = 1.0;
+
+    return wgt;
+}
+
+double NC1p::CalWeight(AnalysisEvent* Event, int run_id) {
+    double pot_scale = POTwgt(run_id, sample_type_);
+    double cv_weight = 1.0;
+    if (Event->mc_wgt_tunedcv != BOGUS && Event->mc_wgt_tunedcv > -100) {
+        // cv_weight = Event->mc_wgt_tunedcv;
+    }
+    return 1.0; //pot_scale * cv_weight;
+}
+
+void NC1p::LoadBDTWeights(int run) {
+    TString weight_path = Form("/exp/uboone/app/users/renlu23/v61_2022/analysis/BDT/dataset/weights_%d/TMVAClassification_BDTG.weights.xml", run);
+    if ( access( weight_path.Data(), F_OK ) != -1 ) {
+        std::cout << "[NC1p] Loading BDT weights for Run " << run << " from: " << weight_path << std::endl;
+        bdt_reader_->BookMVA( "BDTG", weight_path.Data() );
+    } else {
+        std::cerr << "[NC1p] WARNING: BDT Weight file not found: " << weight_path << std::endl;
+    }
+}
+
+float NC1p::ClusterTrackDistance(float vx, float vy, float vz, float cx, float cy, float cz) {
+    return std::sqrt(std::pow(vx - cx, 2) + std::pow(vy - cy, 2) + std::pow(vz - cz, 2));
+}
+
+/*
+int NC1p::VertexIsInFV(float st_x, float st_y, float st_z) {
+    const float xmin = 0, xmax = 256.35;
+    const float ymin = -116.35, ymax = 116.35;
+    const float zmin = 0, zmax = 1036.8;
+    const float b_xz = 10, b_y = 20;
+
+    // 1. Standard Rectangular Box Cut
+    if (st_x < xmin + b_xz || st_x > xmax - b_xz) return -1;
+    if (st_y < ymin + b_y  || st_y > ymax - b_y ) return -1;
+    if (st_z < zmin + b_xz || st_z > zmax - b_xz) return -1;
+
+    // 2. Specific Geometric "Dead Region" Checks (from make_tree.C)
+    // These exclude regions with dead wires or TPC edge effects
+    if (st_y - 0.6 * st_z > -186 && st_y - 0.6 * st_z < -120) return 1;
+    if (st_y - 0.6 * st_z < -207 && st_y + 0.6 * st_z < 434 && st_z < 700) return 2;
+    if (st_z > 740 && st_y + 0.6 * st_z > 454) return 3;
+    if (st_y + 0.6 * st_z > 454 && st_z < 700) return 4;
+    if (st_y + 0.6 * st_z < 434 && st_z > 740) return 5;
+
+    return 0; // 0 = Purely inside the Fiducial Volume
+}
+*/
+
+int NC1p::VertexIsInFV(float st_x, float st_y, float st_z) {
+    int passFV = 0;
+    const float border_xorz = 10;
+    const float border_y = 20;
+
+    if (st_x < 0 + border_xorz) passFV = -1;
+    if (st_y < -116.35 + border_y) passFV = -1;
+    if (st_z < 0 + border_xorz) passFV = -1;
+    if (st_x > 256.35 - border_xorz) passFV = -1;
+    if (st_y > 116.35 - border_y) passFV = -1;
+    if (st_z > 1036.8 - border_xorz) passFV = -1;
+
+    if (st_y - 0.6*st_z > -186 && st_y - 0.6*st_z < -120) passFV = 1;
+    if (st_y - 0.6*st_z < -207 && st_y + 0.6*st_z < 434 && st_z < 700) passFV = 2;
+    if (st_z > 740 && st_y + 0.6*st_z > 454) passFV = 3;
+    if (st_y + 0.6*st_z > 454 && st_z < 700) passFV = 4;
+    if (st_y + 0.6*st_z < 434 && st_z > 740) passFV = 5;
+
+    return passFV;
 }
 
 bool NC1p::define_signal( AnalysisEvent* Event ) {
+    Event->sig_is_nc_ = (Event->mc_ccnc == 1);
+    Event->sig_no_muon_ = (Event->mc_n_threshold_muon == 0);
+    Event->sig_no_pions_ = ((Event->mc_n_threshold_pionpm + Event->mc_n_threshold_pion0) == 0);
+    Event->sig_one_proton_ = (Event->mc_n_threshold_proton == 1);
+    Event->sig_is_nu_pdg_ = (Event->mc_nupdg == 14 || Event->mc_nupdg == -14);
 
-    // Logic from FillSubCat in make_tree.C
-
-    // Must be neutrino origin
-    // Note: make_tree loop checks index, here we generally check the event or specific MC particle.
-    // Assuming signal definition is based on the interaction topology:
-
-    sig_is_nc_ = (Event->mc_ccnc == 1);
-
-    // Threshold counts
-    sig_no_muon_ = (Event->mc_n_threshold_muon == 0);
-    sig_no_pions_ = ((Event->mc_n_threshold_pionpm + Event->mc_n_threshold_pion0) == 0);
-    sig_one_proton_ = (Event->mc_n_threshold_proton == 1);
-
-    // 14 is Muon Neutrino
-    sig_is_nu_pdg_ = (Event->mc_nupdg == 14 || Event->mc_nupdg == -14);
-
-    // FV Truth Check (cm)
     bool in_x = (Event->mc_nu_vtxx > 10 && Event->mc_nu_vtxx < 246.35);
     bool in_y = (Event->mc_nu_vtxy > -96.5 && Event->mc_nu_vtxy < 96.5);
     bool in_z = (Event->mc_nu_vtxz > 10 && Event->mc_nu_vtxz < 1026.8);
-    sig_in_fv_ = (in_x && in_y && in_z);
+    Event->sig_in_fv_ = (in_x && in_y && in_z);
 
-    // Standard NC1p definition
-    bool is_nc1p = sig_is_nc_ && sig_no_muon_ && sig_no_pions_ && sig_one_proton_;
-
-    // Return true if it meets the general signal definition (NC1p in FV)
-    return is_nc1p && sig_in_fv_ && sig_is_nu_pdg_;
+    bool is_nc1p = Event->sig_is_nc_ && Event->sig_no_muon_ && Event->sig_no_pions_ && Event->sig_one_proton_;
+    return is_nc1p && Event->sig_in_fv_ && Event->sig_is_nu_pdg_;
 }
 
-bool NC1p::selection( AnalysisEvent* Event ) {
+bool NC1p::selection( AnalysisEvent* Event, int rid) {
+    if ( rid != current_run_ ) {
+        LoadBDTWeights(rid);
+        current_run_ = rid;
+    }
 
-    // 1. Pre-selection: Must be reconstructed as 1 proton event
     if ( Event->evt_reco_1p != 1 ) return false;
-    sel_reco_1p_ = true;
+    Event->sel_reco_1p_ = true;
 
-    // 2. Loop over tracks to find the candidate proton
-    // Logic from make_tree.C Loop
-
-    // Variables for cuts
-    float startx, starty, startz, endx, endy, endz, len, costheta, pid_p2;
-
+    float startx, starty, startz, endx, endy, endz, len, costheta;
     int best_idx = -1;
+    float best_trk_dis = 999.0;
 
-    // Check if vectors exist
     if ( !Event->reco_length || Event->reco_length->empty() ) return false;
 
     for ( size_t i = 0; i < Event->reco_length->size(); ++i ) {
-
-        // Must be tagged as NC1p candidate by upstream reco
         if ( !Event->is_reco_nc1p->at(i) ) continue;
         if ( Event->isinFV->at(i) <= 0 ) continue;
 
@@ -114,122 +231,171 @@ bool NC1p::selection( AnalysisEvent* Event ) {
         endz   = Event->reco_end_z_f2->at(i);
         len    = Event->reco_length->at(i);
         costheta = cos(Event->reco_theta_f2->at(i));
-        pid_p2 = Event->chi2_p_2->at(i);
 
-        // FV Cuts (make_tree.C)
-        bool s_x = (startx > 10 && startx < 246.35);
-        bool e_x = (endx > 10 && endx < 246.35);
-        bool s_y = (starty > -96.35 && starty < 96.35);
-        bool e_y = (endy > -96.35 && endy < 96.35);
-        bool s_z = (startz > 10 && startz < 1026.8);
-        bool e_z = (endz > 10 && endz < 1026.8);
+        float temp_trk_dis = 999.0;
+        if ( Event->reco_length->size() > 1 ) {
+            for ( size_t j = 0; j < Event->reco_length->size(); ++j ) {
+                if ( i == j ) continue;
+                float d1 = std::sqrt(std::pow(startx - Event->reco_start_x->at(j), 2) +
+                std::pow(starty - Event->reco_start_y->at(j), 2) +
+                std::pow(startz - Event->reco_start_z->at(j), 2));
+                float d2 = std::sqrt(std::pow(startx - Event->reco_end_x->at(j), 2) +
+                std::pow(starty - Event->reco_end_y->at(j), 2) +
+                std::pow(startz - Event->reco_end_z->at(j), 2));
+                if (d1 < temp_trk_dis) {temp_trk_dis = d1;}
+                if (d2 < temp_trk_dis) {temp_trk_dis = d2;}
+            }
+        }
 
-        if ( !s_x || !e_x || !s_y || !e_y || !s_z || !e_z ) continue;
-        sel_in_fv_ = true;
-        sel_containment_ = true; // Implied by start/end checks
+        if (startx < 10 || startx > 246.35) continue;
+        if (endx < 10 || endx > 246.35) continue;
+        if (starty < -96.35 || starty > 96.35) continue;
+        if (endy < -96.35 || endy > 96.35) continue;
+        if (startz < 10 || startz > 1026.8) continue;
+        if (endz < 10 || endz > 1026.8) continue;
 
-        // Track Quality Cuts
-        if ( len < 1.2 || len > 200 ) continue;
-        if ( costheta < 0 ) continue;
-        sel_track_quality_ = true;
+        if (len < 1.2 || len > 200) continue;
+        if (costheta < 0) continue;
+        if (Event->chi2_p_2->at(i) > 60 || Event->chi2_p_2->at(i) < 0) continue;
 
-        // PID Cut
-        if ( pid_p2 > 60 || pid_p2 < 0 ) continue;
-        sel_pid_cut_ = true;
-
-        // If passed all, this is our candidate
         best_idx = i;
-        break; // Assuming we take the first valid one or there is only one due to evt_reco_1p
+        best_trk_dis = temp_trk_dis;
+
+        // break here to mimic make_tree.C "greedy" selection
+        break;
     }
 
     if ( best_idx == -1 ) return false;
-    proton_candidate_idx_ = best_idx;
 
-    // 3. BDT Cut (Placeholder logic)
-    // make_tree.C calculates BDT on the fly.
-    // Here we assume the score needs to be computed or checked.
-    // For now, we pass this if we found a candidate, but in full implementation
-    // the TMVA reader logic would go here or in compute_reco_observables.
-    sel_bdt_cut_ = true; // Placeholder
+    Event->proton_candidate_idx_ = best_idx;
+    Event->reco_trk_dis_ = best_trk_dis;
+    Event->sel_in_fv_ = true;
+    Event->sel_containment_ = true;
+    Event->sel_track_quality_ = true;
+    Event->sel_pid_cut_ = true;
 
-    // 4. Blip Cut
-    // Logic: if(nblip[5]>1 && do_blip1) continue;
-    // nblip[5] corresponds to blips with R < 50cm and Z < startZ (upstream)
-    // Implementation requires iterating blips.
-    // Assuming passed for this skeleton.
-    sel_blip_cut_ = true;
+    int nblip_5 = 0;
+    float p_x = Event->reco_start_x->at(best_idx);
+    float p_y = Event->reco_start_y->at(best_idx);
+    float p_z = Event->reco_start_z->at(best_idx);
+
+    if ( Event->blip_x && !Event->blip_x->empty() ) {
+        for ( size_t k = 0; k < Event->blip_x->size(); ++k ) {
+            float bx = Event->blip_x->at(k);
+            float by = Event->blip_y->at(k);
+            float bz = Event->blip_z->at(k);
+            if ( VertexIsInFV(bx, by, bz) > 0 ) {
+                float disb = ClusterTrackDistance(p_x, p_y, p_z, bx, by, bz);
+                if ( disb < 50.0 ) {
+                    if ( bz < p_z ) nblip_5++;
+                }
+            }
+        }
+    }
+    Event->reco_nblip_upstream_ = nblip_5;
+
+    if ( Event->reco_nblip_upstream_ > 1 ) return false;
+    Event->sel_blip_cut_ = true;
+
+    tmva_reco_length_ = Event->reco_length->at(best_idx);
+    tmva_reco_theta_  = Event->reco_theta_f2->at(best_idx);
+    tmva_reco_phi_    = Event->reco_phi_f2->at(best_idx);
+    tmva_end_dedx_2_  = Event->start_dedx_2->at(best_idx);
+    tmva_total_dedx_2_= Event->total_dedx_2->at(best_idx);
+    tmva_reco_start_y_= Event->reco_start_y->at(best_idx);
+    tmva_reco_start_z_= Event->reco_start_z->at(best_idx);
+    tmva_reco_end_y_  = Event->reco_end_y->at(best_idx);
+    tmva_reco_end_z_  = Event->reco_end_z->at(best_idx);
+    tmva_chi2_p_0_    = Event->chi2_p_0->at(best_idx);
+    tmva_chi2_p_1_    = Event->chi2_p_1->at(best_idx);
+    tmva_chi2_p_2_    = Event->chi2_p_2->at(best_idx);
+    tmva_trk_dis_     = Event->reco_trk_dis_;
+
+    Event->reco_bdt_score_ = bdt_reader_->EvaluateMVA("BDTG");
+
+    if ( Event->reco_bdt_score_ < 0.2 ) return false;
+    Event->sel_bdt_cut_ = true;
+
+    LogEvent(Event);
+    Flush();
 
     return true;
 }
 
 int NC1p::categorize_event( AnalysisEvent* Event ) {
-    // Logic from FillSubCat
 
-    if ( Event->mc_origin->size() > 0 && Event->mc_origin->at(0) == 1 ) { // Neutrino origin
-        if ( Event->mc_pdg->size() > 0 && Event->mc_pdg->at(0) == 2212 ) { // Proton? (Check index logic)
-            // If signal definition passed
-            if ( sig_is_nu_pdg_ && sig_in_fv_ && sig_is_nc_ && sig_no_muon_ && sig_no_pions_ && sig_one_proton_ ) {
-                // Signal breakdown
-                if ( Event->mc_mode == 0 && (Event->mc_hitnuc == 2212 || Event->mc_hitnuc11_nuwro == 2212) ) return 8; // NCE
-                return 9; // Non-NCE
+    // This allows SelectionBase to invoke compute_true_observables
+    if (Event->mc_ccnc != BOGUS_INT) {
+        Event->is_mc_ = true;
+    } else {
+        Event->is_mc_ = false;
+    }
+
+    // Logic from FillSubCat in make_tree.C
+    if ( Event->mc_origin->size() > 0 && Event->mc_origin->at(0) == 1 ) {
+        if ( Event->mc_pdg->size() > 0 && Event->mc_pdg->at(0) == 2212 ) {
+            if ( Event->sig_is_nu_pdg_ && Event->sig_in_fv_ && Event->sig_is_nc_ && Event->sig_no_muon_ && Event->sig_no_pions_ && Event->sig_one_proton_ ) {
+                if ( Event->mc_mode == 0 && (Event->mc_hitnuc == 2212 || Event->mc_hitnuc11_nuwro == 2212) ) return 8;
+                return 9;
             }
-            // NC Other
-            if ( sig_is_nc_ ) return 7;
-            // CC Background
+            if ( Event->sig_is_nc_ ) return 7;
             if ( Event->mc_ccnc == 0 ) return 4;
-        }
-        else {
-            return 5; // Non-proton primary
+        } else {
+            return 5;
         }
     }
-    return 6; // Non-Nu origin
+    return 6;
 }
 
-void NC1p::compute_reco_observables( AnalysisEvent* Event ) {
-    if ( proton_candidate_idx_ == BOGUS_INDEX ) return;
+void NC1p::compute_reco_observables( AnalysisEvent* Event, int run_id) {
+    Event->computed_weight_ = CalWeight(Event, run_id);
 
-    int i = proton_candidate_idx_;
+    if ( Event->proton_candidate_idx_ == BOGUS_INDEX ) return;
 
-    // Formula from make_tree.C
-    reco_length_ = Event->reco_length->at(i);
-
-    // KE = 31.3 * Length^0.578 (MeV -> GeV converison handled by /1000)
-    reco_proton_ke_ = 31.3 * std::pow(reco_length_, 0.578) / 1000.0;
-
-    // Q2 = 2 * Mn * KE (Mn = 0.938272 GeV)
-    reco_q2_ = reco_proton_ke_ * 2.0 * 0.938272;
-
-    reco_proton_mom_ = Event->reco_mom_proton->at(i);
-    reco_costheta_ = cos(Event->reco_theta_f2->at(i));
+    int i = Event->proton_candidate_idx_;
+    Event->reco_length_ = Event->reco_length->at(i);
+    Event->reco_proton_ke_ = 31.3 * std::pow(Event->reco_length_, 0.578) / 1000.0;
+    Event->reco_q2_ = Event->reco_proton_ke_ * 2.0 * 0.938272;
+    Event->reco_proton_mom_ = Event->reco_mom_proton->at(i);
+    Event->reco_costheta_ = cos(Event->reco_theta_f2->at(i));
 }
 
 void NC1p::compute_true_observables( AnalysisEvent* Event ) {
-    // Need to find corresponding MC particle or use global MC vars
-    // Assuming 1-to-1 mapping or using first primary for now
-    if ( Event->mc_ke->size() > 0 ) {
-        // In make_tree.C, true variables often pulled from vectors aligned with reco tracks
-        // or specific MC branches.
-        int i = (proton_candidate_idx_ != BOGUS_INDEX) ? proton_candidate_idx_ : 0;
+    int i = (Event->proton_candidate_idx_ != BOGUS_INDEX) ? Event->proton_candidate_idx_ : 0;
+    if ( Event->mc_ke && i < Event->mc_ke->size() ) {
+        Event->true_proton_ke_ = Event->mc_ke->at(i);
+        Event->true_proton_mom_ = Event->mc_mom->at(i);
+        Event->true_costheta_ = cos(Event->mc_theta->at(i));
+    }
+    Event->true_q2_ = Event->mc_q2;
+}
 
-        if(i < Event->mc_ke->size()){
-            true_proton_ke_ = Event->mc_ke->at(i);
-            true_proton_mom_ = Event->mc_mom->at(i);
-            true_costheta_ = cos(Event->mc_theta->at(i));
-        }
-        true_q2_ = Event->mc_q2;
+
+void NC1p::define_output_branches() {
+    /*
+    out_tree_->Branch( "reco_proton_ke", &reco_proton_ke_, "reco_proton_ke/D" );
+    out_tree_->Branch( "reco_q2", &reco_q2_, "reco_q2/D" );
+    out_tree_->Branch( "reco_proton_mom", &reco_proton_mom_, "reco_proton_mom/D" );
+    out_tree_->Branch( "reco_costheta", &reco_costheta_, "reco_costheta/D" );
+    out_tree_->Branch( "reco_bdt_score", &reco_bdt_score_, "reco_bdt_score/D" );
+    out_tree_->Branch( "computed_weight", &computed_weight_, "computed_weight/D" );
+
+    out_tree_->Branch( "true_proton_ke", &true_proton_ke_, "true_proton_ke/D" );
+    out_tree_->Branch( "true_q2", &true_q2_, "true_q2/D" );
+
+    out_tree_->Branch( "sig_is_nc", &sig_is_nc_, "sig_is_nc/O" );
+    out_tree_->Branch( "sel_reco_1p", &sel_reco_1p_, "sel_reco_1p/O" );
+    out_tree_->Branch( "sel_bdt_cut", &sel_bdt_cut_, "sel_bdt_cut/O" );
+    out_tree_->Branch( "sel_blip_cut", &sel_blip_cut_, "sel_blip_cut/O" );
+    */
+}
+
+void NC1p::LogEvent(AnalysisEvent* Event) {
+    if(out_file.is_open()) {
+        out_file << Event->event << "\t" << Event->proton_candidate_idx_ << "\t" << Event->sel_reco_1p_ << "\t" << Event->sel_in_fv_ << "\t" << Event->sel_containment_ << "\t" << Event->sel_track_quality_ << "\t" << Event->sel_pid_cut_ << "\t" << Event->sel_blip_cut_ << "\t" << Event->sel_bdt_cut_ << "\n";
     }
 }
 
-void NC1p::define_output_branches() {
-    set_branch( &reco_proton_ke_, "reco_proton_ke", "reco_proton_ke/D" );
-    set_branch( &reco_q2_, "reco_q2", "reco_q2/D" );
-    set_branch( &reco_proton_mom_, "reco_proton_mom", "reco_proton_mom/D" );
-    set_branch( &reco_costheta_, "reco_costheta", "reco_costheta/D" );
-
-    set_branch( &true_proton_ke_, "true_proton_ke", "true_proton_ke/D" );
-    set_branch( &true_q2_, "true_q2", "true_q2/D" );
-
-    set_branch( &sig_is_nc_, "sig_is_nc", "sig_is_nc/O" );
-    set_branch( &sig_one_proton_, "sig_one_proton", "sig_one_proton/O" );
-    set_branch( &sel_reco_1p_, "sel_reco_1p", "sel_reco_1p/O" );
+void NC1p::Flush() {
+    out_file.flush();
 }

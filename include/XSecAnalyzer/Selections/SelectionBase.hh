@@ -23,7 +23,7 @@ public:
   virtual ~SelectionBase() = default;
 
   void setup( TTree* out_tree, bool create_branches = true );
-  void apply_selection( AnalysisEvent* event );
+  void apply_selection( AnalysisEvent* event, int run_id);
   void summary();
 
   virtual void final_tasks() {};
@@ -132,14 +132,14 @@ protected:
     return fv_reco_;
   }
 
-  virtual bool selection( AnalysisEvent* event ) = 0;
+  virtual bool selection( AnalysisEvent* event, int run) = 0;
   virtual int categorize_event( AnalysisEvent* event ) = 0;
-  virtual void compute_reco_observables( AnalysisEvent* event ) = 0;
+  virtual void compute_reco_observables( AnalysisEvent* event, int rid) = 0;
   virtual void compute_true_observables( AnalysisEvent* event ) = 0;
   virtual void define_output_branches() = 0;
   virtual bool define_signal( AnalysisEvent* event ) = 0;
   virtual void define_constants() = 0;
-  virtual void reset() = 0;
+  virtual void reset(AnalysisEvent* Event) = 0;
   void define_additional_input_branches() {};
 
   TTree* out_tree_;

@@ -1,6 +1,7 @@
 // XSecAnalyzer includes
 #include "XSecAnalyzer/Binning/BinSchemeFactory.hh"
 #include "XSecAnalyzer/Binning/TutorialBinScheme.hh"
+#include "XSecAnalyzer/Binning/NC1pBinScheme.hh"
 
 BinSchemeFactory::BinSchemeFactory() {
 }
@@ -12,6 +13,10 @@ BinSchemeBase* BinSchemeFactory::CreateBinScheme(
 
   if ( bin_scheme_name == "TutorialBinScheme" ) {
     bs = new TutorialBinScheme;
+    bs->Init();
+  }
+  else if( bin_scheme_name == "NC1pBinScheme" ) {
+    bs = new NC1pBinScheme;
     bs->Init();
   }
   else {

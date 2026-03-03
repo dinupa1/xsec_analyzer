@@ -24,12 +24,12 @@
 // to have this branch.
 bool is_reweightable_mc_ntuple( const std::string& input_file_name ) {
   TFile temp_file( input_file_name.c_str(), "read" );
-  TTree* stv_tree = nullptr;
-  temp_file.GetObject( "stv_tree", stv_tree );
-  if ( !stv_tree ) throw std::runtime_error( "Missing TTree \"stv_tree\" in"
+  TTree* nc1p_tree = nullptr;
+  temp_file.GetObject( "nc1p_tree", nc1p_tree );
+  if ( !nc1p_tree ) throw std::runtime_error( "Missing TTree \"nc1p_tree\" in"
     " the input ROOT file " + input_file_name );
 
-  TBranch* cv_weight_br = stv_tree->GetBranch( TUNE_WEIGHT_NAME.c_str() );
+  TBranch* cv_weight_br = nc1p_tree->GetBranch( TUNE_WEIGHT_NAME.c_str() );
   bool has_cv_weights = ( cv_weight_br != nullptr );
   return has_cv_weights;
 }
@@ -67,6 +67,7 @@ int main( int argc, char* argv[] ) {
   // only place where the FilePropertiesManager configuration is relevant is in
   // the use of MCC9SystematicsCalculator to compute total event count
   // histograms (see below).
+
   auto& fpm = FilePropertiesManager::Instance();
   if ( argc == 5 ) {
     fpm.load_file_properties( argv[4] );

@@ -9,7 +9,7 @@ void DummySelection::define_constants() {
   // within selection cuts
 }
 
-void DummySelection::compute_reco_observables( AnalysisEvent* event ) {
+void DummySelection::compute_reco_observables( AnalysisEvent* event, int run ) {
   // Calculate reconstructed kinematic variables to be saved in the output
 }
 
@@ -28,7 +28,7 @@ bool DummySelection::define_signal(AnalysisEvent* event) {
   return false;
 }
 
-bool DummySelection::selection( AnalysisEvent* event ) {
+bool DummySelection::selection( AnalysisEvent* event, int run ) {
   // Determine whether an input event satisfies the selection criteria.
   // Only reco information should be used to determine the answer.
   return false;
@@ -38,7 +38,7 @@ void DummySelection::define_output_branches() {
   // Call set_branch() for every new variable to be saved to the output TTree
 }
 
-void DummySelection::reset() {
+void DummySelection::reset(AnalysisEvent* Event) {
   // Set variables managed by this class to their default values. This function
   // is called in preparation for analyzing each new input event.
 }

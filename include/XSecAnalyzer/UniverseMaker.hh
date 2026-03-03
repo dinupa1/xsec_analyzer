@@ -60,6 +60,7 @@ inline std::string ntuple_subfolder_from_file_name(
 const std::string SPLINE_WEIGHT_NAME = "weight_splines_general_Spline";
 const std::string TUNE_WEIGHT_NAME = "weight_TunedCentralValue_UBGenie";
 const std::string PPFX_WEIGHT_NAME = "weight_ppfx_cv_UBPPFXCV";
+const std::string NC1P_WEIGHT_NAME = "computed_weight";
 
 // Special weight name to store the unweighted event counts
 const std::string UNWEIGHTED_NAME = "unweighted";

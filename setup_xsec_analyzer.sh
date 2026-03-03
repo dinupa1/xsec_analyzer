@@ -43,3 +43,4 @@ else
   # Assume a GNU/Linux platform
   export LD_LIBRARY_PATH=${LD_LIBRARY_PATH}:${THIS_DIRECTORY}/lib
 fi
+

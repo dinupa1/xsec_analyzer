@@ -1,0 +1,12 @@
+# Format: file_name run file_type [triggers POT (for data only)]
+# Beam-off data
+/exp/uboone/app/users/dinupa/xsec_analyzer/data/xsec-ana-r1_dirt.root 1 extBNB 618 0
+#
+# Beam-on data
+/exp/uboone/app/users/dinupa/xsec_analyzer/data/xsec-ana-r1_overlay_genie320_precompound_hadronhp.root 1 onBNB 14138 1.4138e+4
+#
+# Dirt MC
+/exp/uboone/app/users/dinupa/xsec_analyzer/data/xsec-ana-r1_dirt.root 1 dirtMC
+#
+# Intrinsic nue MC
+/exp/uboone/app/users/dinupa/xsec_analyzer/data/xsec-ana-r1_overlay_genie320_precompound_hadronhp.root 1 numuMC

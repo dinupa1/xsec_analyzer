@@ -40,6 +40,8 @@ void UniverseMaker::init( std::istream& in_file ) {
   //FIXME: using normal pointer to avoid invalid pointer error
   sel_for_categories_ = sel_fact.CreateSelection( sel_categ_name);
 
+  // std::cout << "sel. cat. name: " << sel_categ_name << std::endl;
+
   // Load the true bin definitions
   size_t num_true_bins;
   in_file >> num_true_bins;
@@ -172,9 +174,12 @@ void UniverseMaker::build_universes(
   // Make sure that we always have branches set up for the CV correction
   // weights, i.e., the spline and tune weights. Don't throw an exception if
   // these are missing in the input TTree (we could be working with real data)
+  /*
   wh.add_branch( input_chain_, SPLINE_WEIGHT_NAME, false );
   wh.add_branch( input_chain_, TUNE_WEIGHT_NAME, false );
   if (useNuMI) wh.add_branch( input_chain_, PPFX_WEIGHT_NAME, false );
+  */
+  wh.add_branch( input_chain_, NC1P_WEIGHT_NAME, false);
 
   this->prepare_formulas();
 
@@ -184,6 +189,7 @@ void UniverseMaker::build_universes(
   input_chain_.SetBranchAddress( "is_mc", &is_mc );
 
   // set CV weight addresses, NuMI-specific
+  /*
   float tune_weight_numi = 1;
   float ppfx_weight_numi = 1;
   float normalisation_weight_numi = 1;
@@ -192,6 +198,9 @@ void UniverseMaker::build_universes(
     input_chain_.SetBranchAddress( "ppfx_cv_weight", &ppfx_weight_numi );
     input_chain_.SetBranchAddress( "normalisation_weight", &normalisation_weight_numi );
   }
+  */
+  double computed_weight;
+  input_chain_.SetBranchAddress( "computed_weight", &computed_weight );
 
   // Get the first TChain entry so that we can know the number of universes
   // used in each vector of weights
@@ -263,11 +272,12 @@ void UniverseMaker::build_universes(
       // below
       // NuMI
       // access CV weights (NuMI-specific)
+
       if (useNuMI) {
         spline_weight = 1; // not filled in NuMI
-        tune_weight = tune_weight_numi;
-        ppfx_weight = ppfx_weight_numi;
-        normalisation_weight = normalisation_weight_numi;
+        tune_weight = 1; //tune_weight_numi;
+        ppfx_weight = 1; //ppfx_weight_numi;
+        normalisation_weight = 1; //normalisation_weight_numi;
       }
       else {
         auto& wm = wh.weight_map();

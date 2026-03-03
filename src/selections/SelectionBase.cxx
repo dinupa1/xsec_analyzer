@@ -27,15 +27,15 @@ void SelectionBase::setup( TTree* out_tree, bool create_branches ) {
 
 }
 
-void SelectionBase::apply_selection( AnalysisEvent* event ) {
+void SelectionBase::apply_selection( AnalysisEvent* event, int run) {
   this->reset_base();
-  this->reset();
+  this->reset(event);
 
   mc_signal_ = this->define_signal( event );
-  selected_ = this->selection( event );
-  event_category_ = this->categorize_event( event );
+  selected_ = this->selection( event, run);
+  event_category_ = this->categorize_event( event);
 
-  this->compute_reco_observables( event );
+  this->compute_reco_observables( event, run);
 
   // Note that event->is_mc_ is set in CategorizeEvent() above
   if ( event->is_mc_ ) {

@@ -1,14 +1,14 @@
 #pragma once
 
 // STV analysis includes
-#include "TreeUtils.hh"
-#include "FiducialVolume.hh"
+#include "XSecAnalyzer/TreeUtils.hh"
 #include "Constants.hh"
 
 #include <vector>
 #include <map>
 #include <string>
 
+// ROOT includes
 #include "TVector3.h"
 
 class AnalysisEvent{
@@ -16,6 +16,9 @@ public:
   AnalysisEvent() {}
   ~AnalysisEvent() {}
 
+  bool is_mc_ = false;
+
+  // --- Simple Branch Types ---
   Int_t           run = BOGUS_INT;
   Int_t           subrun = BOGUS_INT;
   Int_t           event = BOGUS_INT;
@@ -49,7 +52,7 @@ public:
   Int_t           evt_n_nu_pfp = BOGUS_INT;
   Int_t           evt_nu_PDG = BOGUS_INT;
 
-
+  // --- Vectors (Wrapped in MyPointer) ---
   MyPointer <std::vector<float>>   flash_Ywidth;
   MyPointer <std::vector<float>>   flash_Zwidth;
   MyPointer <std::vector<float>>   flash_Twidth;
@@ -57,7 +60,7 @@ public:
   MyPointer <std::vector<float>>   flash_Zcenter;
   MyPointer <std::vector<float>>   flash_Time;
   MyPointer <std::vector<float>>   flash_CRThit;
-  MyPointer <<std::vector<bool>>    flash_CRTveto;
+  MyPointer <std::vector<bool>>    flash_CRTveto;
   MyPointer <std::vector<float>>   flash_TotalPE;
 
   Float_t         flash_brightest_Ywidth = BOGUS;
@@ -67,7 +70,7 @@ public:
   Float_t         flash_brightest_Zcenter = BOGUS;
   Float_t         flash_brightest_Time = BOGUS;
   Float_t         flash_brightest_CRThit = BOGUS;
-  Bool_t          flash_brightest_CRTveto = BOGUS;
+  Bool_t          flash_brightest_CRTveto = false;
   Float_t         flash_brightest_TotalPE = BOGUS;
 
   MyPointer <std::vector<std::vector<float>>> flash_PE_Per_PMT;
@@ -117,7 +120,6 @@ public:
   MyPointer <std::vector<std::string>>                evtwgt_genie_multisim_funcname;
   MyPointer <std::vector<int>>                        evtwgt_genie_multisim_nweight;
   MyPointer <std::vector<std::vector<double>>>        evtwgt_genie_multisim_weight;
-
 
   Int_t           evtwgt_g4_multisim_nfunc = BOGUS_INT;
 
@@ -195,7 +197,6 @@ public:
   MyPointer <std::vector<float>>          mc_g4_nI_proton_start_x;
   MyPointer <std::vector<float>>          mc_g4_nI_proton_start_y;
   MyPointer <std::vector<float>>          mc_g4_nI_proton_start_z;
-
   MyPointer <std::vector<float>>          mc_g4_nI_proton_end_x;
   MyPointer <std::vector<float>>          mc_g4_nI_proton_end_y;
   MyPointer <std::vector<float>>          mc_g4_nI_proton_end_z;
@@ -253,9 +254,11 @@ public:
   MyPointer <std::vector<float>>          flash_score;
   MyPointer <std::vector<int>>            n_daughters;
   MyPointer <std::vector<bool>>           has_shower;
-  Float_t         reco_nu_vtxx;
-  Float_t         reco_nu_vtxy;
-  Float_t         reco_nu_vtxz;
+
+  Float_t         reco_nu_vtxx = BOGUS;
+  Float_t         reco_nu_vtxy = BOGUS;
+  Float_t         reco_nu_vtxz = BOGUS;
+
   MyPointer <std::vector<float>>          deltaY;
   MyPointer <std::vector<float>>          deltaZ;
   MyPointer <std::vector<float>>          deltaYSigma;
@@ -315,19 +318,9 @@ public:
   MyPointer <std::vector<float>>          total_dedx_0;
   MyPointer <std::vector<float>>          total_dedx_1;
   MyPointer <std::vector<float>>          total_dedx_2;
-  // Not used in the make_tree.h
-  // MyPointer <std::vector<std::vector<float>>>   RR_0;
-  // MyPointer <std::vector<std::vector<float>>>   RR_1;
-  // MyPointer <std::vector<std::vector<float>>>   RR_2;
-  // MyPointer <std::vector<std::vector<float>>>   dEdx_0;
-  // MyPointer <std::vector<std::vector<float>>>   dEdx_1;
-  // MyPointer <std::vector<std::vector<float>>>   dEdx_2;
-  // MyPointer <std::vector<std::vector<float>>>   dQdx_0;
-  // MyPointer <std::vector<std::vector<float>>>   dQdx_1;
-  // MyPointer <std::vector<std::vector<float>>>   dQdx_2;
 
-  Int_t           nclusters;
-  Int_t           nclustersps;
+  Int_t           nclusters = BOGUS_INT;
+  Int_t           nclustersps = BOGUS_INT;
   MyPointer <std::vector<int>>            cluster_ID;
   MyPointer <std::vector<int>>            cluster_plane;
   MyPointer <std::vector<float>>          cluster_start_charge;
@@ -347,7 +340,8 @@ public:
   MyPointer <std::vector<float>>          cluster_sps_x;
   MyPointer <std::vector<float>>          cluster_sps_y;
   MyPointer <std::vector<float>>          cluster_sps_z;
-  Int_t           nblips;
+
+  Int_t           nblips = BOGUS_INT;
   MyPointer <std::vector<float>>          blip_x;
   MyPointer <std::vector<float>>          blip_y;
   MyPointer <std::vector<float>>          blip_z;
@@ -368,37 +362,70 @@ public:
   MyPointer <std::vector<int>>            blip_trkid;
   MyPointer <std::vector<float>>          blip_trkdist;
   MyPointer <std::vector<int>>            blip_pdg;
-  MyPointer <std::vector<string>>         blip_process;
-  // MyPointer <std::vector<string>>  *blip_mom_process;
-  // MyPointer <std::vector<int>>     *blip_mom_pdg;
-  // MyPointer <std::vector<string>>  *blip_grandmom_process;
-  // MyPointer <std::vector<int>>     *blip_grandmom_pdg;
-  // MyPointer <std::vector<string>>  *blip_greatgrandmom_process;
-  // MyPointer <std::vector<int>>     *blip_greatgrandmom_pdg;
+  MyPointer <std::vector<std::string>>    blip_process;
+
   MyPointer <std::vector<float>>          blip_vx;
   MyPointer <std::vector<float>>          blip_vy;
   MyPointer <std::vector<float>>          blip_vz;
   MyPointer <std::vector<float>>          blip_E;
   MyPointer <std::vector<float>>          blip_mass;
-  MyPointer <std::vector<string>>         blip_mom_process;
+  MyPointer <std::vector<std::string>>    blip_mom_process;
   MyPointer <std::vector<int>>            blip_mom_pdg;
   MyPointer <std::vector<float>>          blip_mom_vx;
   MyPointer <std::vector<float>>          blip_mom_vy;
   MyPointer <std::vector<float>>          blip_mom_vz;
   MyPointer <std::vector<float>>          blip_mom_E;
   MyPointer <std::vector<float>>          blip_mom_mass;
-  MyPointer <std::vector<string>>         blip_grandmom_process;
+  MyPointer <std::vector<std::string>>    blip_grandmom_process;
   MyPointer <std::vector<int>>            blip_grandmom_pdg;
   MyPointer <std::vector<float>>          blip_grandmom_vx;
   MyPointer <std::vector<float>>          blip_grandmom_vy;
   MyPointer <std::vector<float>>          blip_grandmom_vz;
   MyPointer <std::vector<float>>          blip_grandmom_E;
   MyPointer <std::vector<float>>          blip_grandmom_mass;
-  MyPointer <std::vector<string>>         blip_greatgrandmom_process;
+  MyPointer <std::vector<std::string>>    blip_greatgrandmom_process;
   MyPointer <std::vector<int>>            blip_greatgrandmom_pdg;
   MyPointer <std::vector<float>>          blip_greatgrandmom_vx;
   MyPointer <std::vector<float>>          blip_greatgrandmom_vy;
   MyPointer <std::vector<float>>          blip_greatgrandmom_vz;
   MyPointer <std::vector<float>>          blip_greatgrandmom_E;
   MyPointer <std::vector<float>>          blip_greatgrandmom_mass;
+
+  // NC1p variables
+
+  // --- Signal Flags ---
+  bool sig_is_nc_;
+  bool sig_one_proton_;
+  bool sig_no_muon_;
+  bool sig_no_pions_;
+  bool sig_is_nu_pdg_;
+  bool sig_in_fv_;
+
+  // --- Selection Flags ---
+  bool sel_reco_1p_;
+  bool sel_in_fv_;
+  bool sel_containment_;
+  bool sel_track_quality_;
+  bool sel_pid_cut_;
+  bool sel_bdt_cut_;
+  bool sel_blip_cut_;
+
+  // --- Internal State ---
+  int proton_candidate_idx_;
+  float reco_trk_dis_;
+  int reco_nblip_upstream_;
+
+  // --- Observables ---
+  double reco_proton_ke_;
+  double reco_q2_;
+  double reco_proton_mom_;
+  double reco_costheta_;
+  double reco_length_;
+  double reco_bdt_score_;
+  double computed_weight_;
+
+  double true_proton_ke_;
+  double true_q2_;
+  double true_proton_mom_;
+  double true_costheta_;
 };
