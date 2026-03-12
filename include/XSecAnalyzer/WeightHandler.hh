@@ -39,9 +39,16 @@ class WeightHandler {
     inline const auto& weight_map() const { return weight_map_; }
     inline auto& weight_map() { return weight_map_; }
 
+    // Access the map branch
+    inline const auto& weights_map_ptr() const { return mc_weights_map_; }
+    inline auto& weights_map_ptr() { return mc_weights_map_; }
+
   protected:
 
     // Keys are branch names in the input TTree, values point to vectors of
     // event weights
     std::map< std::string, MyPointer< std::vector<double> > > weight_map_;
+
+    // Optional pointer to a branch that stores a map of weight vectors
+    MyPointer< std::map< std::string, std::vector<double> > > mc_weights_map_;
 };

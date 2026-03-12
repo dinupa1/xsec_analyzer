@@ -6,6 +6,23 @@ void WeightHandler::set_branch_addresses( TTree& in_tree,
 {
   // Delete any pre-existing contents of the weight map
   weight_map_.clear();
+  mc_weights_map_.reset();
+
+  // Handle the special case of a map of weights stored in a single branch
+  bool include_weights_map = false;
+  if ( branch_names ) {
+    auto iter = std::find( branch_names->begin(), branch_names->end(),
+      "weights" );
+    include_weights_map = ( iter != branch_names->end() );
+  }
+  else {
+    include_weights_map = true;
+  }
+
+  if ( include_weights_map && in_tree.GetBranch( "weights" ) ) {
+    mc_weights_map_ = MyPointer< std::map< std::string, std::vector<double> > >();
+    set_object_input_branch_address( in_tree, "weights", mc_weights_map_ );
+  }
 
   // Loop over each of the branches of the input TTree
   auto* lob = in_tree.GetListOfBranches();
@@ -63,6 +80,24 @@ void WeightHandler::set_branch_addresses( TTree& in_tree,
 void WeightHandler::add_branch( TTree& in_tree,
   const std::string& branch_name, bool throw_when_missing )
 {
+  // If the branch name is "weights", then use the specialized map branch
+  // storage
+  if ( branch_name == "weights" ) {
+    if ( !mc_weights_map_ ) {
+      TBranch* br = in_tree.GetBranch( "weights" );
+      if ( !br ) {
+        if ( throw_when_missing ) throw std::runtime_error(
+          "Missing TTree branch weights" );
+        return;
+      }
+
+      mc_weights_map_ = MyPointer< std::map<
+        std::string, std::vector< double > > >();
+      set_object_input_branch_address( in_tree, "weights", mc_weights_map_ );
+    }
+    return;
+  }
+
   // If we already have an entry in the map for this branch, just return
   // without doing anything
   auto iter = weight_map_.find( branch_name );

@@ -13,6 +13,7 @@
 
 #include "TFile.h"
 #include "TTree.h"
+#include "TParameter.h"
 
 int main(int argc, char *argv[]) {
 	
@@ -78,6 +79,29 @@ int main(int argc, char *argv[]) {
     t2_nu->SetBranchStatus("weights",0);
     TTree *t3_nu = t2_nu->CloneTree(0);
     TTree *t3_pot = t2_pot->CloneTree();
+
+    // Calculate POT from the input file
+    float summed_pot = 0;
+    if ( t2_pot ) {
+      float pot;
+      if ( t2_pot->GetBranch( "pot" ) ) {
+        t2_pot->SetBranchAddress( "pot", &pot );
+        for ( long i = 0; i < t2_pot->GetEntries(); ++i ) {
+          t2_pot->GetEntry( i );
+          summed_pot += pot;
+        }
+      } else if ( t2_pot->GetBranch( "POT" ) ) {
+        t2_pot->SetBranchAddress( "POT", &pot );
+        for ( long i = 0; i < t2_pot->GetEntries(); ++i ) {
+          t2_pot->GetEntry( i );
+          summed_pot += pot;
+        }
+      }
+    }
+
+    // Write the summed_pot to the output file
+    TParameter<float>* out_pot_param = new TParameter<float>( "summed_pot", summed_pot );
+    out_pot_param->Write();
 
     // create new branch weights
     std::map<std::string, std::vector<double>> new_weights;

@@ -40,8 +40,6 @@ void UniverseMaker::init( std::istream& in_file ) {
   //FIXME: using normal pointer to avoid invalid pointer error
   sel_for_categories_ = sel_fact.CreateSelection( sel_categ_name);
 
-  // std::cout << "sel. cat. name: " << sel_categ_name << std::endl;
-
   // Load the true bin definitions
   size_t num_true_bins;
   in_file >> num_true_bins;
@@ -174,11 +172,10 @@ void UniverseMaker::build_universes(
   // Make sure that we always have branches set up for the CV correction
   // weights, i.e., the spline and tune weights. Don't throw an exception if
   // these are missing in the input TTree (we could be working with real data)
-  /*
+
   wh.add_branch( input_chain_, SPLINE_WEIGHT_NAME, false );
   wh.add_branch( input_chain_, TUNE_WEIGHT_NAME, false );
   if (useNuMI) wh.add_branch( input_chain_, PPFX_WEIGHT_NAME, false );
-  */
   wh.add_branch( input_chain_, NC1P_WEIGHT_NAME, false);
 
   this->prepare_formulas();
@@ -189,7 +186,7 @@ void UniverseMaker::build_universes(
   input_chain_.SetBranchAddress( "is_mc", &is_mc );
 
   // set CV weight addresses, NuMI-specific
-  /*
+
   float tune_weight_numi = 1;
   float ppfx_weight_numi = 1;
   float normalisation_weight_numi = 1;
@@ -198,9 +195,6 @@ void UniverseMaker::build_universes(
     input_chain_.SetBranchAddress( "ppfx_cv_weight", &ppfx_weight_numi );
     input_chain_.SetBranchAddress( "normalisation_weight", &normalisation_weight_numi );
   }
-  */
-  double computed_weight;
-  input_chain_.SetBranchAddress( "computed_weight", &computed_weight );
 
   // Get the first TChain entry so that we can know the number of universes
   // used in each vector of weights
@@ -249,6 +243,13 @@ void UniverseMaker::build_universes(
 
     input_chain_.GetEntry( entry );
 
+    double computed_weight = 1.0;
+    auto& wm = wh.weight_map();
+    if ( wm.count( NC1P_WEIGHT_NAME ) ) {
+      const auto& cw_vec = wm.at( NC1P_WEIGHT_NAME );
+      if ( !cw_vec->empty() ) computed_weight = cw_vec->front();
+    }
+
     std::vector< FormulaMatch > matched_true_bins;
     double spline_weight = 0.;
     double tune_weight = 0.;
@@ -275,23 +276,26 @@ void UniverseMaker::build_universes(
 
       if (useNuMI) {
         spline_weight = 1; // not filled in NuMI
-        tune_weight = 1; //tune_weight_numi;
-        ppfx_weight = 1; //ppfx_weight_numi;
-        normalisation_weight = 1; //normalisation_weight_numi;
+        tune_weight = tune_weight_numi;
+        ppfx_weight = ppfx_weight_numi;
+        normalisation_weight = normalisation_weight_numi;
       }
       else {
-        auto& wm = wh.weight_map();
         if ( wm.size() > 0u ) {
-          spline_weight = wm.at( SPLINE_WEIGHT_NAME )->front();
-          tune_weight = wm.at( TUNE_WEIGHT_NAME )->front();
+          if ( wm.count( SPLINE_WEIGHT_NAME ) ) spline_weight = wm.at( SPLINE_WEIGHT_NAME )->front();
+          if ( wm.count( TUNE_WEIGHT_NAME ) ) tune_weight = wm.at( TUNE_WEIGHT_NAME )->front();
         }
       }
+
     } // MC event
 
     for ( const auto& pair : wh.weight_map() ) {
       const std::string& wgt_name = pair.first;
       const auto& wgt_vec = pair.second;
 
+      // std::cout << "weight name: " << wgt_name << std::endl;
+
+      if ( universes_.count( wgt_name ) == 0 ) continue;
       auto& u_vec = universes_.at( wgt_name );
 
       for ( size_t u = 0u; u < wgt_vec->size(); ++u ) {
@@ -305,10 +309,11 @@ void UniverseMaker::build_universes(
         else apply_cv_correction_weights( wgt_name, w, spline_weight, tune_weight );
 
         // Deal with NaNs, etc. to make a "safe weight" in all cases
-        double safe_wgt = safe_weight( w );
+        double safe_wgt = safe_weight( w * computed_weight );
 
         // Get the universe object that should be filled with the processed
         // event weight
+        if ( u >= u_vec.size() ) continue;
         auto& universe = u_vec.at( u );
 
         for ( const auto& tb : matched_true_bins ) {
@@ -342,6 +347,62 @@ void UniverseMaker::build_universes(
         } // reco bins
       } // universes
     } // weight names
+
+    // Also handle the weights map branch if it is valid and non-empty
+    if ( wh.weights_map_ptr().get() && !wh.weights_map_ptr()->empty() ) {
+      for ( const auto& pair : *wh.weights_map_ptr() ) {
+        const std::string& wgt_name = pair.first;
+        const auto& wgt_vec = pair.second;
+
+        if ( universes_.count( wgt_name ) == 0 ) continue;
+        auto& u_vec = universes_.at( wgt_name );
+
+        for ( size_t u = 0u; u < wgt_vec.size(); ++u ) {
+
+          double w = wgt_vec.operator[]( u );
+
+          // Multiply by any needed CV correction weights
+          if (useNuMI) apply_cv_correction_weights( wgt_name, w, spline_weight, tune_weight, ppfx_weight, normalisation_weight );
+          else apply_cv_correction_weights( wgt_name, w, spline_weight, tune_weight );
+
+          // Deal with NaNs, etc. to make a "safe weight" in all cases
+          double safe_wgt = safe_weight( w * computed_weight );
+
+          // Get the universe object that should be filled with the processed
+          // event weight
+          if ( u >= u_vec.size() ) continue;
+          auto& universe = u_vec.at( u );
+
+          for ( const auto& tb : matched_true_bins ) {
+            universe.hist_true_->Fill( tb.bin_index_, tb.weight_ * safe_wgt );
+            for ( const auto& rb : matched_reco_bins ) {
+              universe.hist_2d_->Fill( tb.bin_index_, rb.bin_index_,
+                tb.weight_ * rb.weight_ * safe_wgt );
+            } // reco bins
+
+            for ( const auto& other_tb : matched_true_bins ) {
+              universe.hist_true2d_->Fill( tb.bin_index_, other_tb.bin_index_,
+                tb.weight_ * other_tb.weight_ * safe_wgt );
+            } // true bins
+
+          } // true bins
+
+          for ( const auto& rb : matched_reco_bins ) {
+            universe.hist_reco_->Fill( rb.bin_index_, rb.weight_ * safe_wgt );
+
+            for ( const auto& c : matched_category_indices ) {
+              universe.hist_categ_->Fill( c.bin_index_, rb.bin_index_,
+                c.weight_ * rb.weight_ * safe_wgt );
+            }
+
+            for ( const auto& other_rb : matched_reco_bins ) {
+              universe.hist_reco2d_->Fill( rb.bin_index_, other_rb.bin_index_,
+                rb.weight_ * other_rb.weight_ * safe_wgt );
+            }
+          } // reco bins
+        } // universes
+      } // weight map names
+    }
 
     // Fill the unweighted histograms now that we're done with the
     // weighted ones. Note that "unweighted" in this context applies to
@@ -399,6 +460,23 @@ void UniverseMaker::prepare_universes( const WeightHandler& wh ) {
     }
 
     universes_[ weight_name ] = std::move( u_vec );
+  }
+
+  // Also handle the weights map branch if it is valid and non-empty
+  const auto& weights_map_ptr = wh.weights_map_ptr();
+  if ( weights_map_ptr.get() && !weights_map_ptr->empty() ) {
+    for ( const auto& pair : *weights_map_ptr ) {
+      const std::string& weight_name = pair.first;
+      size_t num_universes = pair.second.size();
+
+      std::vector< Universe > u_vec;
+
+      for ( size_t u = 0u; u < num_universes; ++u ) {
+        u_vec.emplace_back( weight_name, u, num_true_bins, num_reco_bins );
+      }
+
+      universes_[ weight_name ] = std::move( u_vec );
+    }
   }
 
   // Add the special "unweighted" universe unconditionally

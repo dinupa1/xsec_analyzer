@@ -1,14 +1,14 @@
 #/exp/uboone/data/users/renlu23/NCE/Spring_2021/CV/r1_bnb.root bnb 1
-#/exp/uboone/data/users/renlu23/NCE/Spring_2021/CV/r1_extbnb.root extbnb 1
+/exp/uboone/data/users/renlu23/NCE/Spring_2021/CV/r1_extbnb.root extbnb 1
 /exp/uboone/data/users/renlu23/NCE/Spring_2021/CV/r1_dirt.root dirt 1
 /exp/uboone/data/users/renlu23/NCE/Spring_2021/CV/r1_overlay_genie320_precompound_hadronhp.root overlay_genie320_precompound_hadronhp 1
 
 #/exp/uboone/data/users/renlu23/NCE/Spring_2021/CV/r2_bnb.root bnb 2
 #/exp/uboone/data/users/renlu23/NCE/Spring_2021/CV/r2_extbnb.root extbnb 2
-/exp/uboone/data/users/renlu23/NCE/Spring_2021/CV/r2_dirt.root dirt 2
-/exp/uboone/data/users/renlu23/NCE/Spring_2021/CV/r2_overlay_genie320_precompound_hadronhp.root overlay_genie320_precompound_hadronhp 2
+#/exp/uboone/data/users/renlu23/NCE/Spring_2021/CV/r2_dirt.root dirt 2
+#/exp/uboone/data/users/renlu23/NCE/Spring_2021/CV/r2_overlay_genie320_precompound_hadronhp.root overlay_genie320_precompound_hadronhp 2
 
 #/exp/uboone/data/users/renlu23/NCE/Spring_2021/CV/r3_bnb.root bnb 3
 #/exp/uboone/data/users/renlu23/NCE/Spring_2021/CV/r3_extbnb.root extbnb 3
-/exp/uboone/data/users/renlu23/NCE/Spring_2021/CV/r3_dirt.root dirt 3
-/exp/uboone/data/users/renlu23/NCE/Spring_2021/CV/r3_overlay_genie320_precompound_hadronhp.root overlay_genie320_precompound_hadronhp 3
+#/exp/uboone/data/users/renlu23/NCE/Spring_2021/CV/r3_dirt.root dirt 3
+#/exp/uboone/data/users/renlu23/NCE/Spring_2021/CV/r3_overlay_genie320_precompound_hadronhp.root overlay_genie320_precompound_hadronhp 3

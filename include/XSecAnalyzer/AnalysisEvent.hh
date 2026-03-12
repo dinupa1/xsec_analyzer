@@ -422,7 +422,8 @@ public:
   double reco_costheta_;
   double reco_length_;
   double reco_bdt_score_;
-  double computed_weight_;
+
+  MyPointer <std::vector<double>>          computed_weight_;
 
   double true_proton_ke_;
   double true_q2_;

@@ -383,17 +383,17 @@ void set_event_output_branch_addresses(TTree& out_tree, AnalysisEvent& ev, bool 
   set_output_branch_address(out_tree, "reco_proton_mom", &ev.reco_proton_mom_, create, "reco_proton_mom/D");
   set_output_branch_address(out_tree, "reco_costheta", &ev.reco_costheta_, create, "reco_costheta/D");
   set_output_branch_address(out_tree, "reco_bdt_score", &ev.reco_bdt_score_, create, "reco_bdt_score/D");
-  set_output_branch_address(out_tree, "computed_weight", &ev.computed_weight_, create, "computed_weight/D");
+  set_object_output_branch_address< std::vector<double> >(out_tree, "computed_weight", ev.computed_weight_, create);
+  set_output_branch_address(out_tree, "is_mc", &ev.is_mc_, create, "is_mc/O");
   set_output_branch_address(out_tree, "true_proton_ke", &ev.true_proton_ke_, create, "true_proton_ke/D");
   set_output_branch_address(out_tree, "true_costheta", &ev.true_costheta_, create, "true_costheta/D");
   set_output_branch_address(out_tree, "true_q2", &ev.true_q2_, create, "true_q2/D");
-  set_output_branch_address(out_tree, "is_mc", &ev.is_mc_, create, "is_mc/D");
   set_output_branch_address(out_tree, "sig_is_nc", &ev.sig_is_nc_, create, "sig_is_nc/O");
   set_output_branch_address(out_tree, "sel_reco_1p", &ev.sel_reco_1p_, create, "sel_reco_1p/O");
   set_output_branch_address(out_tree, "sel_bdt_cut", &ev.sel_bdt_cut_, create, "sel_bdt_cut/O");
   set_output_branch_address(out_tree, "sel_blip_cut", &ev.sel_blip_cut_, create, "sel_blip_cut/O");
-  set_output_branch_address(out_tree, "reco_nblip_upstream", &ev.reco_nblip_upstream_, create, "reco_nblip_upstream/I");
-  set_output_branch_address(out_tree, "reco_trk_dis", &ev.reco_trk_dis_, create, "reco_trk_dis/F"); //is_mc_
+  // set_output_branch_address(out_tree, "reco_nblip_upstream", &ev.reco_nblip_upstream_, create, "reco_nblip_upstream/I");
+  // set_output_branch_address(out_tree, "reco_trk_dis", &ev.reco_trk_dis_, create, "reco_trk_dis/F"); //is_mc_
 }
 
 /*

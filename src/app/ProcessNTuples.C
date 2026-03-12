@@ -49,10 +49,46 @@ void analyze( const std::string& input_filename,
   TChain events_ch( "SingleProtonAna/tree" );
   events_ch.Add( input_filename.c_str() );
 
+  // Get the POT from the input file
+  float summed_pot = 0;
+  TFile* in_file = TFile::Open( input_filename.c_str(), "read" );
+  if ( in_file && !in_file->IsZombie() ) {
+    TParameter<float>* in_pot_param = nullptr;
+    in_file->GetObject( "summed_pot", in_pot_param );
+    if ( in_pot_param ) {
+      summed_pot = in_pot_param->GetVal();
+    } else {
+      TTree* pot_tree = nullptr;
+      in_file->GetObject( "SingleProtonAna/subrun", pot_tree );
+      if ( !pot_tree ) in_file->GetObject( "nuselection/SubRun", pot_tree );
+      if ( pot_tree ) {
+        float pot;
+        if ( pot_tree->GetBranch( "pot" ) ) {
+          pot_tree->SetBranchAddress( "pot", &pot );
+          for ( long i = 0; i < pot_tree->GetEntries(); ++i ) {
+            pot_tree->GetEntry( i );
+            summed_pot += pot;
+          }
+        } else if ( pot_tree->GetBranch( "POT" ) ) {
+          pot_tree->SetBranchAddress( "POT", &pot );
+          for ( long i = 0; i < pot_tree->GetEntries(); ++i ) {
+            pot_tree->GetEntry( i );
+            summed_pot += pot;
+          }
+        }
+      }
+    }
+    in_file->Close();
+  }
+
   // OUTPUT TTREE
   TFile* out_file = new TFile( output_filename.c_str(), "recreate" );
   out_file->cd();
   TTree* out_tree = new TTree( "nc1p_tree", "NC1p analysis tree" );
+
+  // Write the summed_pot to the output file
+  TParameter<float>* out_pot_param = new TParameter<float>( "summed_pot", summed_pot );
+  out_pot_param->Write();
 
   // Selection Setup
   std::vector< std::unique_ptr<SelectionBase> > selections;

@@ -11,6 +11,7 @@
 #include "TFile.h"
 #include "TTree.h"
 #include "TH2F.h"
+#include "TParameter.h"
 #include "TVector3.h"
 #include "TRotation.h"
 
@@ -128,6 +129,29 @@ int main(int argc, char *argv[]) {
     // create new tree
     TTree *t_out_nu = t_nu->CloneTree(0);
     TTree *t_out_pot = t_pot->CloneTree();
+
+    // Calculate POT from the input file
+    float summed_pot = 0;
+    if ( t_pot ) {
+      float pot;
+      if ( t_pot->GetBranch( "pot" ) ) {
+        t_pot->SetBranchAddress( "pot", &pot );
+        for ( long i = 0; i < t_pot->GetEntries(); ++i ) {
+          t_pot->GetEntry( i );
+          summed_pot += pot;
+        }
+      } else if ( t_pot->GetBranch( "POT" ) ) {
+        t_pot->SetBranchAddress( "POT", &pot );
+        for ( long i = 0; i < t_pot->GetEntries(); ++i ) {
+          t_pot->GetEntry( i );
+          summed_pot += pot;
+        }
+      }
+    }
+
+    // Write the summed_pot to the output file
+    TParameter<float>* out_pot_param = new TParameter<float>( "summed_pot", summed_pot );
+    out_pot_param->Write();
 
     // event loop
     int nEntries = t_nu->GetEntries();

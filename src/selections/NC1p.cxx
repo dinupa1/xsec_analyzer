@@ -40,6 +40,7 @@ NC1p::~NC1p() {
 }
 
 void NC1p::reset(AnalysisEvent* Event) {
+    Event->is_mc_ = false;
     Event->sig_is_nc_ = false;
     Event->sig_one_proton_ = false;
     Event->sig_no_muon_ = false;
@@ -65,7 +66,8 @@ void NC1p::reset(AnalysisEvent* Event) {
     Event->reco_costheta_ = BOGUS;
     Event->reco_length_ = BOGUS;
     Event->reco_bdt_score_ = BOGUS;
-    Event->computed_weight_ = 1.0;
+    Event->computed_weight_->clear();
+    Event->computed_weight_->push_back( 1.0 );
 
     Event->true_proton_ke_ = BOGUS;
     Event->true_q2_ = BOGUS;
@@ -348,7 +350,8 @@ int NC1p::categorize_event( AnalysisEvent* Event ) {
 }
 
 void NC1p::compute_reco_observables( AnalysisEvent* Event, int run_id) {
-    Event->computed_weight_ = CalWeight(Event, run_id);
+    Event->computed_weight_->clear();
+    Event->computed_weight_->push_back( CalWeight(Event, run_id) );
 
     if ( Event->proton_candidate_idx_ == BOGUS_INDEX ) return;
 

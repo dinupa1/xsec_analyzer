@@ -29,7 +29,7 @@ bool is_reweightable_mc_ntuple( const std::string& input_file_name ) {
   if ( !nc1p_tree ) throw std::runtime_error( "Missing TTree \"nc1p_tree\" in"
     " the input ROOT file " + input_file_name );
 
-  TBranch* cv_weight_br = nc1p_tree->GetBranch( TUNE_WEIGHT_NAME.c_str() );
+  TBranch* cv_weight_br = nc1p_tree->GetBranch( NC1P_WEIGHT_NAME.c_str() );
   bool has_cv_weights = ( cv_weight_br != nullptr );
   return has_cv_weights;
 }
@@ -118,6 +118,8 @@ int main( int argc, char* argv[] ) {
     std::cout << '\t' << counter << '/' << input_files.size() << " - "
       << input_file_name << '\n';
 
+    std::cout << "input_file_name" << input_file_name.c_str() << std::endl;
+
     UniverseMaker univ_maker( univmake_config_file_name );
 
     univ_maker.add_input_file( input_file_name.c_str() );
@@ -158,7 +160,7 @@ int main( int argc, char* argv[] ) {
   // MCC9SystematicsCalculator class to use the default systematics
   // configuration file.
 
-  MCC9SystematicsCalculator unfolder( output_file_name, "", tdirfile_name );
+  // MCC9SystematicsCalculator unfolder( output_file_name, "", tdirfile_name );
 
   return 0;
 }

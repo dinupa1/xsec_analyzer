@@ -394,31 +394,35 @@ void SystematicsCalculator::build_universes( TDirectoryFile& root_tdir ) {
     int run = run_and_type_pair.first;
     const auto& type_map = run_and_type_pair.second;
 
-    const auto& bnb_file_set = type_map.at( NFT::kOnBNB );
-    for ( const std::string& bnb_file : bnb_file_set ) {
-      const auto& pot_and_trigs = data_norm_map.at( bnb_file );
+    if ( type_map.count( NFT::kOnBNB ) ) {
+      const auto& bnb_file_set = type_map.at( NFT::kOnBNB );
+      for ( const std::string& bnb_file : bnb_file_set ) {
+        const auto& pot_and_trigs = data_norm_map.at( bnb_file );
 
-      if ( !run_to_bnb_pot_map.count(run) ) {
-        run_to_bnb_pot_map[ run ] = 0.;
-        run_to_bnb_trigs_map[ run ] = 0.;
-      }
+        if ( !run_to_bnb_pot_map.count(run) ) {
+          run_to_bnb_pot_map[ run ] = 0.;
+          run_to_bnb_trigs_map[ run ] = 0.;
+        }
 
-      run_to_bnb_pot_map.at( run ) += pot_and_trigs.pot_;
-      run_to_bnb_trigs_map.at( run ) += pot_and_trigs.trigger_count_;
+        run_to_bnb_pot_map.at( run ) += pot_and_trigs.pot_;
+        run_to_bnb_trigs_map.at( run ) += pot_and_trigs.trigger_count_;
 
-    } // BNB data files
+      } // BNB data files
+    }
 
-    const auto& ext_file_set = type_map.at( NFT::kExtBNB );
-    for ( const std::string& ext_file : ext_file_set ) {
-      const auto& pot_and_trigs = data_norm_map.at( ext_file );
+    if ( type_map.count( NFT::kExtBNB ) ) {
+      const auto& ext_file_set = type_map.at( NFT::kExtBNB );
+      for ( const std::string& ext_file : ext_file_set ) {
+        const auto& pot_and_trigs = data_norm_map.at( ext_file );
 
-      if ( !run_to_ext_trigs_map.count(run) ) {
-        run_to_ext_trigs_map[ run ] = 0.;
-      }
+        if ( !run_to_ext_trigs_map.count(run) ) {
+          run_to_ext_trigs_map[ run ] = 0.;
+        }
 
-      run_to_ext_trigs_map.at( run ) += pot_and_trigs.trigger_count_;
+        run_to_ext_trigs_map.at( run ) += pot_and_trigs.trigger_count_;
 
-    } // EXT files
+      } // EXT files
+    }
 
   } // runs
 
@@ -501,17 +505,19 @@ void SystematicsCalculator::build_universes( TDirectoryFile& root_tdir ) {
           // If we're working with EXT data, scale it to the corresponding
           // number of triggers from the BNB data from the same run
           if ( type == NFT::kExtBNB ) {
-            double bnb_trigs = run_to_bnb_trigs_map.at( run );
-            double ext_trigs = run_to_ext_trigs_map.at( run );
+            if ( run_to_bnb_trigs_map.count( run ) && run_to_ext_trigs_map.count( run ) ) {
+              double bnb_trigs = run_to_bnb_trigs_map.at( run );
+              double ext_trigs = run_to_ext_trigs_map.at( run );
 
-            // account for 2% beam occupancy in NuMI, negligible in BNB
-            if (useNuMI) {  
-              reco_hist->Scale( (bnb_trigs / ext_trigs) * 0.98 );
-              reco_hist2d->Scale( (bnb_trigs / ext_trigs) * 0.98 );
-            }
-            else {
-              reco_hist->Scale( bnb_trigs / ext_trigs );
-              reco_hist2d->Scale( bnb_trigs / ext_trigs );
+              // account for 2% beam occupancy in NuMI, negligible in BNB
+              if (useNuMI) {  
+                reco_hist->Scale( (bnb_trigs / ext_trigs) * 0.98 );
+                reco_hist2d->Scale( (bnb_trigs / ext_trigs) * 0.98 );
+              }
+              else {
+                reco_hist->Scale( bnb_trigs / ext_trigs );
+                reco_hist2d->Scale( bnb_trigs / ext_trigs );
+              }
             }
           }
 
@@ -719,8 +725,15 @@ void SystematicsCalculator::build_universes( TDirectoryFile& root_tdir ) {
           if ( is_altCV ) {
             // AltCV ntuple files are available for all runs, so scale
             // each individually to the BNB data POT for the current run
-            double temp_run_pot = run_to_bnb_pot_map.at( run );
-            temp_scale_factor = temp_run_pot / file_pot;
+            if ( run_to_bnb_pot_map.count( run ) ) {
+              double temp_run_pot = run_to_bnb_pot_map.at( run );
+              temp_scale_factor = temp_run_pot / file_pot;
+            }
+            else {
+              // If no BNB data for this run, skip scaling? or throw?
+              // The framework usually expects BNB data. For now, default to 1.
+              temp_scale_factor = 1.;
+            }
           }
           else {
             // Scale all detVar universe histograms from the simulated POT to
@@ -728,7 +741,9 @@ void SystematicsCalculator::build_universes( TDirectoryFile& root_tdir ) {
             // have detVar samples for Run 3b, we assume that they can be
             // applied globally in this step.
             // TODO: revisit this as appropriate
-            temp_scale_factor = total_bnb_data_pot_ / file_pot;
+            if ( file_pot > 0 ) {
+              temp_scale_factor = total_bnb_data_pot_ / file_pot;
+            }
           }
 
           // Apply the scaling factor defined above to all histograms that
@@ -823,8 +838,11 @@ void SystematicsCalculator::build_universes( TDirectoryFile& root_tdir ) {
 
           // For reweightable MC ntuple files, scale the histograms for
           // each universe to the BNB data POT for the current run
-          double run_bnb_pot = run_to_bnb_pot_map.at( run );
-          double rw_scale_factor = run_bnb_pot / file_pot;
+          double rw_scale_factor = 1.;
+          if ( run_to_bnb_pot_map.count( run ) ) {
+            double run_bnb_pot = run_to_bnb_pot_map.at( run );
+            rw_scale_factor = run_bnb_pot / file_pot;
+          }
 
           // Iterate over the reweighting universes, retrieve the
           // histograms for each, and add their POT-scaled contributions
@@ -906,15 +924,19 @@ void SystematicsCalculator::build_universes( TDirectoryFile& root_tdir ) {
   // histograms.
   if ( using_fake_data ) {
 
-    const TH1D* ext_hist = data_hists_.at( NFT::kExtBNB ).get(); // EXT data
-    TH1D* bnb_hist = data_hists_.at( NFT::kOnBNB ).get();
+    if ( data_hists_.count( NFT::kExtBNB ) && data_hists_.count( NFT::kOnBNB ) ) {
+      const TH1D* ext_hist = data_hists_.at( NFT::kExtBNB ).get(); // EXT data
+      TH1D* bnb_hist = data_hists_.at( NFT::kOnBNB ).get();
 
-    bnb_hist->Add( ext_hist );
+      if ( bnb_hist && ext_hist ) bnb_hist->Add( ext_hist );
+    }
 
-    const TH2D* ext_hist2d = data_hists2d_.at( NFT::kExtBNB ).get(); // EXT data
-    TH2D* bnb_hist2d = data_hists2d_.at( NFT::kOnBNB ).get();
+    if ( data_hists2d_.count( NFT::kExtBNB ) && data_hists2d_.count( NFT::kOnBNB ) ) {
+      const TH2D* ext_hist2d = data_hists2d_.at( NFT::kExtBNB ).get(); // EXT data
+      TH2D* bnb_hist2d = data_hists2d_.at( NFT::kOnBNB ).get();
 
-    bnb_hist2d->Add( ext_hist2d );
+      if ( bnb_hist2d && ext_hist2d ) bnb_hist2d->Add( ext_hist2d );
+    }
 
     // In a real measurement, the (Poisson) statistical uncertainty on each BNB
     // data histogram bin would be simply the square root of the event count.
@@ -926,16 +948,28 @@ void SystematicsCalculator::build_universes( TDirectoryFile& root_tdir ) {
     // bars, just in case.
     // TODO: consider whether a different approach to assigning the fake data
     // statistical uncertainties is more appropriate
-    int num_reco_bins = bnb_hist->GetNbinsX();
-    for ( int rb = 0; rb <= num_reco_bins + 1; ++rb ) {
-      double evts = std::max( 0., bnb_hist->GetBinContent(rb) );
-      bnb_hist->SetBinError( rb, std::sqrt(evts) );
-
-      for ( int rb2 = 0; rb2 <= num_reco_bins + 1; ++rb2 ) {
-        double evts2d = std::max( 0., bnb_hist2d->GetBinContent(rb, rb2) );
-        bnb_hist2d->SetBinError( rb, rb2, std::sqrt(evts2d) );
+    if ( data_hists_.count( NFT::kOnBNB ) ) {
+      TH1D* bnb_hist = data_hists_.at( NFT::kOnBNB ).get();
+      if ( bnb_hist ) {
+        int num_reco_bins = bnb_hist->GetNbinsX();
+        for ( int rb = 0; rb <= num_reco_bins + 1; ++rb ) {
+          double evts = std::max( 0., bnb_hist->GetBinContent(rb) );
+          bnb_hist->SetBinError( rb, std::sqrt(evts) );
+        }
       }
+    }
 
+    if ( data_hists2d_.count( NFT::kOnBNB ) ) {
+      TH2D* bnb_hist2d = data_hists2d_.at( NFT::kOnBNB ).get();
+      if ( bnb_hist2d ) {
+        int num_reco_bins = bnb_hist2d->GetNbinsX();
+        for ( int rb = 0; rb <= num_reco_bins + 1; ++rb ) {
+          for ( int rb2 = 0; rb2 <= num_reco_bins + 1; ++rb2 ) {
+            double evts2d = std::max( 0., bnb_hist2d->GetBinContent(rb, rb2) );
+            bnb_hist2d->SetBinError( rb, rb2, std::sqrt(evts2d) );
+          }
+        }
+      }
     }
 
     std::cout << "******* USING FAKE DATA *******\n";

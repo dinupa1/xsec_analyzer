@@ -128,6 +128,9 @@ inline void apply_cv_correction_weights( const std::string& wgt_name,
     // BNB: No extra weight factors needed (Q: is this correct? shouldn't tune_weight be applied?)
     return;
   }
+  else if ( wgt_name == NC1P_WEIGHT_NAME ) {
+    return;
+  }
   else throw std::runtime_error( "Unrecognized weight name: " + wgt_name );
 }
 
