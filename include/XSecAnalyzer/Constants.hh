@@ -2,6 +2,7 @@
 
 // Enable NuMI mode
 constexpr bool useNuMI = false;
+constexpr bool useNC1p = true;
 
 // Boundaries of the neutrino vertex fiducial volume (cm)
 // This is handled the same way for reco and in MC

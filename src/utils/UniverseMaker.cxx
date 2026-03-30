@@ -173,10 +173,17 @@ void UniverseMaker::build_universes(
   // weights, i.e., the spline and tune weights. Don't throw an exception if
   // these are missing in the input TTree (we could be working with real data)
 
+  /*
+  * for NC1p analysis we don't need spline weight and tune weight.
+  * this is already included in GENIE 3.2
+  */  
+  
+  /*
   wh.add_branch( input_chain_, SPLINE_WEIGHT_NAME, false );
   wh.add_branch( input_chain_, TUNE_WEIGHT_NAME, false );
+  */
   if (useNuMI) wh.add_branch( input_chain_, PPFX_WEIGHT_NAME, false );
-  wh.add_branch( input_chain_, NC1P_WEIGHT_NAME, false);
+ // wh.add_branch( input_chain_, NC1P_WEIGHT_NAME, false);
 
   this->prepare_formulas();
 
@@ -195,6 +202,9 @@ void UniverseMaker::build_universes(
     input_chain_.SetBranchAddress( "ppfx_cv_weight", &ppfx_weight_numi );
     input_chain_.SetBranchAddress( "normalisation_weight", &normalisation_weight_numi );
   }
+
+  double PoT_scale = 1.0;
+  if(useNC1p) input_chain_.SetBranchAddress("PoT_scale", &PoT_scale);
 
   // Get the first TChain entry so that we can know the number of universes
   // used in each vector of weights
@@ -243,12 +253,14 @@ void UniverseMaker::build_universes(
 
     input_chain_.GetEntry( entry );
 
+    /*
     double computed_weight = 1.0;
     auto& wm = wh.weight_map();
     if ( wm.count( NC1P_WEIGHT_NAME ) ) {
       const auto& cw_vec = wm.at( NC1P_WEIGHT_NAME );
       if ( !cw_vec->empty() ) computed_weight = cw_vec->front();
     }
+    */
 
     std::vector< FormulaMatch > matched_true_bins;
     double spline_weight = 0.;
@@ -274,6 +286,9 @@ void UniverseMaker::build_universes(
       // NuMI
       // access CV weights (NuMI-specific)
 
+      /* Do we need this ? */
+      
+      /*
       if (useNuMI) {
         spline_weight = 1; // not filled in NuMI
         tune_weight = tune_weight_numi;
@@ -286,14 +301,13 @@ void UniverseMaker::build_universes(
           if ( wm.count( TUNE_WEIGHT_NAME ) ) tune_weight = wm.at( TUNE_WEIGHT_NAME )->front();
         }
       }
+      */
 
     } // MC event
 
     for ( const auto& pair : wh.weight_map() ) {
       const std::string& wgt_name = pair.first;
       const auto& wgt_vec = pair.second;
-
-      // std::cout << "weight name: " << wgt_name << std::endl;
 
       if ( universes_.count( wgt_name ) == 0 ) continue;
       auto& u_vec = universes_.at( wgt_name );
@@ -309,7 +323,7 @@ void UniverseMaker::build_universes(
         else apply_cv_correction_weights( wgt_name, w, spline_weight, tune_weight );
 
         // Deal with NaNs, etc. to make a "safe weight" in all cases
-        double safe_wgt = safe_weight( w * computed_weight );
+        double safe_wgt = safe_weight( w );
 
         // Get the universe object that should be filled with the processed
         // event weight
@@ -366,7 +380,7 @@ void UniverseMaker::build_universes(
           else apply_cv_correction_weights( wgt_name, w, spline_weight, tune_weight );
 
           // Deal with NaNs, etc. to make a "safe weight" in all cases
-          double safe_wgt = safe_weight( w * computed_weight );
+          double safe_wgt = safe_weight( w );
 
           // Get the universe object that should be filled with the processed
           // event weight

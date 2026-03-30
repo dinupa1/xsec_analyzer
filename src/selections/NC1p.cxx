@@ -27,16 +27,10 @@ NC1p::NC1p() : SelectionBase( "NC1p" ){
     current_run_ = -1;
     // Default fallback
     sample_type_ = "overlay_genie320_precompound_hadronhp";
-
-    out_file.open(filename, std::ios::out | std::ios::trunc);
-    if (!out_file.is_open()) {
-        std::cerr << " > Error: Could not open file " << filename << std::endl;
-    }
 }
 
 NC1p::~NC1p() {
     if (bdt_reader_) delete bdt_reader_;
-    if(out_file.is_open()) out_file.close();
 }
 
 void NC1p::reset(AnalysisEvent* Event) {
@@ -66,8 +60,8 @@ void NC1p::reset(AnalysisEvent* Event) {
     Event->reco_costheta_ = BOGUS;
     Event->reco_length_ = BOGUS;
     Event->reco_bdt_score_ = BOGUS;
-    Event->computed_weight_->clear();
-    Event->computed_weight_->push_back( 1.0 );
+    // Event->computed_weight_->clear();
+    // Event->computed_weight_->push_back( 1.0 );
 
     Event->true_proton_ke_ = BOGUS;
     Event->true_q2_ = BOGUS;
@@ -126,9 +120,9 @@ double NC1p::CalWeight(AnalysisEvent* Event, int run_id) {
     double pot_scale = POTwgt(run_id, sample_type_);
     double cv_weight = 1.0;
     if (Event->mc_wgt_tunedcv != BOGUS && Event->mc_wgt_tunedcv > -100) {
-        // cv_weight = Event->mc_wgt_tunedcv;
+        cv_weight = Event->mc_wgt_tunedcv;
     }
-    return 1.0; //pot_scale * cv_weight;
+    return pot_scale * cv_weight;
 }
 
 void NC1p::LoadBDTWeights(int run) {
@@ -350,8 +344,9 @@ int NC1p::categorize_event( AnalysisEvent* Event ) {
 }
 
 void NC1p::compute_reco_observables( AnalysisEvent* Event, int run_id) {
-    Event->computed_weight_->clear();
-    Event->computed_weight_->push_back( CalWeight(Event, run_id) );
+    // Event->computed_weight_->clear();
+    // Event->computed_weight_->push_back( CalWeight(Event, run_id) );
+    Event->PoT_scale_ = CalWeight(Event, run_id);
 
     if ( Event->proton_candidate_idx_ == BOGUS_INDEX ) return;
 
@@ -391,14 +386,4 @@ void NC1p::define_output_branches() {
     out_tree_->Branch( "sel_bdt_cut", &sel_bdt_cut_, "sel_bdt_cut/O" );
     out_tree_->Branch( "sel_blip_cut", &sel_blip_cut_, "sel_blip_cut/O" );
     */
-}
-
-void NC1p::LogEvent(AnalysisEvent* Event) {
-    if(out_file.is_open()) {
-        out_file << Event->event << "\t" << Event->proton_candidate_idx_ << "\t" << Event->sel_reco_1p_ << "\t" << Event->sel_in_fv_ << "\t" << Event->sel_containment_ << "\t" << Event->sel_track_quality_ << "\t" << Event->sel_pid_cut_ << "\t" << Event->sel_blip_cut_ << "\t" << Event->sel_bdt_cut_ << "\n";
-    }
-}
-
-void NC1p::Flush() {
-    out_file.flush();
 }

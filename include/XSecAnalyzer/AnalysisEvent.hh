@@ -16,8 +16,6 @@ public:
   AnalysisEvent() {}
   ~AnalysisEvent() {}
 
-  bool is_mc_ = false;
-
   // --- Simple Branch Types ---
   Int_t           run = BOGUS_INT;
   Int_t           subrun = BOGUS_INT;
@@ -393,6 +391,8 @@ public:
 
   // NC1p variables
 
+  bool is_mc_ = false;
+
   // --- Signal Flags ---
   bool sig_is_nc_;
   bool sig_one_proton_;
@@ -423,7 +423,8 @@ public:
   double reco_length_;
   double reco_bdt_score_;
 
-  MyPointer <std::vector<double>>          computed_weight_;
+  // MyPointer <std::vector<double>>          computed_weight_;
+  double PoT_scale_;
 
   double true_proton_ke_;
   double true_q2_;

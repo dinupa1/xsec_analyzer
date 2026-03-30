@@ -160,7 +160,7 @@ int main( int argc, char* argv[] ) {
   // MCC9SystematicsCalculator class to use the default systematics
   // configuration file.
 
-  // MCC9SystematicsCalculator unfolder( output_file_name, "", tdirfile_name );
+  MCC9SystematicsCalculator unfolder( output_file_name, "", tdirfile_name );
 
   return 0;
 }

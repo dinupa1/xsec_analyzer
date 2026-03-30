@@ -1,6 +1,9 @@
 // XSecAnalyzer includes
 #include "XSecAnalyzer/SystematicsCalculator.hh"
 
+// Standard library includes
+#include <algorithm>
+
 void set_stats_and_dir( Universe& univ ) {
   univ.hist_reco_->SetStats( false );
   univ.hist_reco_->SetDirectory( nullptr );
@@ -244,6 +247,9 @@ void SystematicsCalculator::load_universes( TDirectoryFile& total_subdir ) {
 
     int univ_index = std::stoi( univ_index_str );
 
+    std::cout << "univ name" << univ_name << std::endl;
+    std::cout << "univ index " << univ_name << std::endl;
+
     TH1D* hist_true = nullptr;
     TH1D* hist_reco = nullptr;
     TH2D* hist_2d = nullptr;
@@ -316,23 +322,24 @@ void SystematicsCalculator::load_universes( TDirectoryFile& total_subdir ) {
           = std::vector< std::unique_ptr<Universe> >();
       }
 
-      // Move this universe into the map. Note that the automatic
-      // sorting of keys in a ROOT TDirectoryFile ensures that the
-      // universe ordering remains correct. We'll double-check that
-      // below, though, just in case.
+      // Move this universe into the map.
       auto& univ_vec = rw_universes_.at( univ_name );
       univ_vec.emplace_back( std::move(temp_univ) );
-
-      // Verify that the new universe is placed in the expected
-      // position in the vector. If there's a mismatch, something has
-      // gone wrong and the universe ordering will not be preserved.
-      int vec_index = univ_vec.size() - 1;
-      if ( vec_index != univ_index ) {
-        throw std::runtime_error( "Universe index mismatch encountered!" );
-      }
     }
 
   } // TDirectoryFile keys (and 2D universe histograms)
+
+  // Sort the reweightable universes by index to ensure their order matches
+  // the expected one. The alphabetical sorting of keys in the input ROOT
+  // file might not match the numerical order of the indices.
+  for ( auto& rw_pair : rw_universes_ ) {
+    std::sort( rw_pair.second.begin(), rw_pair.second.end(),
+      []( const std::unique_ptr<Universe>& a,
+          const std::unique_ptr<Universe>& b ) {
+        return a->index_ < b->index_;
+      }
+    );
+  }
 
   constexpr std::array< NFT, 2 > data_file_types = { NFT::kOnBNB,
     NFT::kExtBNB };
@@ -473,6 +480,7 @@ void SystematicsCalculator::build_universes( TDirectoryFile& root_tdir ) {
           if ( !temp_pot ) throw std::runtime_error(
             "Missing POT in MC file!" );
           file_pot = temp_pot->GetVal();
+          std::cout << "pot from file : " << file_pot << std::endl;
         }
         else {
           // We can ask the FilePropertiesManager for the data POT values
@@ -489,9 +497,13 @@ void SystematicsCalculator::build_universes( TDirectoryFile& root_tdir ) {
         if ( !subdir ) throw std::runtime_error(
           "Missing TDirectoryFile " + subdir_name );
 
+        std::cout << "line 500" << std::endl;
+
         // For data, just add the reco-space event counts to the total,
         // scaling to the beam-on triggers in the case of EXT data
         if ( !is_mc ) {
+
+          std::cout << "this is not MC" << std::endl;
 
           // when using fake data, use the weighted CV histogram if it is present
           auto tmp_reco_hist = type == NFT::kOnBNB ? get_object_unique_ptr<TH1D>((CV_UNIV_NAME + "_0_reco").c_str(), *subdir) : nullptr;
@@ -520,6 +532,8 @@ void SystematicsCalculator::build_universes( TDirectoryFile& root_tdir ) {
               }
             }
           }
+
+          std::cout << "line 536" << std::endl;
 
           // If we don't have a histogram in the map for this data type
           // yet, just clone the existing histogram.
@@ -552,6 +566,8 @@ void SystematicsCalculator::build_universes( TDirectoryFile& root_tdir ) {
             // histogram
             data_hists2d_.at( type )->Add( reco_hist2d.get() );
           }
+
+          std::cout << "line 568" << std::endl;
 
           // For EXT data files (always assumed to be real data), no further
           // processing is needed, so just move to the next file
@@ -589,6 +605,9 @@ void SystematicsCalculator::build_universes( TDirectoryFile& root_tdir ) {
           if ( !is_fake_data ) continue;
 
         } // data ntuple files
+        
+
+        std::cout << "line 610" << std::endl;
 
         // If we've made it here, then we're working with an MC ntuple
         // file. For these, all four histograms for the "unweighted"
@@ -634,6 +653,8 @@ void SystematicsCalculator::build_universes( TDirectoryFile& root_tdir ) {
           const auto tmp_reco_hist = get_object_unique_ptr<TH1D>((CV_UNIV_NAME + "_0_reco").c_str(), *subdir);
           const auto dataContainsWeightedCV = tmp_reco_hist.get() != nullptr;
           std::string hist_name_prefix = (dataContainsWeightedCV ? CV_UNIV_NAME : "unweighted" ) + "_0";
+
+          std::cout << "line 657" << std::endl;
 
           auto h_reco = get_object_unique_ptr< TH1D >(
             (hist_name_prefix + "_reco"), *subdir );
@@ -777,7 +798,6 @@ void SystematicsCalculator::build_universes( TDirectoryFile& root_tdir ) {
           }
 
         } // detVar and altCV samples
-
         // Now handle the reweightable systematic universes
         else if ( is_reweightable_mc ) {
 
@@ -809,7 +829,11 @@ void SystematicsCalculator::build_universes( TDirectoryFile& root_tdir ) {
               std::string univ_name = key.substr( 0, temp_idx );
               std::string univ_index_str = key.substr( temp_idx + 1u );
 
+              std::cout << "univ name " << univ_name << std::endl;
+
               int univ_index = std::stoi( univ_index_str );
+
+              std::cout << "univ idx " << univ_index << std::endl;
 
               // We have what we need to create the new Universe object. Do
               // it! Note that its owned histograms are currently empty.
@@ -832,6 +856,19 @@ void SystematicsCalculator::build_universes( TDirectoryFile& root_tdir ) {
                 std::move(temp_univ) );
 
             } // TDirectoryFile keys
+
+            // Sort the reweightable universes by index to ensure their order
+            // matches the expected one. The alphabetical sorting of keys in
+            // the input ROOT file might not match the numerical order of the
+            // indices.
+            for ( auto& rw_pair : rw_universes_ ) {
+              std::sort( rw_pair.second.begin(), rw_pair.second.end(),
+                []( const std::unique_ptr<Universe>& a,
+                    const std::unique_ptr<Universe>& b ) {
+                  return a->index_ < b->index_;
+                }
+              );
+            }
 
           } // first reweightable MC ntuple file
 
@@ -909,6 +946,9 @@ void SystematicsCalculator::build_universes( TDirectoryFile& root_tdir ) {
           } // universe types
 
         } // reweightable MC samples
+
+
+        std::cout << "line 951" << std::endl;
 
       } // ntuple file
 

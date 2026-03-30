@@ -1,14 +1,95 @@
-#/exp/uboone/data/users/renlu23/NCE/Spring_2021/CV/r1_bnb.root bnb 1
+# CV files
+/exp/uboone/data/users/renlu23/NCE/Spring_2021/CV/r1_bnb.root bnb 1
 /exp/uboone/data/users/renlu23/NCE/Spring_2021/CV/r1_extbnb.root extbnb 1
 /exp/uboone/data/users/renlu23/NCE/Spring_2021/CV/r1_dirt.root dirt 1
-/exp/uboone/data/users/renlu23/NCE/Spring_2021/CV/r1_overlay_genie320_precompound_hadronhp.root overlay_genie320_precompound_hadronhp 1
+/exp/uboone/data/users/renlu23/NCE/Spring_2021/CV/r1_overlay_genie320_precompound_hadronhp.root 1
 
-#/exp/uboone/data/users/renlu23/NCE/Spring_2021/CV/r2_bnb.root bnb 2
-#/exp/uboone/data/users/renlu23/NCE/Spring_2021/CV/r2_extbnb.root extbnb 2
-#/exp/uboone/data/users/renlu23/NCE/Spring_2021/CV/r2_dirt.root dirt 2
-#/exp/uboone/data/users/renlu23/NCE/Spring_2021/CV/r2_overlay_genie320_precompound_hadronhp.root overlay_genie320_precompound_hadronhp 2
+/exp/uboone/data/users/renlu23/NCE/Spring_2021/CV/r2_bnb.root bnb 2
+/exp/uboone/data/users/renlu23/NCE/Spring_2021/CV/r2_extbnb.root extbnb 2
+/exp/uboone/data/users/renlu23/NCE/Spring_2021/CV/r2_dirt.root dirt 2
+/exp/uboone/data/users/renlu23/NCE/Spring_2021/CV/r2_overlay_genie320_precompound_hadronhp.root 2
 
-#/exp/uboone/data/users/renlu23/NCE/Spring_2021/CV/r3_bnb.root bnb 3
-#/exp/uboone/data/users/renlu23/NCE/Spring_2021/CV/r3_extbnb.root extbnb 3
-#/exp/uboone/data/users/renlu23/NCE/Spring_2021/CV/r3_dirt.root dirt 3
-#/exp/uboone/data/users/renlu23/NCE/Spring_2021/CV/r3_overlay_genie320_precompound_hadronhp.root overlay_genie320_precompound_hadronhp 3
+/exp/uboone/data/users/renlu23/NCE/Spring_2021/CV/r3_bnb.root bnb 3
+/exp/uboone/data/users/renlu23/NCE/Spring_2021/CV/r3_extbnb.root extbnb 3
+/exp/uboone/data/users/renlu23/NCE/Spring_2021/CV/r3_dirt.root dirt 3
+/exp/uboone/data/users/renlu23/NCE/Spring_2021/CV/r3_overlay_genie320_precompound_hadronhp.root 3
+
+# Systematic files
+/exp/uboone/data/users/renlu23/NCE/Spring_2021/CV/r1_ly_attenuation.root 1
+/exp/uboone/data/users/renlu23/NCE/Spring_2021/CV/r1_ly_down.root 1
+/exp/uboone/data/users/renlu23/NCE/Spring_2021/CV/r1_ly_rayleigh.root 1
+#/exp/uboone/data/users/renlu23/NCE/Spring_2021/CV/r1_overlay_genie320_default_hadronhp.root 1
+/exp/uboone/data/users/renlu23/NCE/Spring_2021/CV/r1_overlay_genie320_default.root 1
+/exp/uboone/data/users/renlu23/NCE/Spring_2021/CV/r1_overlay_genie320_precompound_hadronhp_flux.root 1
+/exp/uboone/data/users/renlu23/NCE/Spring_2021/CV/r1_overlay_genie320_precompound_hadronhp_g4.root 1
+/exp/uboone/data/users/renlu23/NCE/Spring_2021/CV/r1_overlay_genie320_precompound_hadronhp_genie_pm.root 1
+/exp/uboone/data/users/renlu23/NCE/Spring_2021/CV/r1_overlay_genie320_precompound_hadronhp_genie_xsec_1.root 1
+/exp/uboone/data/users/renlu23/NCE/Spring_2021/CV/r1_overlay_genie320_precompound_hadronhp_genie_xsec_1_ttt.root 1
+/exp/uboone/data/users/renlu23/NCE/Spring_2021/CV/r1_overlay_genie320_precompound_hadronhp_genie_xsec_2.root 1
+/exp/uboone/data/users/renlu23/NCE/Spring_2021/CV/r1_overlay_genie320_precompound_hadronhp_genie_xsec_3.root 1
+/exp/uboone/data/users/renlu23/NCE/Spring_2021/CV/r1_overlay_genie320_precompound_hadronhp_genie_xsec_4.root 1
+/exp/uboone/data/users/renlu23/NCE/Spring_2021/CV/r1_overlay_genie320_precompound_hadronhp_genie_xsec_5.root 1
+#/exp/uboone/data/users/renlu23/NCE/Spring_2021/CV/r1_overlay_genie320_precompound_hadronhp.root 1
+#/exp/uboone/data/users/renlu23/NCE/Spring_2021/CV/r1_overlay_genie320_precompound.root 1
+/exp/uboone/data/users/renlu23/NCE/Spring_2021/CV/r1_overlay_genie_fsi.root 1
+/exp/uboone/data/users/renlu23/NCE/Spring_2021/CV/r1_overlay_genie_pm.root 1
+#/exp/uboone/data/users/renlu23/NCE/Spring_2021/CV/r1_overlay_s2.root 1
+/exp/uboone/data/users/renlu23/NCE/Spring_2021/CV/r1_recomb2.root 1
+/exp/uboone/data/users/renlu23/NCE/Spring_2021/CV/r1_sce.root 1
+/exp/uboone/data/users/renlu23/NCE/Spring_2021/CV/r1_wiremod_angle_xz.root 1
+/exp/uboone/data/users/renlu23/NCE/Spring_2021/CV/r1_wiremod_angle_yz.root 1
+/exp/uboone/data/users/renlu23/NCE/Spring_2021/CV/r1_wiremod_x.root 1
+/exp/uboone/data/users/renlu23/NCE/Spring_2021/CV/r1_wiremod_yz.root 1
+
+/exp/uboone/data/users/renlu23/NCE/Spring_2021/CV/r2_ly_attenuation.root 2
+/exp/uboone/data/users/renlu23/NCE/Spring_2021/CV/r2_ly_down.root 2
+/exp/uboone/data/users/renlu23/NCE/Spring_2021/CV/r2_ly_rayleigh.root 2
+#/exp/uboone/data/users/renlu23/NCE/Spring_2021/CV/r2_overlay_genie320_default_hadronhp.root 2
+/exp/uboone/data/users/renlu23/NCE/Spring_2021/CV/r2_overlay_genie320_default.root 2
+/exp/uboone/data/users/renlu23/NCE/Spring_2021/CV/r2_overlay_genie320_precompound_hadronhp_flux.root 2
+/exp/uboone/data/users/renlu23/NCE/Spring_2021/CV/r2_overlay_genie320_precompound_hadronhp_g4.root 2
+/exp/uboone/data/users/renlu23/NCE/Spring_2021/CV/r2_overlay_genie320_precompound_hadronhp_genie_pm.root 2
+/exp/uboone/data/users/renlu23/NCE/Spring_2021/CV/r2_overlay_genie320_precompound_hadronhp_genie_xsec_1.root 2
+/exp/uboone/data/users/renlu23/NCE/Spring_2021/CV/r2_overlay_genie320_precompound_hadronhp_genie_xsec_1_ttt.root 2
+/exp/uboone/data/users/renlu23/NCE/Spring_2021/CV/r2_overlay_genie320_precompound_hadronhp_genie_xsec_2.root 2
+/exp/uboone/data/users/renlu23/NCE/Spring_2021/CV/r2_overlay_genie320_precompound_hadronhp_genie_xsec_3.root 2
+/exp/uboone/data/users/renlu23/NCE/Spring_2021/CV/r2_overlay_genie320_precompound_hadronhp_genie_xsec_4.root 2
+/exp/uboone/data/users/renlu23/NCE/Spring_2021/CV/r2_overlay_genie320_precompound_hadronhp_genie_xsec_5.root 2
+#/exp/uboone/data/users/renlu23/NCE/Spring_2021/CV/r2_overlay_genie320_precompound_hadronhp.root 2
+#/exp/uboone/data/users/renlu23/NCE/Spring_2021/CV/r2_overlay_genie320_precompound.root 2
+/exp/uboone/data/users/renlu23/NCE/Spring_2021/CV/r2_overlay_genie_fsi.root 2
+/exp/uboone/data/users/renlu23/NCE/Spring_2021/CV/r2_overlay_genie_pm.root 2
+#/exp/uboone/data/users/renlu23/NCE/Spring_2021/CV/r2_overlay_s2.root 2
+/exp/uboone/data/users/renlu23/NCE/Spring_2021/CV/r2_recomb2.root 2
+/exp/uboone/data/users/renlu23/NCE/Spring_2021/CV/r2_sce.root 2
+/exp/uboone/data/users/renlu23/NCE/Spring_2021/CV/r2_wiremod_angle_xz.root 2
+/exp/uboone/data/users/renlu23/NCE/Spring_2021/CV/r2_wiremod_angle_yz.root 2
+/exp/uboone/data/users/renlu23/NCE/Spring_2021/CV/r2_wiremod_x.root 2
+/exp/uboone/data/users/renlu23/NCE/Spring_2021/CV/r2_wiremod_yz.root 2
+
+
+/exp/uboone/data/users/renlu23/NCE/Spring_2021/CV/r3_ly_attenuation.root 3
+/exp/uboone/data/users/renlu23/NCE/Spring_2021/CV/r3_ly_down.root 3
+/exp/uboone/data/users/renlu23/NCE/Spring_2021/CV/r3_ly_rayleigh.root 3
+#/exp/uboone/data/users/renlu23/NCE/Spring_2021/CV/r3_overlay_genie320_default_hadronhp.root 3
+/exp/uboone/data/users/renlu23/NCE/Spring_2021/CV/r3_overlay_genie320_default.root 3
+/exp/uboone/data/users/renlu23/NCE/Spring_2021/CV/r3_overlay_genie320_precompound_hadronhp_flux.root 3
+/exp/uboone/data/users/renlu23/NCE/Spring_2021/CV/r3_overlay_genie320_precompound_hadronhp_g4.root 3
+/exp/uboone/data/users/renlu23/NCE/Spring_2021/CV/r3_overlay_genie320_precompound_hadronhp_genie_pm.root 3
+/exp/uboone/data/users/renlu23/NCE/Spring_2021/CV/r3_overlay_genie320_precompound_hadronhp_genie_xsec_1.root 3
+/exp/uboone/data/users/renlu23/NCE/Spring_2021/CV/r3_overlay_genie320_precompound_hadronhp_genie_xsec_1_ttt.root 3
+/exp/uboone/data/users/renlu23/NCE/Spring_2021/CV/r3_overlay_genie320_precompound_hadronhp_genie_xsec_2.root 3
+/exp/uboone/data/users/renlu23/NCE/Spring_2021/CV/r3_overlay_genie320_precompound_hadronhp_genie_xsec_3.root 3
+/exp/uboone/data/users/renlu23/NCE/Spring_2021/CV/r3_overlay_genie320_precompound_hadronhp_genie_xsec_4.root 3
+/exp/uboone/data/users/renlu23/NCE/Spring_2021/CV/r3_overlay_genie320_precompound_hadronhp_genie_xsec_5.root 3
+#/exp/uboone/data/users/renlu23/NCE/Spring_2021/CV/r3_overlay_genie320_precompound_hadronhp.root 3
+#/exp/uboone/data/users/renlu23/NCE/Spring_2021/CV/r3_overlay_genie320_precompound.root 3
+/exp/uboone/data/users/renlu23/NCE/Spring_2021/CV/r3_overlay_genie_fsi.root 3
+/exp/uboone/data/users/renlu23/NCE/Spring_2021/CV/r3_overlay_genie_pm.root 3
+#/exp/uboone/data/users/renlu23/NCE/Spring_2021/CV/r3_overlay_s2.root 3
+/exp/uboone/data/users/renlu23/NCE/Spring_2021/CV/r3_recomb2.root 3
+/exp/uboone/data/users/renlu23/NCE/Spring_2021/CV/r3_sce.root 3
+/exp/uboone/data/users/renlu23/NCE/Spring_2021/CV/r3_wiremod_angle_xz.root 3
+/exp/uboone/data/users/renlu23/NCE/Spring_2021/CV/r3_wiremod_angle_yz.root 3
+/exp/uboone/data/users/renlu23/NCE/Spring_2021/CV/r3_wiremod_x.root 3
+/exp/uboone/data/users/renlu23/NCE/Spring_2021/CV/r3_wiremod_yz.root 3

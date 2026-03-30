@@ -383,8 +383,9 @@ void set_event_output_branch_addresses(TTree& out_tree, AnalysisEvent& ev, bool 
   set_output_branch_address(out_tree, "reco_proton_mom", &ev.reco_proton_mom_, create, "reco_proton_mom/D");
   set_output_branch_address(out_tree, "reco_costheta", &ev.reco_costheta_, create, "reco_costheta/D");
   set_output_branch_address(out_tree, "reco_bdt_score", &ev.reco_bdt_score_, create, "reco_bdt_score/D");
-  set_object_output_branch_address< std::vector<double> >(out_tree, "computed_weight", ev.computed_weight_, create);
+  //set_object_output_branch_address< std::vector<double> >(out_tree, "computed_weight", ev.computed_weight_, create);
   set_output_branch_address(out_tree, "is_mc", &ev.is_mc_, create, "is_mc/O");
+  set_output_branch_address(out_tree, "PoT_scale", &ev.PoT_scale_, create, "PoT_scale/D");
   set_output_branch_address(out_tree, "true_proton_ke", &ev.true_proton_ke_, create, "true_proton_ke/D");
   set_output_branch_address(out_tree, "true_costheta", &ev.true_costheta_, create, "true_costheta/D");
   set_output_branch_address(out_tree, "true_q2", &ev.true_q2_, create, "true_q2/D");

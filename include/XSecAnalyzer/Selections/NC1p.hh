@@ -39,12 +39,7 @@ private:
     double CalWeight(AnalysisEvent* Event, int rid);
     float ClusterTrackDistance(float vx, float vy, float vz, float cx, float cy, float cz);
     int VertexIsInFV(float st_x, float st_y, float st_z);
-    void LogEvent(AnalysisEvent* Event);
-    void Flush();
 
-    // --- Debug event selection ---
-    std::ofstream out_file;
-    std::string filename = "r1_bnb.debug";
 
     // --- Configuration ---
     int current_run_;
