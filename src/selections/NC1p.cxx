@@ -214,7 +214,7 @@ bool NC1p::selection( AnalysisEvent* event ) {
 
   // Evaluate BDT score if weights are loaded
   try {
-    bdt_score_ = reader_->EvaluateMVA( "BDTG" );
+    bdt_score_ = bdt_reader_->EvaluateMVA( "BDTG" );
   } catch (...) {
     bdt_score_ = -1.0;
   }
