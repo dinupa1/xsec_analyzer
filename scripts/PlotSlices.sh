@@ -37,4 +37,4 @@ if [ ! -d "${PlotOutputDir}" ]; then
   exit 5
 fi
 
-SlicePlots ${FPM_Config} ${SYST_Config} ${SLICE_Config} ${Univ_File} ${PlotOutputDir}
+bin/SlicePlots ${FPM_Config} ${SYST_Config} ${SLICE_Config} ${Univ_File} ${PlotOutputDir}

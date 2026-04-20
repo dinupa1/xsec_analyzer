@@ -33,14 +33,12 @@
 #include "XSecAnalyzer/Selections/SelectionFactory.hh"
 
 void analyze( const std::string& input_filename,
-  const std::string& file_type,
   const std::vector< std::string >& selection_names,
   const int run_id,
   const std::string& output_filename )
 {
   std::cout << "\nRunning ProcessNTuples with options:\n";
   std::cout << "\tinput_filename: " << input_filename << '\n';
-  std::cout << "\tinput_file_type: " << file_type << '\n';
   std::cout << "\trun_id: " << run_id << '\n';
   std::cout << "\toutput_filename: " << output_filename << '\n';
   std::cout << "\n\nselection names:\n";
@@ -209,35 +207,6 @@ void analyze( const std::string& input_filename,
       }
     }
 
-    // Handle integrating signal enhanced samples
-    // note that these are typically generated only in the active volume
-    // compared with full overlay that is generated for the whole cryostat
-    // and may only be generated for CC events, excluding NC
-    
-    // *** Intrinsic Nue ***
-    if (file_type == "nueMC" || file_type == "nueDV") {
-      // inverse cut, to avoid any accidental double-counting
-      if ( !(std::abs(cur_event.mc_nu_pdg_) == 12 && cur_event.mc_nu_ccnc_ == 0 && point_inside_FV(AV, cur_event.mc_nu_vx_, cur_event.mc_nu_vy_, cur_event.mc_nu_vz_)) ) {
-        ++events_entry;
-        continue;
-      }
-    }
-    if (file_type == "numuMC") {
-      if ( (std::abs(cur_event.mc_nu_pdg_) == 12 && cur_event.mc_nu_ccnc_ == 0 && point_inside_FV(AV, cur_event.mc_nu_vx_, cur_event.mc_nu_vy_, cur_event.mc_nu_vz_)) ) {
-        ++events_entry;
-        continue;
-      }
-    }
-
-    // *** Add any other signal enhanced samples here ***
-
-    // NuMI specific: configure normalisation weight
-    // dirt scaling
-    if (useNuMI) {
-      if (file_type == "dirtMC") cur_event.normalisation_weight_ = 0.65;
-      else cur_event.normalisation_weight_ = 1.0;
-    }
-
     // Set the output TTree branch addresses, creating the branches if needed
     // (during the first event loop iteration)
     bool create_them = false;
@@ -272,27 +241,26 @@ void analyze( const std::string& input_filename,
 
 int main( int argc, char* argv[] ) {
 
-  if ( argc != 6 ) {
+  if ( argc != 5 ) {
     std::cout << "Usage: " << argv[0]
-      << " INPUT_PELEE_NTUPLE_FILE FILE_TYPE SELECTION_NAMES RUN_ID OUTPUT_FILE\n";
+      << " INPUT_PELEE_NTUPLE_FILE SELECTION_NAMES RUN_ID OUTPUT_FILE\n";
     return 1;
   }
 
   std::string input_file_name( argv[1] );
-  std::string output_file_name( argv[5] );
+  std::string output_file_name( argv[4] );
 
   std::vector< std::string > selection_names;
 
-  std::stringstream sel_ss( argv[3] );
+  std::stringstream sel_ss( argv[2] );
   std::string sel_name;
   while ( std::getline(sel_ss, sel_name, ',') ) {
     selection_names.push_back( sel_name );
   }
 
-  std::string file_type( argv[2] );
-  int run_id = std::stoi( argv[4] );
+  int run_id = std::stoi( argv[3] );
 
-  analyze( input_file_name, file_type, selection_names, run_id, output_file_name );
+  analyze( input_file_name, selection_names, run_id, output_file_name );
 
   return 0;
 }

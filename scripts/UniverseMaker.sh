@@ -20,4 +20,4 @@ if [ ! -f "$BIN_CONFIG" ]; then
   exit 1
 fi
 
-univmake ${FPM_CONFIG} ${BIN_CONFIG} ${OUTPUT_ROOT_FILE} ${FPM_CONFIG}
+bin/univmake ${FPM_CONFIG} ${BIN_CONFIG} ${OUTPUT_ROOT_FILE} ${FPM_CONFIG}

@@ -20,4 +20,4 @@ if [ ! -f "$SLICE_CONFIG" ]; then
   exit 1
 fi
 
-Unfolder ${XSEC_CONFIG} ${SLICE_CONFIG} ${OUTPUT_FILE}
+bin/Unfolder ${XSEC_CONFIG} ${SLICE_CONFIG} ${OUTPUT_FILE}

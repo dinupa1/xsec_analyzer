@@ -57,7 +57,7 @@ do
     echo "Output file name: "${output_file_name}
 
     date
-    # time ProcessNTuples ${input_file_name} ${input_file_type} ${selections} ${run_id} ${output_file_name}
+    time bin/ProcessNTuples ${input_file_name} ${selections} ${run_id} ${output_file_name}
     date
     counter=$((counter + 1))
 done
