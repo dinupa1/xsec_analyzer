@@ -103,6 +103,10 @@ void NC1p::compute_true_observables( AnalysisEvent* event ) {
 
 int NC1p::categorize_event( AnalysisEvent* event ) {
   // Refined categorization based on make_tree.C FillSubCat
+  int abs_mc_nu_pdg = std::abs( event->mc_nu_pdg_ );
+  event->is_mc_ = ( abs_mc_nu_pdg == ELECTRON_NEUTRINO
+    || abs_mc_nu_pdg == MUON_NEUTRINO || abs_mc_nu_pdg == TAU_NEUTRINO );
+
   if ( !event->is_mc_ ) return 0; // Data
 
   bool in_fv = point_inside_FV( this->true_FV(), event->mc_nu_vx_, event->mc_nu_vy_, event->mc_nu_vz_ );
