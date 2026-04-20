@@ -26,6 +26,7 @@ protected:
 
   TMVA::Reader* bdt_reader_;
   int current_run_;
+  bool bdt_weights_loaded_ = false;
 
   // BDT variables
   float len_, theta_, phi_, dedx_end2_, dedx_total2_, starty_, startz_, endy_, endz_, pid_p0_, pid_p1_, pid_p2_, trk_dis_;

@@ -23,6 +23,7 @@ NC1p::NC1p() : SelectionBase( "NC1p" ) {
 }
 
 void NC1p::LoadBDTWeights( int run ) {
+  bdt_weights_loaded_ = false;
   TString weight_path = Form("/exp/uboone/app/users/renlu23/v61_2022/analysis/BDT/dataset/weights_%d/TMVAClassification_BDTG.weights.xml", run);
   if ( access( weight_path.Data(), F_OK ) != -1 ) {
       std::cout << "[NC1p] Loading BDT weights for Run " << run << " from: " << weight_path << std::endl;
@@ -43,6 +44,7 @@ void NC1p::LoadBDTWeights( int run ) {
       bdt_reader_->AddVariable( "chi2_p_2", &pid_p2_ );
       bdt_reader_->AddVariable( "trk_dis", &trk_dis_ );
       bdt_reader_->BookMVA( "BDTG", weight_path.Data() );
+      bdt_weights_loaded_ = true;
   } else {
       std::cerr << "[NC1p] WARNING: BDT Weight file not found: " << weight_path << std::endl;
   }
@@ -213,9 +215,13 @@ bool NC1p::selection( AnalysisEvent* event ) {
   }
 
   // Evaluate BDT score if weights are loaded
-  try {
-    bdt_score_ = bdt_reader_->EvaluateMVA( "BDTG" );
-  } catch (...) {
+  if ( bdt_weights_loaded_ ) {
+    try {
+      bdt_score_ = bdt_reader_->EvaluateMVA( "BDTG" );
+    } catch (...) {
+      bdt_score_ = -1.0;
+    }
+  } else {
     bdt_score_ = -1.0;
   }
 
