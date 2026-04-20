@@ -43,15 +43,21 @@ for file in "${input_files[@]}"
 do
     input_file_name=$( echo $file | awk '{print $1}' )
     input_file_type=$( echo $file | awk '{print $2}' )
+    run_id=$( echo $file | awk '{print $3}' )
+    if [ -z "$run_id" ]; then
+      run_id=0
+    fi
+
     output_file_name="${output_dir}/xsec-ana-$(basename ${input_file_name})"
     echo "Starting file:"${counter}"/"${total_files}
     echo "Input file name: "${input_file_name}
     echo "Input file type: "${input_file_type}
+    echo "Run ID: "${run_id}
     echo "Selections: "${selections}
     echo "Output file name: "${output_file_name}
 
     date
-    time ProcessNTuples ${input_file_name} ${input_file_type} ${selections} ${output_file_name}
+    time ProcessNTuples ${input_file_name} ${input_file_type} ${selections} ${run_id} ${output_file_name}
     date
     counter=$((counter + 1))
 done

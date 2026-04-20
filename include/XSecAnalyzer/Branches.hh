@@ -216,6 +216,120 @@ void set_event_branch_addresses(TTree& etree, AnalysisEvent& ev)
   SetBranchAddress(etree, "elec_e", &ev.mc_elec_e_ ); // Electron energy
 }
 
+// Helper function to set branch addresses for reading information
+// from the Event TTree in the old NC1p format
+void set_nc1p_event_branch_addresses(TTree& etree, AnalysisEvent& ev)
+{
+  SetBranchAddress(etree, "event", &ev.event_number_ );
+
+  // Reconstructed neutrino vertex position
+  SetBranchAddress(etree, "reco_nu_vtxx", &ev.nu_vx_ );
+  SetBranchAddress(etree, "reco_nu_vtxy", &ev.nu_vy_ );
+  SetBranchAddress(etree, "reco_nu_vtxz", &ev.nu_vz_ );
+
+  // Reconstructed object counts
+  SetBranchAddress(etree, "evt_n_pfp", &ev.num_pf_particles_ );
+  SetBranchAddress(etree, "evt_n_trk", &ev.num_tracks_ );
+  SetBranchAddress(etree, "evt_n_shower", &ev.num_showers_ );
+
+  // Track properties
+  set_object_input_branch_address( etree, "reco_length", ev.track_length_ );
+  set_object_input_branch_address( etree, "reco_start_x", ev.track_startx_ );
+  set_object_input_branch_address( etree, "reco_start_y", ev.track_starty_ );
+  set_object_input_branch_address( etree, "reco_start_z", ev.track_startz_ );
+
+  set_object_input_branch_address( etree, "reco_end_x", ev.track_endx_ );
+  set_object_input_branch_address( etree, "reco_end_y", ev.track_endy_ );
+  set_object_input_branch_address( etree, "reco_end_z", ev.track_endz_ );
+
+  set_object_input_branch_address( etree, "reco_theta", ev.track_theta_ );
+  set_object_input_branch_address( etree, "reco_phi", ev.track_phi_ );
+
+  set_object_input_branch_address( etree, "reco_theta_f2", ev.track_theta_f2_ );
+  set_object_input_branch_address( etree, "reco_phi_f2", ev.track_phi_f2_ );
+
+  set_object_input_branch_address( etree, "reco_start_x_f2", ev.track_startx_f2_ );
+  set_object_input_branch_address( etree, "reco_start_y_f2", ev.track_starty_f2_ );
+  set_object_input_branch_address( etree, "reco_start_z_f2", ev.track_startz_f2_ );
+  set_object_input_branch_address( etree, "reco_end_x_f2", ev.track_endx_f2_ );
+  set_object_input_branch_address( etree, "reco_end_y_f2", ev.track_endy_f2_ );
+  set_object_input_branch_address( etree, "reco_end_z_f2", ev.track_endz_f2_ );
+
+  set_object_input_branch_address( etree, "reco_ke", ev.track_kinetic_energy_p_ );
+  set_object_input_branch_address( etree, "reco_mom_muon", ev.track_range_mom_mu_ );
+
+  // NC1p specific
+  SetBranchAddress(etree, "flash_brightest_TotalPE", &ev.flash_brightest_TotalPE_ );
+  SetBranchAddress(etree, "evt_reco_1p", &ev.evt_reco_1p_ );
+  
+  set_object_input_branch_address( etree, "chi2_p_0", ev.track_chi2_proton_0_ );
+  set_object_input_branch_address( etree, "chi2_p_1", ev.track_chi2_proton_1_ );
+  set_object_input_branch_address( etree, "chi2_p_2", ev.track_chi2_proton_2_ );
+
+  set_object_input_branch_address( etree, "start_dedx_0", ev.track_start_dedx_0_ );
+  set_object_input_branch_address( etree, "start_dedx_1", ev.track_start_dedx_1_ );
+  set_object_input_branch_address( etree, "start_dedx_2", ev.track_start_dedx_2_ );
+
+  set_object_input_branch_address( etree, "end_dedx_0", ev.track_end_dedx_0_ );
+  set_object_input_branch_address( etree, "end_dedx_1", ev.track_end_dedx_1_ );
+  set_object_input_branch_address( etree, "end_dedx_2", ev.track_end_dedx_2_ );
+
+  set_object_input_branch_address( etree, "total_dedx_0", ev.track_total_dedx_0_ );
+  set_object_input_branch_address( etree, "total_dedx_1", ev.track_total_dedx_1_ );
+  set_object_input_branch_address( etree, "total_dedx_2", ev.track_total_dedx_2_ );
+
+  set_object_input_branch_address( etree, "deltaY", ev.deltaY_ );
+  set_object_input_branch_address( etree, "deltaZ", ev.deltaZ_ );
+  set_object_input_branch_address( etree, "deltaYSigma", ev.deltaYSigma_ );
+  set_object_input_branch_address( etree, "deltaZSigma", ev.deltaZSigma_ );
+  set_object_input_branch_address( etree, "xclVariable", ev.xclVariable_ );
+  set_object_input_branch_address( etree, "flash_score", ev.flash_score_ );
+
+  SetBranchAddress(etree, "nblips", &ev.nblips_ );
+  set_object_input_branch_address( etree, "blip_x", ev.blip_x_ );
+  set_object_input_branch_address( etree, "blip_y", ev.blip_y_ );
+  set_object_input_branch_address( etree, "blip_z", ev.blip_z_ );
+  set_object_input_branch_address( etree, "blip_energy", ev.blip_energy_ );
+  
+  set_object_input_branch_address( etree, "is_reco_nc1p", ev.is_reco_nc1p_ );
+  set_object_input_branch_address( etree, "isinFV", ev.isinFV_ );
+
+  // MC truth information for the neutrino
+  SetBranchAddress(etree, "mc_nupdg", &ev.mc_nu_pdg_ );
+  SetBranchAddress(etree, "mc_nu_vtxx", &ev.mc_nu_vx_ );
+  SetBranchAddress(etree, "mc_nu_vtxy", &ev.mc_nu_vy_ );
+  SetBranchAddress(etree, "mc_nu_vtxz", &ev.mc_nu_vz_ );
+  SetBranchAddress(etree, "mc_enu", &ev.mc_nu_energy_ );
+  SetBranchAddress(etree, "mc_ccnc", &ev.mc_nu_ccnc_ );
+  SetBranchAddress(etree, "mc_mode", &ev.mc_nu_interaction_type_ );
+
+  SetBranchAddress(etree, "mc_n_threshold_muon", &ev.mc_n_threshold_muon_ );
+  SetBranchAddress(etree, "mc_n_threshold_proton", &ev.mc_n_threshold_proton_ );
+  SetBranchAddress(etree, "mc_n_threshold_pion0", &ev.mc_n_threshold_pion0_ );
+  SetBranchAddress(etree, "mc_n_threshold_pionpm", &ev.mc_n_threshold_pionpm_ );
+
+  SetBranchAddress(etree, "mc_hitnuc", &ev.mc_hitnuc_ );
+  SetBranchAddress(etree, "mc_hitnuc11_nuwro", &ev.mc_hitnuc11_nuwro_ );
+
+  // MC truth information for the final-state primary particles
+  set_object_input_branch_address( etree, "mc_pdg", ev.mc_nu_daughter_pdg_ );
+  set_object_input_branch_address( etree, "mc_g4_E", ev.mc_nu_daughter_energy_ );
+  set_object_input_branch_address( etree, "mc_g4_px", ev.mc_nu_daughter_px_ );
+  set_object_input_branch_address( etree, "mc_g4_py", ev.mc_nu_daughter_py_ );
+  set_object_input_branch_address( etree, "mc_g4_pz", ev.mc_nu_daughter_pz_ );
+
+  set_object_input_branch_address( etree, "mc_theta", ev.mc_nu_daughter_theta_ );
+  set_object_input_branch_address( etree, "mc_phi", ev.mc_nu_daughter_phi_ );
+
+  // GENIE and other systematic variation weights
+  bool has_tunedcv = ( etree.GetBranch("mc_wgt_tunedcv") != nullptr );
+  if ( has_tunedcv ) {
+    SetBranchAddress(etree, "mc_wgt_tunedcv", &ev.tuned_cv_weight_ );
+  }
+
+  // Handle weights in a special way in ProcessNTuples if needed, or map them to the weights map
+}
+
 // Helper function to set branch addresses for the output TTree
 void set_event_output_branch_addresses(TTree& out_tree, AnalysisEvent& ev,
   bool create = false)
@@ -474,6 +588,60 @@ void set_event_output_branch_addresses(TTree& out_tree, AnalysisEvent& ev,
 
   set_object_output_branch_address< std::vector<float> >( out_tree,
     "trk_llr_pid_score_v", ev.track_llr_pid_score_, create );
+
+  // NC1p specific branches
+  set_output_branch_address( out_tree, "flash_brightest_TotalPE",
+    &ev.flash_brightest_TotalPE_, create, "flash_brightest_TotalPE/F" );
+
+  set_object_output_branch_address< std::vector<float> >( out_tree,
+    "chi2_p_0", ev.track_chi2_proton_0_, create );
+  set_object_output_branch_address< std::vector<float> >( out_tree,
+    "chi2_p_1", ev.track_chi2_proton_1_, create );
+  set_object_output_branch_address< std::vector<float> >( out_tree,
+    "chi2_p_2", ev.track_chi2_proton_2_, create );
+
+  set_object_output_branch_address< std::vector<float> >( out_tree,
+    "start_dedx_0", ev.track_start_dedx_0_, create );
+  set_object_output_branch_address< std::vector<float> >( out_tree,
+    "start_dedx_1", ev.track_start_dedx_1_, create );
+  set_object_output_branch_address< std::vector<float> >( out_tree,
+    "start_dedx_2", ev.track_start_dedx_2_, create );
+
+  set_object_output_branch_address< std::vector<float> >( out_tree,
+    "total_dedx_0", ev.track_total_dedx_0_, create );
+  set_object_output_branch_address< std::vector<float> >( out_tree,
+    "total_dedx_1", ev.track_total_dedx_1_, create );
+  set_object_output_branch_address< std::vector<float> >( out_tree,
+    "total_dedx_2", ev.track_total_dedx_2_, create );
+
+  set_object_output_branch_address< std::vector<float> >( out_tree,
+    "deltaY", ev.deltaY_, create );
+  set_object_output_branch_address< std::vector<float> >( out_tree,
+    "deltaZ", ev.deltaZ_, create );
+  set_object_output_branch_address< std::vector<float> >( out_tree,
+    "deltaYSigma", ev.deltaYSigma_, create );
+  set_object_output_branch_address< std::vector<float> >( out_tree,
+    "deltaZSigma", ev.deltaZSigma_, create );
+  set_object_output_branch_address< std::vector<float> >( out_tree,
+    "xclVariable", ev.xclVariable_, create );
+  set_object_output_branch_address< std::vector<float> >( out_tree,
+    "flash_score", ev.flash_score_, create );
+
+  set_output_branch_address( out_tree, "nblips",
+    &ev.nblips_, create, "nblips/I" );
+  set_object_output_branch_address< std::vector<float> >( out_tree,
+    "blip_x", ev.blip_x_, create );
+  set_object_output_branch_address< std::vector<float> >( out_tree,
+    "blip_y", ev.blip_y_, create );
+  set_object_output_branch_address< std::vector<float> >( out_tree,
+    "blip_z", ev.blip_z_, create );
+  set_object_output_branch_address< std::vector<float> >( out_tree,
+    "blip_energy", ev.blip_energy_, create );
+
+  set_object_output_branch_address< std::vector<bool> >( out_tree,
+    "is_reco_nc1p", ev.is_reco_nc1p_, create );
+  set_object_output_branch_address< std::vector<int> >( out_tree,
+    "isinFV", ev.isinFV_, create );
 
   // MC truth information for the final-state primary particles
   set_object_output_branch_address< std::vector<int> >( out_tree, "mc_pdg",

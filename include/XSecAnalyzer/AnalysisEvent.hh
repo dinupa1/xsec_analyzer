@@ -154,6 +154,8 @@ public:
   MyPointer< std::vector<float> > mc_nu_daughter_px_;
   MyPointer< std::vector<float> > mc_nu_daughter_py_;
   MyPointer< std::vector<float> > mc_nu_daughter_pz_;
+  MyPointer< std::vector<float> > mc_nu_daughter_theta_;
+  MyPointer< std::vector<float> > mc_nu_daughter_phi_;
 
   // General systematic weights
   MyPointer< std::map< std::string, std::vector<double> > > mc_weights_map_;
@@ -190,12 +192,71 @@ public:
   // Signal definition requirements
   bool is_mc_ = false;
 
-  // truth electron information
+  // truth particle multiplicity information
   int mc_nelec_ = BOGUS_INT;
   int mc_npi0_ = BOGUS_INT;
   float mc_elec_e_ = BOGUS;
 
+  // Event identifiers
+  int run_number_ = BOGUS_INT;
+  int event_number_ = BOGUS_INT;
+
+  // MC truth counts for signal definition
+  int mc_n_threshold_muon_ = BOGUS_INT;
+
+  int mc_n_threshold_proton_ = BOGUS_INT;
+  int mc_n_threshold_pion0_ = BOGUS_INT;
+  int mc_n_threshold_pionpm_ = BOGUS_INT;
+
+  int mc_hitnuc_ = BOGUS_INT;
+  int mc_hitnuc11_nuwro_ = BOGUS_INT;
+
   //================================================================================================================
   // ** Reconstructed observables **
+
+  // NC1p specific
+  float flash_brightest_TotalPE_ = BOGUS;
+  int evt_reco_1p_ = BOGUS_INT;
+  
+  MyPointer< std::vector<float> > track_chi2_proton_0_;
+  MyPointer< std::vector<float> > track_chi2_proton_1_;
+  MyPointer< std::vector<float> > track_chi2_proton_2_;
+
+  MyPointer< std::vector<float> > track_start_dedx_0_;
+  MyPointer< std::vector<float> > track_start_dedx_1_;
+  MyPointer< std::vector<float> > track_start_dedx_2_;
+
+  MyPointer< std::vector<float> > track_end_dedx_0_;
+  MyPointer< std::vector<float> > track_end_dedx_1_;
+  MyPointer< std::vector<float> > track_end_dedx_2_;
+
+  MyPointer< std::vector<float> > track_total_dedx_0_;
+  MyPointer< std::vector<float> > track_total_dedx_1_;
+  MyPointer< std::vector<float> > track_total_dedx_2_;
+
+  MyPointer< std::vector<float> > track_startx_f2_;
+  MyPointer< std::vector<float> > track_starty_f2_;
+  MyPointer< std::vector<float> > track_startz_f2_;
+  MyPointer< std::vector<float> > track_endx_f2_;
+  MyPointer< std::vector<float> > track_endy_f2_;
+  MyPointer< std::vector<float> > track_endz_f2_;
+  MyPointer< std::vector<float> > track_theta_f2_;
+  MyPointer< std::vector<float> > track_phi_f2_;
+
+  MyPointer< std::vector<float> > deltaY_;
+  MyPointer< std::vector<float> > deltaZ_;
+  MyPointer< std::vector<float> > deltaYSigma_;
+  MyPointer< std::vector<float> > deltaZSigma_;
+  MyPointer< std::vector<float> > xclVariable_;
+  MyPointer< std::vector<float> > flash_score_;
+
+  int nblips_ = BOGUS_INT;
+  MyPointer< std::vector<float> > blip_x_;
+  MyPointer< std::vector<float> > blip_y_;
+  MyPointer< std::vector<float> > blip_z_;
+  MyPointer< std::vector<float> > blip_energy_;
+  
+  MyPointer< std::vector<bool> > is_reco_nc1p_;
+  MyPointer< std::vector<int> > isinFV_;
 
 };
