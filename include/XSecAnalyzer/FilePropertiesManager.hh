@@ -42,6 +42,13 @@ enum class NtupleFileType {
   kDetVarMCWMYZ, // wireMod YZ
   kDetVarMCCVExtra, // alternate CV for small samples
 
+  // *** NC1p Generator Variations (Separate Files) ***
+  kNC1pGenieXSec,
+  kNC1pGenieFSI,
+  kNC1pGeniePM,
+  kNC1pFlux,
+  kNC1pG4,
+
   // An alternate CV MC simulation
   kAltCVMC,
 
@@ -83,7 +90,12 @@ inline bool ntuple_type_is_reweightable_mc( const NtupleFileType& type ) {
 
   if ( type == NtupleFileType::kNumuMC
     || type == NtupleFileType::kIntrinsicNueMC
-    || type == NtupleFileType::kDirtMC )
+    || type == NtupleFileType::kDirtMC
+    || type == NtupleFileType::kNC1pGenieXSec
+    || type == NtupleFileType::kNC1pGenieFSI
+    || type == NtupleFileType::kNC1pGeniePM
+    || type == NtupleFileType::kNC1pFlux
+    || type == NtupleFileType::kNC1pG4 )
   {
     return true;
   }
@@ -178,7 +190,11 @@ class FilePropertiesManager {
     {
       auto end = string_to_file_type_map_.cend();
       auto iter = string_to_file_type_map_.find( str );
+
+      // std::cout << __FILE__ << " " << __LINE__ << std::endl;
+
       if ( iter != end ) return iter->second;
+      // std::cout << iter << std::endl;
       return NtupleFileType::kUnknown;
     }
 
@@ -298,17 +314,21 @@ class FilePropertiesManager {
       { "nueMC", NtupleFileType::kIntrinsicNueMC },
       { "dirtMC", NtupleFileType::kDirtMC },
       { "detVarCV", NtupleFileType::kDetVarMCCV },
-      { "detVarLYatten", NtupleFileType::kDetVarMCLYatten },
-      { "detVarLYdown", NtupleFileType::kDetVarMCLYdown },
-      { "detVarLYrayl", NtupleFileType::kDetVarMCLYrayl },
-      { "detVarRecomb2", NtupleFileType::kDetVarMCRecomb2 },
-      { "detVarSCE", NtupleFileType::kDetVarMCSCE },
-      { "detVarWMAngleXZ", NtupleFileType::kDetVarMCWMAngleXZ },
-      { "detVarWMAngleYZ", NtupleFileType::kDetVarMCWMAngleYZ },
-      { "detVarWMdEdx", NtupleFileType::kDetVarMCWMdEdx },
-      { "detVarWMX", NtupleFileType::kDetVarMCWMX },
-      { "detVarWMYZ", NtupleFileType::kDetVarMCWMYZ },
+      { "ly_attenuation", NtupleFileType::kDetVarMCLYatten },
+      { "ly_down", NtupleFileType::kDetVarMCLYdown },
+      { "ly_rayleigh", NtupleFileType::kDetVarMCLYrayl },
+      { "recomb2", NtupleFileType::kDetVarMCRecomb2 },
+      { "sce", NtupleFileType::kDetVarMCSCE },
+      { "wiremod_angle_xz", NtupleFileType::kDetVarMCWMAngleXZ },
+      { "wiremod_angle_yz", NtupleFileType::kDetVarMCWMAngleYZ },
+      { "wiremod_x", NtupleFileType::kDetVarMCWMX },
+      { "wiremod_yz", NtupleFileType::kDetVarMCWMYZ },
       { "detVarCVExtra", NtupleFileType::kDetVarMCCVExtra },
+      { "genie_xsec", NtupleFileType::kNC1pGenieXSec },
+      { "genie_fsi", NtupleFileType::kNC1pGenieFSI },
+      { "genie_pm", NtupleFileType::kNC1pGeniePM },
+      { "flux", NtupleFileType::kNC1pFlux },
+      { "g4", NtupleFileType::kNC1pG4 },
       { "altCVMC", NtupleFileType::kAltCVMC },
     };
 
