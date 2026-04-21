@@ -80,7 +80,7 @@ SystematicsCalculator::SystematicsCalculator(
   if ( syst_config_file_name_.empty() ) {
     // Look up the location of the default configuration file using the
     // FilePropertiesManager to get the directory name
-    syst_config_file_name_ = fpm.analysis_path() + "/configs/systcalc.conf";
+    syst_config_file_name_ = fpm.analysis_path() + "/configs/systcalc_nc1p.conf";
     std::cout << "syst_config_file_name given to SystematicsCalculator is"
       << " empty. Using default: " << syst_config_file_name_ << '\n';
   }
@@ -492,7 +492,7 @@ void SystematicsCalculator::build_universes( TDirectoryFile& root_tdir ) {
           // when using fake data, use the weighted CV histogram if it is present
           auto tmp_reco_hist = type == NFT::kOnBNB ? get_object_unique_ptr<TH1D>((CV_UNIV_NAME + "_0_reco").c_str(), *subdir) : nullptr;
           const auto dataContainsWeightedCV = tmp_reco_hist.get() != nullptr;
-          
+
           auto reco_hist = dataContainsWeightedCV ? std::move(tmp_reco_hist) : get_object_unique_ptr<TH1D>("unweighted_0_reco", *subdir);
 
           const std::string reco_hist2d_name = (dataContainsWeightedCV ? CV_UNIV_NAME : "unweighted") + "_0_reco2d";
@@ -505,7 +505,7 @@ void SystematicsCalculator::build_universes( TDirectoryFile& root_tdir ) {
             double ext_trigs = run_to_ext_trigs_map.at( run );
 
             // account for 2% beam occupancy in NuMI, negligible in BNB
-            if (useNuMI) {  
+            if (useNuMI) {
               reco_hist->Scale( (bnb_trigs / ext_trigs) * 0.98 );
               reco_hist2d->Scale( (bnb_trigs / ext_trigs) * 0.98 );
             }
