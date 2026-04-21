@@ -60,18 +60,30 @@ void NC1p::define_constants() {
 void NC1p::compute_reco_observables( AnalysisEvent* event ) {
   // Find the NC1p candidate track index
   int cand_idx = -1;
-  for ( size_t i = 0; i < event->track_length_->size(); ++i ) {
-    if ( event->is_reco_nc1p_->at(i) ) {
-      cand_idx = i;
-      break;
+  if ( event->is_reco_nc1p_ ) {
+    for ( size_t i = 0; i < event->is_reco_nc1p_->size(); ++i ) {
+      if ( event->is_reco_nc1p_->at(i) ) {
+        cand_idx = i;
+        break;
+      }
     }
   }
 
   if ( cand_idx != -1 ) {
-    reco_ke_ = 31.3 * std::pow( event->track_length_->at(cand_idx), 0.578 ) / 1000.0;
-    reco_q2_ = reco_ke_ * 2.0 * PROTON_MASS;
+    if ( event->track_length_ && event->track_length_->size() > (size_t)cand_idx ) {
+      reco_ke_ = 31.3 * std::pow( event->track_length_->at(cand_idx), 0.578 ) / 1000.0;
+      reco_q2_ = reco_ke_ * 2.0 * PROTON_MASS;
+    } else {
+      reco_ke_ = BOGUS;
+      reco_q2_ = BOGUS;
+    }
+
     // Use f2 for reco costheta to match selection
-    reco_costheta_ = std::cos( event->track_theta_f2_->at(cand_idx) );
+    if ( event->track_theta_f2_ && event->track_theta_f2_->size() > (size_t)cand_idx ) {
+      reco_costheta_ = std::cos( event->track_theta_f2_->at(cand_idx) );
+    } else {
+      reco_costheta_ = BOGUS;
+    }
   }
 }
 
@@ -211,16 +223,21 @@ bool NC1p::selection( AnalysisEvent* event ) {
 
   if ( index_p == -1 ) return false;
 
-  // BDT evaluation
-  dedx_end2_ = event->track_end_dedx_2_->at(index_p); 
-  dedx_total2_ = event->track_total_dedx_2_->at(index_p);
-  starty_ = event->track_starty_f2_->at(index_p);
-  startz_ = event->track_startz_f2_->at(index_p);
-  endy_ = event->track_endy_f2_->at(index_p);
-  endz_ = event->track_endz_f2_->at(index_p);
-  pid_p0_ = event->track_chi2_proton_0_->at(index_p);
-  pid_p1_ = event->track_chi2_proton_1_->at(index_p);
-  pid_p2_ = event->track_chi2_proton_2_->at(index_p);
+  // Safe BDT variable assignment with range checks
+  auto assign_if_safe = [&](const auto& vec_ptr, float& target, size_t idx) {
+    if ( vec_ptr && vec_ptr->size() > idx ) target = vec_ptr->at(idx);
+    else target = BOGUS;
+  };
+
+  assign_if_safe( event->track_end_dedx_2_, dedx_end2_, index_p );
+  assign_if_safe( event->track_total_dedx_2_, dedx_total2_, index_p );
+  assign_if_safe( event->track_starty_f2_, starty_, index_p );
+  assign_if_safe( event->track_startz_f2_, startz_, index_p );
+  assign_if_safe( event->track_endy_f2_, endy_, index_p );
+  assign_if_safe( event->track_endz_f2_, endz_, index_p );
+  assign_if_safe( event->track_chi2_proton_0_, pid_p0_, index_p );
+  assign_if_safe( event->track_chi2_proton_1_, pid_p1_, index_p );
+  assign_if_safe( event->track_chi2_proton_2_, pid_p2_, index_p );
 
   // Check if BDT weights need to be loaded for the current run
   if ( event->run_number_ != current_run_ ) {
