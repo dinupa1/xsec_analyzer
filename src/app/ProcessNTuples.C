@@ -111,6 +111,7 @@ void analyze( const std::string& input_filename,
 
   // Create a single AnalysisEvent object outside the loop to ensure stable memory addresses
   AnalysisEvent cur_event;
+  OldNC1pTruth old_truth;
 
   // Initialize the weights map early if in NC1p format so that output branches can be created
   if ( is_nc1p_format ) {
@@ -121,7 +122,7 @@ void analyze( const std::string& input_filename,
 
   // Set up branch addresses once before the loop
   if ( is_nc1p_format ) {
-    set_nc1p_event_branch_addresses( events_ch, cur_event );
+    set_nc1p_event_branch_addresses( events_ch, cur_event, old_truth );
   }
   else {
     set_event_branch_addresses( events_ch, cur_event );
@@ -173,6 +174,9 @@ void analyze( const std::string& input_filename,
     old_flux_names = nullptr;
     old_flux_weights = nullptr;
 
+    // Reset old truth pointers
+    old_truth.mc_pdg = nullptr;
+
     // TChain::LoadTree() returns the entry number that should be used with
     // the current TTree object
     int local_entry = events_ch.LoadTree( events_entry );
@@ -185,8 +189,27 @@ void analyze( const std::string& input_filename,
     // Overwrite run_number_ with run_id provided externally
     cur_event.run_number_ = run_id;
 
-    // If in old format, populate the mc_weights_map_ manually
+    // If in old format, perform truth data conversion/casting
     if ( is_nc1p_format ) {
+      cur_event.mc_nu_pdg_ = (int)old_truth.mc_nupdg;
+      cur_event.mc_nu_vx_ = old_truth.mc_nu_vtxx;
+      cur_event.mc_nu_vy_ = old_truth.mc_nu_vtxy;
+      cur_event.mc_nu_vz_ = old_truth.mc_nu_vtxz;
+      cur_event.mc_nu_energy_ = old_truth.mc_enu;
+      cur_event.mc_nu_ccnc_ = (int)old_truth.mc_ccnc;
+      cur_event.mc_nu_interaction_type_ = (int)old_truth.mc_mode;
+      cur_event.mc_hitnuc_ = (int)old_truth.mc_hitnuc;
+
+      if ( old_truth.mc_pdg ) {
+        if ( !cur_event.mc_nu_daughter_pdg_ ) {
+          cur_event.mc_nu_daughter_pdg_.reset( new std::vector<int>() );
+        }
+        cur_event.mc_nu_daughter_pdg_->clear();
+        for ( float pdg : *old_truth.mc_pdg ) {
+          cur_event.mc_nu_daughter_pdg_->push_back( (int)pdg );
+        }
+      }
+
       if ( !cur_event.mc_weights_map_ ) {
         cur_event.mc_weights_map_.reset( new std::map<std::string, std::vector<double>>() );
       }

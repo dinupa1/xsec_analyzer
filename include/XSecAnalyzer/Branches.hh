@@ -232,9 +232,19 @@ void set_event_branch_addresses(TTree& etree, AnalysisEvent& ev)
   SetBranchAddress(etree, "elec_e", &ev.mc_elec_e_ ); // Electron energy
 }
 
+struct OldNC1pTruth {
+  Float_t mc_nupdg;
+  Float_t mc_ccnc;
+  Float_t mc_mode;
+  Float_t mc_hitnuc;
+  Float_t mc_enu;
+  Float_t mc_nu_vtxx, mc_nu_vtxy, mc_nu_vtxz;
+  std::vector<float>* mc_pdg = nullptr;
+};
+
 // Helper function to set branch addresses for reading information
 // from the Event TTree in the old NC1p format
-void set_nc1p_event_branch_addresses(TTree& etree, AnalysisEvent& ev)
+void set_nc1p_event_branch_addresses(TTree& etree, AnalysisEvent& ev, OldNC1pTruth& old_truth)
 {
   SetBranchAddressSafe(etree, "event", &ev.event_number_ );
 
@@ -311,24 +321,27 @@ void set_nc1p_event_branch_addresses(TTree& etree, AnalysisEvent& ev)
   set_object_input_branch_address_safe( etree, "isinFV", ev.isinFV_ );
 
   // MC truth information for the neutrino
-  SetBranchAddressSafe(etree, "mc_nupdg", &ev.mc_nu_pdg_ );
-  SetBranchAddressSafe(etree, "mc_nu_vtxx", &ev.mc_nu_vx_ );
-  SetBranchAddressSafe(etree, "mc_nu_vtxy", &ev.mc_nu_vy_ );
-  SetBranchAddressSafe(etree, "mc_nu_vtxz", &ev.mc_nu_vz_ );
-  SetBranchAddressSafe(etree, "mc_enu", &ev.mc_nu_energy_ );
-  SetBranchAddressSafe(etree, "mc_ccnc", &ev.mc_nu_ccnc_ );
-  SetBranchAddressSafe(etree, "mc_mode", &ev.mc_nu_interaction_type_ );
+  // Note: many of these are Float_t in the old files but int/float in AnalysisEvent
+  SetBranchAddressSafe(etree, "mc_nupdg", &old_truth.mc_nupdg );
+  SetBranchAddressSafe(etree, "mc_nu_vtxx", &old_truth.mc_nu_vtxx );
+  SetBranchAddressSafe(etree, "mc_nu_vtxy", &old_truth.mc_nu_vtxy );
+  SetBranchAddressSafe(etree, "mc_nu_vtxz", &old_truth.mc_nu_vtxz );
+  SetBranchAddressSafe(etree, "mc_enu", &old_truth.mc_enu );
+  SetBranchAddressSafe(etree, "mc_ccnc", &old_truth.mc_ccnc );
+  SetBranchAddressSafe(etree, "mc_mode", &old_truth.mc_mode );
 
   SetBranchAddressSafe(etree, "mc_n_threshold_muon", &ev.mc_n_threshold_muon_ );
   SetBranchAddressSafe(etree, "mc_n_threshold_proton", &ev.mc_n_threshold_proton_ );
   SetBranchAddressSafe(etree, "mc_n_threshold_pion0", &ev.mc_n_threshold_pion0_ );
   SetBranchAddressSafe(etree, "mc_n_threshold_pionpm", &ev.mc_n_threshold_pionpm_ );
 
-  SetBranchAddressSafe(etree, "mc_hitnuc", &ev.mc_hitnuc_ );
+  SetBranchAddressSafe(etree, "mc_hitnuc", &old_truth.mc_hitnuc );
   SetBranchAddressSafe(etree, "mc_hitnuc11_nuwro", &ev.mc_hitnuc11_nuwro_ );
 
   // MC truth information for the final-state primary particles
-  set_object_input_branch_address_safe( etree, "mc_pdg", ev.mc_nu_daughter_pdg_ );
+  if (etree.GetBranch("mc_pdg")) {
+    etree.SetBranchAddress("mc_pdg", &old_truth.mc_pdg );
+  }
   set_object_input_branch_address_safe( etree, "mc_g4_E", ev.mc_nu_daughter_energy_ );
   set_object_input_branch_address_safe( etree, "mc_g4_px", ev.mc_nu_daughter_px_ );
   set_object_input_branch_address_safe( etree, "mc_g4_py", ev.mc_nu_daughter_py_ );
