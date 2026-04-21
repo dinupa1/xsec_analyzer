@@ -154,29 +154,7 @@ SystematicsCalculator::SystematicsCalculator(
   const auto& category_map = sel_for_categ_->category_map();
   Universe::set_num_categories( category_map.size() );
 
-
-
-  if ( !total_subdir ) {
-
-    // We couldn't find the pre-computed POT-summed universe histograms,
-    // so make them "on the fly" and store them in this object
-    this->build_universes( *root_tdir );
-
-    // Create a new TDirectoryFile as a subfolder to hold the POT-summed
-    // universe histograms
-    total_subdir = new TDirectoryFile( total_subfolder_name.c_str(),
-      "universes", "", root_tdir );
-
-    // Write the universes to the new subfolder for faster loading
-    // later
-    this->save_universes( *total_subdir );
-  }
-  else {
-    // Retrieve the POT-summed universe histograms that were built
-    // previously
-    this->load_universes( *total_subdir );
-  }
-  // Also load the configuration of true and reco bins used to create the
+  // Load the configuration of true and reco bins used to create the
   // universes
   std::string* true_bin_spec = nullptr;
   std::string* reco_bin_spec = nullptr;
@@ -208,7 +186,28 @@ SystematicsCalculator::SystematicsCalculator(
     reco_bins_.push_back( temp_reco_bin );
   }
 
+  if ( !total_subdir ) {
+
+    // We couldn't find the pre-computed POT-summed universe histograms,
+    // so make them "on the fly" and store them in this object
+    this->build_universes( *root_tdir );
+
+    // Create a new TDirectoryFile as a subfolder to hold the POT-summed
+    // universe histograms
+    total_subdir = new TDirectoryFile( total_subfolder_name.c_str(),
+      "universes", "", root_tdir );
+
+    // Write the universes to the new subfolder for faster loading
+    // later
+    this->save_universes( *total_subdir );
+  }
+  else {
+    // Retrieve the POT-summed universe histograms that were built
+    // previously
+    this->load_universes( *total_subdir );
+  }
 }
+
 
 void SystematicsCalculator::load_universes( TDirectoryFile& total_subdir ) {
 
@@ -591,10 +590,13 @@ void SystematicsCalculator::build_universes( TDirectoryFile& root_tdir ) {
         auto temp_2d_hist = get_object_unique_ptr< TH2D >(
           "unweighted_0_2d", *subdir );
 
-        // NOTE: the convention of the UniverseMaker class is to use
-        // x as the true axis and y as the reco axis.
-        int num_true_bins = temp_2d_hist->GetXaxis()->GetNbins();
-        int num_reco_bins = temp_2d_hist->GetYaxis()->GetNbins();
+        int num_true_bins = true_bins_.size();
+        int num_reco_bins = reco_bins_.size();
+
+        if ( !temp_2d_hist ) {
+           std::cout << "WARNING: MC file " << file_name << " is missing truth histograms. Skipping this file's MC contributions.\n";
+           continue;
+        }
 
         // Let's handle the fake BNB data samples first.
         if ( is_fake_data ) {
@@ -649,12 +651,12 @@ void SystematicsCalculator::build_universes( TDirectoryFile& root_tdir ) {
 
           // Add their contributions to the owned histograms for the
           // current Universe object
-          fake_data_universe_->hist_reco_->Add( h_reco.get() );
-          fake_data_universe_->hist_true_->Add( h_true.get() );
-          fake_data_universe_->hist_2d_->Add( h_2d.get() );
-          fake_data_universe_->hist_categ_->Add( h_categ.get() );
-          fake_data_universe_->hist_reco2d_->Add( h_reco2d.get() );
-          fake_data_universe_->hist_true2d_->Add( h_true2d.get() );
+          if ( h_reco ) fake_data_universe_->hist_reco_->Add( h_reco.get() );
+          if ( h_true ) fake_data_universe_->hist_true_->Add( h_true.get() );
+          if ( h_2d ) fake_data_universe_->hist_2d_->Add( h_2d.get() );
+          if ( h_categ ) fake_data_universe_->hist_categ_->Add( h_categ.get() );
+          if ( h_reco2d ) fake_data_universe_->hist_reco2d_->Add( h_reco2d.get() );
+          if ( h_true2d ) fake_data_universe_->hist_true2d_->Add( h_true2d.get() );
 
         } // fake data sample
 
@@ -733,21 +735,21 @@ void SystematicsCalculator::build_universes( TDirectoryFile& root_tdir ) {
 
           // Apply the scaling factor defined above to all histograms that
           // will be owned by the new Universe
-          hist_reco->Scale( temp_scale_factor );
-          hist_true->Scale( temp_scale_factor );
-          hist_2d->Scale( temp_scale_factor );
-          hist_categ->Scale( temp_scale_factor );
-          hist_reco2d->Scale( temp_scale_factor );
-          hist_true2d->Scale( temp_scale_factor );
+          if ( hist_reco ) hist_reco->Scale( temp_scale_factor );
+          if ( hist_true ) hist_true->Scale( temp_scale_factor );
+          if ( hist_2d ) hist_2d->Scale( temp_scale_factor );
+          if ( hist_categ ) hist_categ->Scale( temp_scale_factor );
+          if ( hist_reco2d ) hist_reco2d->Scale( temp_scale_factor );
+          if ( hist_true2d ) hist_true2d->Scale( temp_scale_factor );
 
           // Add the scaled contents of these histograms to the
           // corresponding histograms in the new Universe object
-          temp_univ_ptr->hist_reco_->Add( hist_reco.get() );
-          temp_univ_ptr->hist_true_->Add( hist_true.get() );
-          temp_univ_ptr->hist_2d_->Add( hist_2d.get() );
-          temp_univ_ptr->hist_categ_->Add( hist_categ.get() );
-          temp_univ_ptr->hist_reco2d_->Add( hist_reco2d.get() );
-          temp_univ_ptr->hist_true2d_->Add( hist_true2d.get() );
+          if ( hist_reco ) temp_univ_ptr->hist_reco_->Add( hist_reco.get() );
+          if ( hist_true ) temp_univ_ptr->hist_true_->Add( hist_true.get() );
+          if ( hist_2d ) temp_univ_ptr->hist_2d_->Add( hist_2d.get() );
+          if ( hist_categ ) temp_univ_ptr->hist_categ_->Add( hist_categ.get() );
+          if ( hist_reco2d ) temp_univ_ptr->hist_reco2d_->Add( hist_reco2d.get() );
+          if ( hist_true2d ) temp_univ_ptr->hist_true2d_->Add( hist_true2d.get() );
 
           // Adjust the owned histograms to avoid auto-deletion problems
           set_stats_and_dir( *temp_univ_ptr );
@@ -870,21 +872,21 @@ void SystematicsCalculator::build_universes( TDirectoryFile& root_tdir ) {
 
               // Scale these histograms to the appropriate BNB data POT for
               // the current run
-              h_reco->Scale( rw_scale_factor );
-              h_true->Scale( rw_scale_factor );
-              h_2d->Scale( rw_scale_factor );
-              h_categ->Scale( rw_scale_factor );
-              h_reco2d->Scale( rw_scale_factor );
-              h_true2d->Scale( rw_scale_factor );
+              if ( h_reco ) h_reco->Scale( rw_scale_factor );
+              if ( h_true ) h_true->Scale( rw_scale_factor );
+              if ( h_2d ) h_2d->Scale( rw_scale_factor );
+              if ( h_categ ) h_categ->Scale( rw_scale_factor );
+              if ( h_reco2d ) h_reco2d->Scale( rw_scale_factor );
+              if ( h_true2d ) h_true2d->Scale( rw_scale_factor );
 
               // Add their contributions to the owned histograms for the
               // current Universe object
-              universe.hist_reco_->Add( h_reco.get() );
-              universe.hist_true_->Add( h_true.get() );
-              universe.hist_2d_->Add( h_2d.get() );
-              universe.hist_categ_->Add( h_categ.get() );
-              universe.hist_reco2d_->Add( h_reco2d.get() );
-              universe.hist_true2d_->Add( h_true2d.get() );
+              if ( h_reco ) universe.hist_reco_->Add( h_reco.get() );
+              if ( h_true ) universe.hist_true_->Add( h_true.get() );
+              if ( h_2d ) universe.hist_2d_->Add( h_2d.get() );
+              if ( h_categ ) universe.hist_categ_->Add( h_categ.get() );
+              if ( h_reco2d ) universe.hist_reco2d_->Add( h_reco2d.get() );
+              if ( h_true2d ) universe.hist_true2d_->Add( h_true2d.get() );
 
             } // universes indices
 

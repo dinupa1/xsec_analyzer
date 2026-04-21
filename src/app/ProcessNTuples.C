@@ -112,6 +112,13 @@ void analyze( const std::string& input_filename,
   // Create a single AnalysisEvent object outside the loop to ensure stable memory addresses
   AnalysisEvent cur_event;
 
+  // Initialize the weights map early if in NC1p format so that output branches can be created
+  if ( is_nc1p_format ) {
+    cur_event.mc_weights_map_.reset( new std::map<std::string, std::vector<double>>() );
+    // Add a dummy TunedCentralValue weight with value 1.0
+    (*cur_event.mc_weights_map_)[ "TunedCentralValue_UBGenie" ] = { 1.0 };
+  }
+
   // Set up branch addresses once before the loop
   if ( is_nc1p_format ) {
     set_nc1p_event_branch_addresses( events_ch, cur_event );
