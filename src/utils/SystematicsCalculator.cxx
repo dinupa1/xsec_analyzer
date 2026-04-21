@@ -1287,7 +1287,15 @@ std::unique_ptr< CovMatrixMap > SystematicsCalculator::get_covariances() const
       // Use a bare pointer for the CV universe so that we can reassign it
       // below if needed. References can't be reassigned after they are
       // initialized.
-      const auto* detVar_cv_u = detvar_universes_.at( NFT::kDetVarMCCV ).get();
+      const auto* detVar_cv_u = nullptr;
+      if ( detvar_universes_.count( NFT::kDetVarMCCV ) ) {
+        detVar_cv_u = detvar_universes_.at( NFT::kDetVarMCCV ).get();
+      }
+      else {
+        // Fall back to the regular CV if the detVar CV is missing
+        detVar_cv_u = &this->cv_universe();
+      }
+
       const auto& detVar_alt_u = detvar_universes_.at( ntuple_type );
 
       // The Recomb2 and SCE variations use an alternate "extra CV" universe
@@ -1298,7 +1306,10 @@ std::unique_ptr< CovMatrixMap > SystematicsCalculator::get_covariances() const
         if ( ntuple_type == NFT::kDetVarMCSCE
           || ntuple_type == NFT::kDetVarMCRecomb2 )
         {
-          detVar_cv_u = detvar_universes_.at( NFT::kDetVarMCCVExtra ).get();
+          if ( detvar_universes_.count( NFT::kDetVarMCCVExtra ) ) {
+            detVar_cv_u = detvar_universes_.at( NFT::kDetVarMCCVExtra ).get();
+          }
+          // if missing, we just keep the previous detVar_cv_u (likely kDetVarMCCV)
         }
       }
 
@@ -1454,7 +1465,10 @@ std::unique_ptr< TMatrixD >
 {
   int num_true_bins = true_bins_.size();
   const auto& cv_univ = this->cv_universe();
-  const TH1D* ext_hist = data_hists_.at( NFT::kExtBNB ).get(); // EXT data
+  const TH1D* ext_hist = nullptr;
+  if ( data_hists_.count( NFT::kExtBNB ) ) {
+    ext_hist = data_hists_.at( NFT::kExtBNB ).get(); // EXT data
+  }
 
   auto result = std::make_unique< TMatrixD >( num_ordinary_reco_bins_, 1 );
 
@@ -1462,7 +1476,8 @@ std::unique_ptr< TMatrixD >
 
     // Start by tallying the EXT contribution in the current reco bin. Note
     // that the EXT data histogram bins have a one-based index.
-    double bkgd_events = ext_hist->GetBinContent( r + 1 );
+    double bkgd_events = 0.;
+    if ( ext_hist ) bkgd_events = ext_hist->GetBinContent( r + 1 );
 
     // Also start out with zero signal events (the signal prediction comes
     // purely from MC)
@@ -1524,11 +1539,16 @@ MeasuredEvents SystematicsCalculator::get_measured_events() const
   );
 
   // Create the vector of measured event counts in the ordinary reco bins
-  const TH1D* d_hist = data_hists_.at( NFT::kOnBNB ).get(); // BNB data
+  const TH1D* d_hist = nullptr;
+  if ( data_hists_.count( NFT::kOnBNB ) ) {
+    d_hist = data_hists_.at( NFT::kOnBNB ).get(); // BNB data
+  }
+
   TMatrixD ordinary_data( num_ordinary_reco_bins_, 1 );
   for ( int r = 0; r < num_ordinary_reco_bins_; ++r ) {
     // Switch to using the one-based TH1D index when retrieving these values
-    double bnb_events = d_hist->GetBinContent( r + 1 );
+    double bnb_events = 0.;
+    if ( d_hist ) bnb_events = d_hist->GetBinContent( r + 1 );
 
     ordinary_data( r, 0 ) = bnb_events;
   }

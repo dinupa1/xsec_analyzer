@@ -80,7 +80,12 @@ double MCC9SystematicsCalculator::evaluate_observable( const Universe& univ,
   // either the regular or detVar CV here as appropriate.
   const Universe* cv_univ = nullptr;
   if ( use_detVar_CV ) {
-    cv_univ = detvar_universes_.at( NFT::kDetVarMCCV ).get();
+    if ( detvar_universes_.count( NFT::kDetVarMCCV ) ) {
+      cv_univ = detvar_universes_.at( NFT::kDetVarMCCV ).get();
+    }
+    else {
+      cv_univ = &this->cv_universe();
+    }
   }
   else {
     cv_univ = &this->cv_universe();
@@ -224,7 +229,12 @@ double MCC9SystematicsCalculator::evaluate_observable( const Universe& univ,
   // either the regular or detVar CV here as appropriate.
   const Universe* cv_univ = nullptr;
   if ( use_detVar_CV ) {
-    cv_univ = detvar_universes_.at( NFT::kDetVarMCCV ).get();
+    if ( detvar_universes_.count( NFT::kDetVarMCCV ) ) {
+      cv_univ = detvar_universes_.at( NFT::kDetVarMCCV ).get();
+    }
+    else {
+      cv_univ = &this->cv_universe();
+    }
   }
   else {
     cv_univ = &this->cv_universe();
@@ -366,8 +376,19 @@ double MCC9SystematicsCalculator::evaluate_data_stat_covariance( int reco_bin_a,
   int reco_bin_b, bool use_ext ) const
 {
   const TH2D* d_hist = nullptr;
-  if ( use_ext ) d_hist = data_hists2d_.at( NFT::kExtBNB ).get(); // EXT data
-  else d_hist = data_hists2d_.at( NFT::kOnBNB ).get(); // BNB data
+  if ( use_ext ) {
+    if ( data_hists2d_.count( NFT::kExtBNB ) ) {
+      d_hist = data_hists2d_.at( NFT::kExtBNB ).get(); // EXT data
+    }
+  }
+  else {
+    if ( data_hists2d_.count( NFT::kOnBNB ) ) {
+      d_hist = data_hists2d_.at( NFT::kOnBNB ).get(); // BNB data
+    }
+  }
+
+  if ( !d_hist ) return 0.;
+
   // ROOT histograms use one-based bin indices, so I correct for that here.
   // Note that using the bin error (rather than the bin contents) enables a
   // correct treatment for weighted events provided TH1::Sumw2() was called
