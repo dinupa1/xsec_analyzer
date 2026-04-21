@@ -180,8 +180,13 @@ void UniverseMaker::build_universes(
 
   // Set up storage for the "is_mc" boolean flag branch. If we're not working
   // with MC events, then we shouldn't do anything with the true bin counts.
-  bool is_mc;
-  input_chain_.SetBranchAddress( "is_mc", &is_mc );
+  bool is_mc = false;
+  if ( input_chain_.GetBranch("is_mc") ) {
+    input_chain_.SetBranchAddress( "is_mc", &is_mc );
+  }
+  else {
+    std::cout << "WARNING: is_mc branch not found in input chain. Assuming false.\n";
+  }
 
   // set CV weight addresses, NuMI-specific
   float tune_weight_numi = 1;

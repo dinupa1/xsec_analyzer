@@ -109,80 +109,77 @@ void analyze( const std::string& input_filename,
   // generated only in active volume rather than full cryostat volume
   FiducialVolume AV = { 0.0, 256.0, -120.0, 120.0, 0.0, 1076.0 };
 
+  // Create a single AnalysisEvent object outside the loop to ensure stable memory addresses
+  AnalysisEvent cur_event;
+
+  // Set up branch addresses once before the loop
+  if ( is_nc1p_format ) {
+    set_nc1p_event_branch_addresses( events_ch, cur_event );
+  }
+  else {
+    set_event_branch_addresses( events_ch, cur_event );
+  }
+
+  // Temporary pointers for old format weights (moved outside the loop)
+  std::vector<std::string>* old_genie_names = nullptr;
+  std::vector<std::vector<double>>* old_genie_weights = nullptr;
+  std::vector<std::string>* old_g4_names = nullptr;
+  std::vector<std::vector<double>>* old_g4_weights = nullptr;
+  std::vector<std::string>* old_flux_names = nullptr;
+  std::vector<std::vector<double>>* old_flux_weights = nullptr;
+
+  if ( is_nc1p_format ) {
+    if ( events_ch.GetBranch("evtwgt_genie_multisim_funcname") ) {
+      events_ch.SetBranchAddress("evtwgt_genie_multisim_funcname", &old_genie_names);
+      events_ch.SetBranchAddress("evtwgt_genie_multisim_weight", &old_genie_weights);
+    }
+    if ( events_ch.GetBranch("evtwgt_g4_multisim_funcname") ) {
+      events_ch.SetBranchAddress("evtwgt_g4_multisim_funcname", &old_g4_names);
+      events_ch.SetBranchAddress("evtwgt_g4_multisim_weight", &old_g4_weights);
+    }
+    if ( events_ch.GetBranch("evtwgt_flux_multisim_funcname") ) {
+      events_ch.SetBranchAddress("evtwgt_flux_multisim_funcname", &old_flux_names);
+      events_ch.SetBranchAddress("evtwgt_flux_multisim_weight", &old_flux_weights);
+    }
+  }
+
+  // Set the output TTree branch addresses once
+  set_event_output_branch_addresses(*out_tree, cur_event, true );
+
   // EVENT LOOP
-  // TChains can potentially be really big (and spread out over multiple
-  // files). When that's the case, calling TChain::GetEntries() can be very
-  // slow. I get around this by using a while loop instead of a for loop.
-  bool created_output_branches = false;
   long events_entry = 0;
-
   while ( true ) {
-
-    //if ( events_entry > 1000) break;
 
     if ( events_entry % 1000 == 0 ) {
       std::cout << "Processing event #" << events_entry << '\n';
     }
 
-    // Create a new AnalysisEvent object. This will reset all analysis
-    // variables for the current event.
-    AnalysisEvent cur_event;
-
-    // Set up old format weight branches if needed
-    std::vector<std::string>* old_genie_names = nullptr;
-    std::vector<std::vector<double>>* old_genie_weights = nullptr;
-    std::vector<std::string>* old_g4_names = nullptr;
-    std::vector<std::vector<double>>* old_g4_weights = nullptr;
-    std::vector<std::string>* old_flux_names = nullptr;
-    std::vector<std::vector<double>>* old_flux_weights = nullptr;
-
-    if ( is_nc1p_format ) {
-      set_nc1p_event_branch_addresses( events_ch, cur_event );
-      
-      // Manually set addresses for old weight branches
-      if ( events_ch.GetBranch("evtwgt_genie_multisim_funcname") ) {
-        events_ch.SetBranchAddress("evtwgt_genie_multisim_funcname", &old_genie_names);
-        events_ch.SetBranchAddress("evtwgt_genie_multisim_weight", &old_genie_weights);
-      }
-      if ( events_ch.GetBranch("evtwgt_g4_multisim_funcname") ) {
-        events_ch.SetBranchAddress("evtwgt_g4_multisim_funcname", &old_g4_names);
-        events_ch.SetBranchAddress("evtwgt_g4_multisim_weight", &old_g4_weights);
-      }
-      if ( events_ch.GetBranch("evtwgt_flux_multisim_funcname") ) {
-        events_ch.SetBranchAddress("evtwgt_flux_multisim_funcname", &old_flux_names);
-        events_ch.SetBranchAddress("evtwgt_flux_multisim_weight", &old_flux_weights);
-      }
-    }
-    else {
-      // Set branch addresses for the member variables that will be read
-      // directly from the Event TTree.
-      set_event_branch_addresses( events_ch, cur_event );
-    }
+    // Reset analysis variables for the current event
+    // Note: AnalysisEvent needs a way to reset itself if we reuse the object.
+    // For now, we rely on the fact that GetEntry overwrites most fields.
+    // However, some fields like is_mc_ and weight maps need manual reset.
+    cur_event.is_mc_ = false;
+    if ( cur_event.mc_weights_map_ ) cur_event.mc_weights_map_->clear();
 
     // TChain::LoadTree() returns the entry number that should be used with
-    // the current TTree object, which (together with the TBranch objects
-    // that it owns) doesn't know about the other TTrees in the TChain.
-    // If the return value is negative, there was an I/O error, or we've
-    // attempted to read past the end of the TChain.
+    // the current TTree object
     int local_entry = events_ch.LoadTree( events_entry );
 
-    // If we've reached the end of the TChain (or encountered an I/O error),
-    // then terminate the event loop
     if ( local_entry < 0 ) break;
 
-    // Load all of the branches for which we've called
-    // TChain::SetBranchAddress() above
+    // Load all of the branches for which we've called SetBranchAddress()
     events_ch.GetEntry( events_entry );
 
-    // Overwrite run_number_ with run_id provided externally (e.g. from file list)
+    // Overwrite run_number_ with run_id provided externally
     cur_event.run_number_ = run_id;
 
     // If in old format, populate the mc_weights_map_ manually
     if ( is_nc1p_format ) {
-      cur_event.mc_weights_map_.reset( new std::map<std::string, std::vector<double>>() );
+      if ( !cur_event.mc_weights_map_ ) {
+        cur_event.mc_weights_map_.reset( new std::map<std::string, std::vector<double>>() );
+      }
       
       // Add a dummy TunedCentralValue weight with value 1.0
-      // This is needed because the framework expects this branch as the CV
       (*cur_event.mc_weights_map_)[ "TunedCentralValue_UBGenie" ] = { 1.0 };
 
       // Also initialize individual weight branches to 1.0
@@ -207,20 +204,10 @@ void analyze( const std::string& input_filename,
       }
     }
 
-    // Set the output TTree branch addresses, creating the branches if needed
-    // (during the first event loop iteration)
-    bool create_them = false;
-    if ( !created_output_branches ) {
-      create_them = true;
-      created_output_branches = true;
-    }
-    set_event_output_branch_addresses(*out_tree, cur_event, create_them );
-
     for ( auto& sel : selections ) {
       sel->apply_selection( &cur_event );
     }
 
-    // We're done. Save the results and move on to the next event.
     out_tree->Fill();
     ++events_entry;
   }
