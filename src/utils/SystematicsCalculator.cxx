@@ -1287,7 +1287,7 @@ std::unique_ptr< CovMatrixMap > SystematicsCalculator::get_covariances() const
       // Use a bare pointer for the CV universe so that we can reassign it
       // below if needed. References can't be reassigned after they are
       // initialized.
-      const auto* detVar_cv_u = nullptr;
+      const Universe* detVar_cv_u = nullptr;
       if ( detvar_universes_.count( NFT::kDetVarMCCV ) ) {
         detVar_cv_u = detvar_universes_.at( NFT::kDetVarMCCV ).get();
       }
