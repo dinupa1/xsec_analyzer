@@ -276,8 +276,10 @@ void UniverseMaker::build_universes(
       }
       else {
         auto& wm = wh.weight_map();
-        if ( wm.size() > 0u ) {
+        if ( wm.count( SPLINE_WEIGHT_NAME ) ) {
           spline_weight = wm.at( SPLINE_WEIGHT_NAME )->front();
+        }
+        if ( wm.count( TUNE_WEIGHT_NAME ) ) {
           tune_weight = wm.at( TUNE_WEIGHT_NAME )->front();
         }
       }

@@ -193,6 +193,7 @@ void analyze( const std::string& input_filename,
       
       // Add a dummy TunedCentralValue weight with value 1.0
       (*cur_event.mc_weights_map_)[ "TunedCentralValue_UBGenie" ] = { 1.0 };
+      (*cur_event.mc_weights_map_)[ "splines_general_Spline" ] = { 1.0 };
 
       // Also initialize individual weight branches to 1.0
       cur_event.spline_weight_ = 1.0;

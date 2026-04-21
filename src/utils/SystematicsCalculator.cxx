@@ -393,31 +393,35 @@ void SystematicsCalculator::build_universes( TDirectoryFile& root_tdir ) {
     int run = run_and_type_pair.first;
     const auto& type_map = run_and_type_pair.second;
 
-    const auto& bnb_file_set = type_map.at( NFT::kOnBNB );
-    for ( const std::string& bnb_file : bnb_file_set ) {
-      const auto& pot_and_trigs = data_norm_map.at( bnb_file );
+    if ( type_map.count(NFT::kOnBNB) ) {
+      const auto& bnb_file_set = type_map.at( NFT::kOnBNB );
+      for ( const std::string& bnb_file : bnb_file_set ) {
+        const auto& pot_and_trigs = data_norm_map.at( bnb_file );
 
-      if ( !run_to_bnb_pot_map.count(run) ) {
-        run_to_bnb_pot_map[ run ] = 0.;
-        run_to_bnb_trigs_map[ run ] = 0.;
-      }
+        if ( !run_to_bnb_pot_map.count(run) ) {
+          run_to_bnb_pot_map[ run ] = 0.;
+          run_to_bnb_trigs_map[ run ] = 0.;
+        }
 
-      run_to_bnb_pot_map.at( run ) += pot_and_trigs.pot_;
-      run_to_bnb_trigs_map.at( run ) += pot_and_trigs.trigger_count_;
+        run_to_bnb_pot_map.at( run ) += pot_and_trigs.pot_;
+        run_to_bnb_trigs_map.at( run ) += pot_and_trigs.trigger_count_;
 
-    } // BNB data files
+      } // BNB data files
+    }
 
-    const auto& ext_file_set = type_map.at( NFT::kExtBNB );
-    for ( const std::string& ext_file : ext_file_set ) {
-      const auto& pot_and_trigs = data_norm_map.at( ext_file );
+    if ( type_map.count(NFT::kExtBNB) ) {
+      const auto& ext_file_set = type_map.at( NFT::kExtBNB );
+      for ( const std::string& ext_file : ext_file_set ) {
+        const auto& pot_and_trigs = data_norm_map.at( ext_file );
 
-      if ( !run_to_ext_trigs_map.count(run) ) {
-        run_to_ext_trigs_map[ run ] = 0.;
-      }
+        if ( !run_to_ext_trigs_map.count(run) ) {
+          run_to_ext_trigs_map[ run ] = 0.;
+        }
 
-      run_to_ext_trigs_map.at( run ) += pot_and_trigs.trigger_count_;
+        run_to_ext_trigs_map.at( run ) += pot_and_trigs.trigger_count_;
 
-    } // EXT files
+      } // EXT files
+    }
 
   } // runs
 
@@ -505,45 +509,49 @@ void SystematicsCalculator::build_universes( TDirectoryFile& root_tdir ) {
 
             // account for 2% beam occupancy in NuMI, negligible in BNB
             if (useNuMI) {
-              reco_hist->Scale( (bnb_trigs / ext_trigs) * 0.98 );
-              reco_hist2d->Scale( (bnb_trigs / ext_trigs) * 0.98 );
+              if ( reco_hist ) reco_hist->Scale( (bnb_trigs / ext_trigs) * 0.98 );
+              if ( reco_hist2d ) reco_hist2d->Scale( (bnb_trigs / ext_trigs) * 0.98 );
             }
             else {
-              reco_hist->Scale( bnb_trigs / ext_trigs );
-              reco_hist2d->Scale( bnb_trigs / ext_trigs );
+              if ( reco_hist ) reco_hist->Scale( bnb_trigs / ext_trigs );
+              if ( reco_hist2d ) reco_hist2d->Scale( bnb_trigs / ext_trigs );
             }
           }
 
           // If we don't have a histogram in the map for this data type
           // yet, just clone the existing histogram.
           if ( !data_hists_.count(type) ) {
-            TH1D* temp_clone = dynamic_cast<TH1D*>(
-              reco_hist->Clone("temp_clone")
-            );
-            temp_clone->SetStats( false );
-            temp_clone->SetDirectory( nullptr );
-            // Note: here the map entry takes ownership of the histogram
-            data_hists_[ type ].reset( temp_clone );
+            if ( reco_hist ) {
+              TH1D* temp_clone = dynamic_cast<TH1D*>(
+                reco_hist->Clone("temp_clone")
+              );
+              temp_clone->SetStats( false );
+              temp_clone->SetDirectory( nullptr );
+              // Note: here the map entry takes ownership of the histogram
+              data_hists_[ type ].reset( temp_clone );
+            }
           }
           else {
             // Otherwise, just add its contribution to the existing
             // histogram
-            data_hists_.at( type )->Add( reco_hist.get() );
+            if ( reco_hist ) data_hists_.at( type )->Add( reco_hist.get() );
           }
 
           if ( !data_hists2d_.count(type) ) {
-            TH2D* temp_clone = dynamic_cast<TH2D*>(
-              reco_hist2d->Clone("temp_clone")
-            );
-            temp_clone->SetStats( false );
-            temp_clone->SetDirectory( nullptr );
-            // Note: here the map entry takes ownership of the histogram
-            data_hists2d_[ type ].reset( temp_clone );
+            if ( reco_hist2d ) {
+              TH2D* temp_clone = dynamic_cast<TH2D*>(
+                reco_hist2d->Clone("temp_clone")
+              );
+              temp_clone->SetStats( false );
+              temp_clone->SetDirectory( nullptr );
+              // Note: here the map entry takes ownership of the histogram
+              data_hists2d_[ type ].reset( temp_clone );
+            }
           }
           else {
             // Otherwise, just add its contribution to the existing
             // histogram
-            data_hists2d_.at( type )->Add( reco_hist2d.get() );
+            if ( reco_hist2d ) data_hists2d_.at( type )->Add( reco_hist2d.get() );
           }
 
           // For EXT data files (always assumed to be real data), no further
