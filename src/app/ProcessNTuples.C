@@ -155,11 +155,16 @@ void analyze( const std::string& input_filename,
     }
 
     // Reset analysis variables for the current event
-    // Note: AnalysisEvent needs a way to reset itself if we reuse the object.
-    // For now, we rely on the fact that GetEntry overwrites most fields.
-    // However, some fields like is_mc_ and weight maps need manual reset.
     cur_event.is_mc_ = false;
     if ( cur_event.mc_weights_map_ ) cur_event.mc_weights_map_->clear();
+
+    // Reset weight pointers to nullptr each iteration
+    old_genie_names = nullptr;
+    old_genie_weights = nullptr;
+    old_g4_names = nullptr;
+    old_g4_weights = nullptr;
+    old_flux_names = nullptr;
+    old_flux_weights = nullptr;
 
     // TChain::LoadTree() returns the entry number that should be used with
     // the current TTree object
@@ -188,17 +193,20 @@ void analyze( const std::string& input_filename,
       cur_event.ppfx_cv_weight_ = 1.0;
 
       if ( old_genie_names && old_genie_weights ) {
-        for ( size_t i = 0; i < old_genie_names->size(); ++i ) {
+        size_t n = std::min( old_genie_names->size(), old_genie_weights->size() );
+        for ( size_t i = 0; i < n; ++i ) {
           (*cur_event.mc_weights_map_)[ old_genie_names->at(i) ] = old_genie_weights->at(i);
         }
       }
       if ( old_g4_names && old_g4_weights ) {
-        for ( size_t i = 0; i < old_g4_names->size(); ++i ) {
+        size_t n = std::min( old_g4_names->size(), old_g4_weights->size() );
+        for ( size_t i = 0; i < n; ++i ) {
           (*cur_event.mc_weights_map_)[ old_g4_names->at(i) ] = old_g4_weights->at(i);
         }
       }
       if ( old_flux_names && old_flux_weights ) {
-        for ( size_t i = 0; i < old_flux_names->size(); ++i ) {
+        size_t n = std::min( old_flux_names->size(), old_flux_weights->size() );
+        for ( size_t i = 0; i < n; ++i ) {
           (*cur_event.mc_weights_map_)[ old_flux_names->at(i) ] = old_flux_weights->at(i);
         }
       }

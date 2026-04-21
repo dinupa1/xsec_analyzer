@@ -89,14 +89,24 @@ void NC1p::compute_true_observables( AnalysisEvent* event ) {
   if ( true_p_idx != -1 ) {
     true_ke_ = event->mc_nu_daughter_energy_->at(true_p_idx) - PROTON_MASS;
     true_q2_ = true_ke_ * 2.0 * PROTON_MASS;
-    // Use mc_theta branch directly if available
-    if ( event->mc_nu_daughter_theta_->size() > (size_t)true_p_idx ) {
+
+    size_t n_px = event->mc_nu_daughter_px_->size();
+    size_t n_py = event->mc_nu_daughter_py_->size();
+    size_t n_pz = event->mc_nu_daughter_pz_->size();
+    size_t n_theta = event->mc_nu_daughter_theta_->size();
+
+    // Use mc_theta branch directly if available and size is consistent
+    if ( n_theta > (size_t)true_p_idx ) {
       true_costheta_ = std::cos( event->mc_nu_daughter_theta_->at(true_p_idx) );
-    } else {
-      true_costheta_ = event->mc_nu_daughter_pz_->at(true_p_idx) / 
-                       std::sqrt(std::pow(event->mc_nu_daughter_px_->at(true_p_idx), 2) + 
-                                 std::pow(event->mc_nu_daughter_py_->at(true_p_idx), 2) + 
-                                 std::pow(event->mc_nu_daughter_pz_->at(true_p_idx), 2));
+    } 
+    else if ( n_px > (size_t)true_p_idx && n_py > (size_t)true_p_idx && n_pz > (size_t)true_p_idx ) {
+      float px = event->mc_nu_daughter_px_->at(true_p_idx);
+      float py = event->mc_nu_daughter_py_->at(true_p_idx);
+      float pz = event->mc_nu_daughter_pz_->at(true_p_idx);
+      true_costheta_ = pz / std::sqrt( px*px + py*py + pz*pz );
+    }
+    else {
+      true_costheta_ = BOGUS;
     }
   }
 }
