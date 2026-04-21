@@ -91,10 +91,17 @@ void NC1p::compute_true_observables( AnalysisEvent* event ) {
   // Looking for the leading true proton in the daughters as in make_tree.C L410
   int true_p_idx = -1;
   float max_e = 0;
-  for ( size_t i = 0; i < event->mc_nu_daughter_pdg_->size(); ++i ) {
-    if ( event->mc_nu_daughter_pdg_->at(i) == 2212 && event->mc_nu_daughter_energy_->at(i) > max_e ) {
-      max_e = event->mc_nu_daughter_energy_->at(i);
-      true_p_idx = i;
+  
+  if ( event->mc_nu_daughter_pdg_ && event->mc_nu_daughter_energy_ ) {
+    size_t n_pdg = event->mc_nu_daughter_pdg_->size();
+    size_t n_e = event->mc_nu_daughter_energy_->size();
+    size_t n = std::min( n_pdg, n_e );
+
+    for ( size_t i = 0; i < n; ++i ) {
+      if ( event->mc_nu_daughter_pdg_->at(i) == 2212 && event->mc_nu_daughter_energy_->at(i) > max_e ) {
+        max_e = event->mc_nu_daughter_energy_->at(i);
+        true_p_idx = i;
+      }
     }
   }
 
@@ -102,10 +109,10 @@ void NC1p::compute_true_observables( AnalysisEvent* event ) {
     true_ke_ = event->mc_nu_daughter_energy_->at(true_p_idx) - PROTON_MASS;
     true_q2_ = true_ke_ * 2.0 * PROTON_MASS;
 
-    size_t n_px = event->mc_nu_daughter_px_->size();
-    size_t n_py = event->mc_nu_daughter_py_->size();
-    size_t n_pz = event->mc_nu_daughter_pz_->size();
-    size_t n_theta = event->mc_nu_daughter_theta_->size();
+    size_t n_px = event->mc_nu_daughter_px_ ? event->mc_nu_daughter_px_->size() : 0;
+    size_t n_py = event->mc_nu_daughter_py_ ? event->mc_nu_daughter_py_->size() : 0;
+    size_t n_pz = event->mc_nu_daughter_pz_ ? event->mc_nu_daughter_pz_->size() : 0;
+    size_t n_theta = event->mc_nu_daughter_theta_ ? event->mc_nu_daughter_theta_->size() : 0;
 
     // Use mc_theta branch directly if available and size is consistent
     if ( n_theta > (size_t)true_p_idx ) {
@@ -170,22 +177,33 @@ bool NC1p::selection( AnalysisEvent* event ) {
   // Primary selection from make_tree.C L435
   if ( event->evt_reco_1p_ != 1 ) return false;
 
+  // Safe vector access lambda
+  auto get_val = [&](const auto& vec_ptr, size_t idx, auto default_val) -> decltype(default_val) {
+    if ( vec_ptr && vec_ptr->size() > idx ) return vec_ptr->at(idx);
+    return default_val;
+  };
+
   int index_p = -1;
   float trkdis = 999;
-  for ( size_t i = 0; i < event->track_length_->size(); ++i ) {
-    if ( event->is_reco_nc1p_->at(i) && event->isinFV_->at(i) > 0 ) {
+  size_t n_tracks = event->track_length_ ? event->track_length_->size() : 0;
+
+  for ( size_t i = 0; i < n_tracks; ++i ) {
+    bool is_reco = get_val( event->is_reco_nc1p_, i, false );
+    int in_fv = get_val( event->isinFV_, i, 0 );
+
+    if ( is_reco && in_fv > 0 ) {
       // Use _f2 branches for primary track as in make_tree.C L445-450
-      float startx = event->track_startx_f2_->at(i);
-      float starty = event->track_starty_f2_->at(i);
-      float startz = event->track_startz_f2_->at(i);
-      float endx = event->track_endx_f2_->at(i);
-      float endy = event->track_endy_f2_->at(i);
-      float endz = event->track_endz_f2_->at(i);
-      float len = event->track_length_->at(i);
-      float theta = event->track_theta_f2_->at(i);
-      float phi = event->track_phi_f2_->at(i);
+      float startx = get_val( event->track_startx_f2_, i, BOGUS );
+      float starty = get_val( event->track_starty_f2_, i, BOGUS );
+      float startz = get_val( event->track_startz_f2_, i, BOGUS );
+      float endx = get_val( event->track_endx_f2_, i, BOGUS );
+      float endy = get_val( event->track_endy_f2_, i, BOGUS );
+      float endz = get_val( event->track_endz_f2_, i, BOGUS );
+      float len = get_val( event->track_length_, i, BOGUS );
+      float theta = get_val( event->track_theta_f2_, i, BOGUS );
+      float phi = get_val( event->track_phi_f2_, i, BOGUS );
       float costheta = std::cos( theta );
-      float chi2p2 = event->track_chi2_proton_2_->at(i);
+      float chi2p2 = get_val( event->track_chi2_proton_2_, i, BOGUS );
 
       if ( startx < 10 || startx > 246.35 ) continue;
       if ( endx < 10 || endx > 246.35 ) continue;
@@ -198,15 +216,23 @@ bool NC1p::selection( AnalysisEvent* event ) {
       if ( chi2p2 > 60 || chi2p2 < 0 ) continue;
 
       // Track distance calculation as in make_tree.C L460-467
-      if ( event->track_length_->size() > 1 ) {
-        for ( size_t j = 0; j < event->track_length_->size(); ++j ) {
-          // Note: make_tree.C uses reco_start_x (non-f2) for comparison
-          float temp1 = std::sqrt( std::pow(startx - event->track_startx_->at(j), 2) + 
-                                   std::pow(starty - event->track_starty_->at(j), 2) + 
-                                   std::pow(startz - event->track_startz_->at(j), 2) );
-          float temp2 = std::sqrt( std::pow(startx - event->track_endx_->at(j), 2) + 
-                                   std::pow(starty - event->track_endy_->at(j), 2) + 
-                                   std::pow(startz - event->track_endz_->at(j), 2) );
+      if ( n_tracks > 1 ) {
+        for ( size_t j = 0; j < n_tracks; ++j ) {
+          float tj_startx = get_val( event->track_startx_, j, BOGUS );
+          float tj_starty = get_val( event->track_starty_, j, BOGUS );
+          float tj_startz = get_val( event->track_startz_, j, BOGUS );
+          float tj_endx = get_val( event->track_endx_, j, BOGUS );
+          float tj_endy = get_val( event->track_endy_, j, BOGUS );
+          float tj_endz = get_val( event->track_endz_, j, BOGUS );
+
+          if (tj_startx == BOGUS) continue;
+
+          float temp1 = std::sqrt( std::pow(startx - tj_startx, 2) + 
+                                   std::pow(starty - tj_starty, 2) + 
+                                   std::pow(startz - tj_startz, 2) );
+          float temp2 = std::sqrt( std::pow(startx - tj_endx, 2) + 
+                                   std::pow(starty - tj_endy, 2) + 
+                                   std::pow(startz - tj_endz, 2) );
           if ( temp1 > 0 && temp2 > 0 && temp1 < temp2 && temp1 < trkdis ) { trkdis = temp1; }
           if ( temp1 > 0 && temp2 > 0 && temp1 >= temp2 && temp2 < trkdis ) { trkdis = temp2; }
         }
