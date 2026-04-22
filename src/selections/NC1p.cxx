@@ -249,6 +249,46 @@ bool NC1p::selection( AnalysisEvent* event ) {
 
   if ( index_p == -1 ) return false;
 
+  // nblip check from make_tree.C L566
+  int nblip5 = 0;
+  size_t n_blips = event->blip_x_ ? event->blip_x_->size() : 0;
+  float startx_f2 = get_val( event->track_startx_f2_, index_p, BOGUS );
+  float starty_f2 = get_val( event->track_starty_f2_, index_p, BOGUS );
+  float startz_f2 = get_val( event->track_startz_f2_, index_p, BOGUS );
+
+  if ( n_blips > 0 ) {
+    for ( size_t i = 0; i < n_blips; ++i ) {
+      float blipx = get_val( event->blip_x_, i, BOGUS );
+      float blipy = get_val( event->blip_y_, i, BOGUS );
+      float blipz = get_val( event->blip_z_, i, BOGUS );
+      
+      float disb = std::sqrt( std::pow(startx_f2 - blipx, 2) + 
+                              std::pow(starty_f2 - blipy, 2) + 
+                              std::pow(startz_f2 - blipz, 2) );
+      
+      // VertexIsInFV check based on make_tree.h
+      auto is_in_fv = [](float x, float y, float z) -> int {
+        if (x < 10 || x > 246.35) return -1;
+        if (y < -96.35 || y > 96.35) return -1;
+        if (z < 10 || z > 1026.8) return -1;
+
+        if (y - 0.6 * z > -186 && y - 0.6 * z < -120) return 1;
+        if (y - 0.6 * z < -207 && y + 0.6 * z < 434 && z < 700) return 2;
+        if (z > 740 && y + 0.6 * z > 454) return 3;
+        if (y + 0.6 * z > 454 && z < 700) return 4;
+        if (y + 0.6 * z < 434 && z > 740) return 5;
+        return 0;
+      };
+
+      if ( disb < 50 && is_in_fv(blipx, blipy, blipz) > 0 ) {
+        if ( blipz < startz_f2 ) nblip5++;
+      }
+    }
+  }
+
+  // Assuming do_blip1 is true as per Task 2/3 requirements for NC1p
+  if ( nblip5 > 1 ) return false;
+
   // Safe BDT variable assignment with range checks
   auto assign_if_safe = [&](const auto& vec_ptr, float& target, size_t idx) {
     if ( vec_ptr && vec_ptr->size() > idx ) target = vec_ptr->at(idx);

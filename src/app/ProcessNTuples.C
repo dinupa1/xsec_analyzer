@@ -81,7 +81,7 @@ void analyze( const std::string& input_filename,
     subruns_ch.SetBranchAddress( pot_branch_name.c_str(), &pot );
     for ( int se = 0; se < subruns_ch.GetEntries(); ++se ) {
       subruns_ch.GetEntry( se );
-      summed_pot += pot;
+      summed_pot += pot * 1e16;
     }
   }
 
@@ -183,7 +183,7 @@ void analyze( const std::string& input_filename,
     }
 
     // Reset analysis variables for the current event
-    cur_event.is_mc_ = false;
+    cur_event.is_mc_ = input_is_mc;
     // Clear only the contents of the weight vectors, not the map itself,
     // to maintain stable memory addresses for the output branches
     if ( cur_event.mc_weights_map_ ) {
@@ -209,7 +209,7 @@ void analyze( const std::string& input_filename,
     cur_event.run_number_ = run_id;
 
     // If in old format, perform truth data conversion/casting
-    if ( is_nc1p_format && input_is_mc ) {
+    if ( is_nc1p_format && cur_event.is_mc_ ) {
       cur_event.mc_nu_pdg_ = old_truth.mc_nupdg;
       cur_event.mc_nu_vx_ = old_truth.mc_nu_vtxx;
       cur_event.mc_nu_vy_ = old_truth.mc_nu_vtxy;
