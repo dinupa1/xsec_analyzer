@@ -175,7 +175,8 @@ void analyze( const std::string& input_filename,
     old_flux_weights = nullptr;
 
     // Reset old truth pointers
-    old_truth.mc_pdg = nullptr;
+    old_truth.mc_pdg_float = nullptr;
+    old_truth.mc_pdg_int = nullptr;
 
     // TChain::LoadTree() returns the entry number that should be used with
     // the current TTree object
@@ -191,22 +192,27 @@ void analyze( const std::string& input_filename,
 
     // If in old format, perform truth data conversion/casting
     if ( is_nc1p_format ) {
-      cur_event.mc_nu_pdg_ = (int)old_truth.mc_nupdg;
+      cur_event.mc_nu_pdg_ = old_truth.mc_nupdg;
       cur_event.mc_nu_vx_ = old_truth.mc_nu_vtxx;
       cur_event.mc_nu_vy_ = old_truth.mc_nu_vtxy;
       cur_event.mc_nu_vz_ = old_truth.mc_nu_vtxz;
       cur_event.mc_nu_energy_ = old_truth.mc_enu;
-      cur_event.mc_nu_ccnc_ = (int)old_truth.mc_ccnc;
-      cur_event.mc_nu_interaction_type_ = (int)old_truth.mc_mode;
-      cur_event.mc_hitnuc_ = (int)old_truth.mc_hitnuc;
+      cur_event.mc_nu_ccnc_ = old_truth.mc_ccnc;
+      cur_event.mc_nu_interaction_type_ = old_truth.mc_mode;
+      cur_event.mc_hitnuc_ = old_truth.mc_hitnuc;
 
-      if ( old_truth.mc_pdg ) {
-        if ( !cur_event.mc_nu_daughter_pdg_ ) {
-          cur_event.mc_nu_daughter_pdg_.reset( new std::vector<int>() );
-        }
-        cur_event.mc_nu_daughter_pdg_->clear();
-        for ( float pdg : *old_truth.mc_pdg ) {
+      if ( !cur_event.mc_nu_daughter_pdg_ ) {
+        cur_event.mc_nu_daughter_pdg_.reset( new std::vector<int>() );
+      }
+      cur_event.mc_nu_daughter_pdg_->clear();
+
+      if ( old_truth.mc_pdg_float ) {
+        for ( float pdg : *old_truth.mc_pdg_float ) {
           cur_event.mc_nu_daughter_pdg_->push_back( (int)pdg );
+        }
+      } else if ( old_truth.mc_pdg_int ) {
+        for ( int pdg : *old_truth.mc_pdg_int ) {
+          cur_event.mc_nu_daughter_pdg_->push_back( pdg );
         }
       }
 

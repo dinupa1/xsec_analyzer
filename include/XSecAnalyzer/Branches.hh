@@ -233,13 +233,14 @@ void set_event_branch_addresses(TTree& etree, AnalysisEvent& ev)
 }
 
 struct OldNC1pTruth {
-  Float_t mc_nupdg;
-  Float_t mc_ccnc;
-  Float_t mc_mode;
-  Float_t mc_hitnuc;
+  int mc_nupdg;
+  int mc_ccnc;
+  int mc_mode;
+  int mc_hitnuc;
   Float_t mc_enu;
   Float_t mc_nu_vtxx, mc_nu_vtxy, mc_nu_vtxz;
-  std::vector<float>* mc_pdg = nullptr;
+  std::vector<float>* mc_pdg_float = nullptr;
+  std::vector<int>* mc_pdg_int = nullptr;
 };
 
 // Helper function to set branch addresses for reading information
@@ -321,7 +322,6 @@ void set_nc1p_event_branch_addresses(TTree& etree, AnalysisEvent& ev, OldNC1pTru
   set_object_input_branch_address_safe( etree, "isinFV", ev.isinFV_ );
 
   // MC truth information for the neutrino
-  // Note: many of these are Float_t in the old files but int/float in AnalysisEvent
   SetBranchAddressSafe(etree, "mc_nupdg", &old_truth.mc_nupdg );
   SetBranchAddressSafe(etree, "mc_nu_vtxx", &old_truth.mc_nu_vtxx );
   SetBranchAddressSafe(etree, "mc_nu_vtxy", &old_truth.mc_nu_vtxy );
@@ -339,9 +339,17 @@ void set_nc1p_event_branch_addresses(TTree& etree, AnalysisEvent& ev, OldNC1pTru
   SetBranchAddressSafe(etree, "mc_hitnuc11_nuwro", &ev.mc_hitnuc11_nuwro_ );
 
   // MC truth information for the final-state primary particles
-  if (etree.GetBranch("mc_pdg")) {
-    etree.SetBranchAddress("mc_pdg", &old_truth.mc_pdg );
+  // Handle mc_pdg as either vector<float> or vector<int>
+  TBranch* mc_pdg_branch = etree.GetBranch("mc_pdg");
+  if (mc_pdg_branch) {
+    std::string className = mc_pdg_branch->GetClassName();
+    if (className.find("float") != std::string::npos) {
+      etree.SetBranchAddress("mc_pdg", &old_truth.mc_pdg_float );
+    } else {
+      etree.SetBranchAddress("mc_pdg", &old_truth.mc_pdg_int );
+    }
   }
+
   set_object_input_branch_address_safe( etree, "mc_g4_E", ev.mc_nu_daughter_energy_ );
   set_object_input_branch_address_safe( etree, "mc_g4_px", ev.mc_nu_daughter_px_ );
   set_object_input_branch_address_safe( etree, "mc_g4_py", ev.mc_nu_daughter_py_ );
