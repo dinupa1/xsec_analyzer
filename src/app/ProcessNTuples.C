@@ -100,6 +100,9 @@ void analyze( const std::string& input_filename,
     selections.emplace_back().reset( sf.CreateSelection(sel_name) );
   }
 
+  // Detect if the input file is MC or Data
+  bool input_is_mc = ( events_ch.GetBranch("mc_nupdg") != nullptr );
+
   out_file->cd();
   for ( auto& sel : selections ) {
     sel->setup( out_tree, input_is_mc );
@@ -109,9 +112,6 @@ void analyze( const std::string& input_filename,
   // required for correctly incorporating signal enhanced samples 
   // generated only in active volume rather than full cryostat volume
   FiducialVolume AV = { 0.0, 256.0, -120.0, 120.0, 0.0, 1076.0 };
-
-  // Detect if the input file is MC or Data
-  bool input_is_mc = ( events_ch.GetBranch("mc_nupdg") != nullptr );
 
   // Create a single AnalysisEvent object outside the loop to ensure stable memory addresses
   AnalysisEvent cur_event;
