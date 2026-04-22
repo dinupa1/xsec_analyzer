@@ -102,7 +102,7 @@ void analyze( const std::string& input_filename,
 
   out_file->cd();
   for ( auto& sel : selections ) {
-    sel->setup( out_tree );
+    sel->setup( out_tree, input_is_mc );
   }
 
   // Active volume definition

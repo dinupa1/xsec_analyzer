@@ -17,9 +17,10 @@ SelectionBase::SelectionBase( const std::string& sel_name ) {
 
 }
 
-void SelectionBase::setup( TTree* out_tree, bool create_branches ) {
+void SelectionBase::setup( TTree* out_tree, bool is_mc, bool create_branches ) {
 
   out_tree_ = out_tree;
+  is_mc_ = is_mc;
   need_to_create_branches_ = create_branches;
   this->setup_tree();
   this->define_category_map();
@@ -57,8 +58,11 @@ void SelectionBase::summary() {
 void SelectionBase::setup_tree() {
 
   this->set_branch( &selected_, "Selected" );
-  this->set_branch( &mc_signal_, "MC_Signal" );
-  this->set_branch( &event_category_, "EventCategory" );
+
+  if ( is_mc_ ) {
+    this->set_branch( &mc_signal_, "MC_Signal" );
+    this->set_branch( &event_category_, "EventCategory" );
+  }
 
   this->define_additional_input_branches();
   this->define_output_branches();

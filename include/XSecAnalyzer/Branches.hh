@@ -433,11 +433,13 @@ void set_event_output_branch_addresses(TTree& out_tree, AnalysisEvent& ev,
   }
 
   // Backtracked neutrino purity and completeness
-  set_output_branch_address( out_tree, "nu_completeness_from_pfp",
-    &ev.nu_completeness_from_pfp_, create, "nu_completeness_from_pfp/F" );
+  if ( ev.is_mc_ ) {
+    set_output_branch_address( out_tree, "nu_completeness_from_pfp",
+      &ev.nu_completeness_from_pfp_, create, "nu_completeness_from_pfp/F" );
 
-  set_output_branch_address( out_tree, "nu_purity_from_pfp",
-    &ev.nu_purity_from_pfp_, create, "nu_purity_from_pfp/F" );
+    set_output_branch_address( out_tree, "nu_purity_from_pfp",
+      &ev.nu_purity_from_pfp_, create, "nu_purity_from_pfp/F" );
+  }
 
   // Number of neutrino slices identified by the SliceID
   set_output_branch_address( out_tree, "nslice", &ev.nslice_, create,
@@ -467,26 +469,28 @@ void set_event_output_branch_addresses(TTree& out_tree, AnalysisEvent& ev,
     &ev.nu_vz_, create, "reco_nu_vtx_sce_z/F" );
 
   // MC truth information for the neutrino
-  set_output_branch_address( out_tree, "mc_nu_pdg", &ev.mc_nu_pdg_,
-    create, "mc_nu_pdg/I" );
+  if ( ev.is_mc_ ) {
+    set_output_branch_address( out_tree, "mc_nu_pdg", &ev.mc_nu_pdg_,
+      create, "mc_nu_pdg/I" );
 
-  set_output_branch_address( out_tree, "mc_nu_vtx_x", &ev.mc_nu_vx_,
-    create, "mc_nu_vtx_x/F" );
+    set_output_branch_address( out_tree, "mc_nu_vtx_x", &ev.mc_nu_vx_,
+      create, "mc_nu_vtx_x/F" );
 
-  set_output_branch_address( out_tree, "mc_nu_vtx_y", &ev.mc_nu_vy_,
-    create, "mc_nu_vtx_y/F" );
+    set_output_branch_address( out_tree, "mc_nu_vtx_y", &ev.mc_nu_vy_,
+      create, "mc_nu_vtx_y/F" );
 
-  set_output_branch_address( out_tree, "mc_nu_vtx_z", &ev.mc_nu_vz_,
-    create, "mc_nu_vtx_z/F" );
+    set_output_branch_address( out_tree, "mc_nu_vtx_z", &ev.mc_nu_vz_,
+      create, "mc_nu_vtx_z/F" );
 
-  set_output_branch_address( out_tree, "mc_nu_energy", &ev.mc_nu_energy_,
-    create, "mc_nu_energy/F" );
+    set_output_branch_address( out_tree, "mc_nu_energy", &ev.mc_nu_energy_,
+      create, "mc_nu_energy/F" );
 
-  set_output_branch_address( out_tree, "mc_ccnc", &ev.mc_nu_ccnc_,
-    create, "mc_ccnc/I" );
+    set_output_branch_address( out_tree, "mc_ccnc", &ev.mc_nu_ccnc_,
+      create, "mc_ccnc/I" );
 
-  set_output_branch_address( out_tree, "mc_interaction",
-    &ev.mc_nu_interaction_type_, create, "mc_interaction/I" );
+    set_output_branch_address( out_tree, "mc_interaction",
+      &ev.mc_nu_interaction_type_, create, "mc_interaction/I" );
+  }
 
   // PFParticle properties
   set_object_output_branch_address< std::vector<unsigned int> >( out_tree,
@@ -517,20 +521,22 @@ void set_event_output_branch_addresses(TTree& out_tree, AnalysisEvent& ev,
     "pfnplanehits_Y", ev.pfp_hitsY_, create );
 
   // Backtracked PFParticle properties
-  set_object_output_branch_address< std::vector<int> >( out_tree,
-    "backtracked_pdg", ev.pfp_true_pdg_, create );
+  if ( ev.is_mc_ ) {
+    set_object_output_branch_address< std::vector<int> >( out_tree,
+      "backtracked_pdg", ev.pfp_true_pdg_, create );
 
-  set_object_output_branch_address< std::vector<float> >( out_tree,
-    "backtracked_e", ev.pfp_true_E_, create );
+    set_object_output_branch_address< std::vector<float> >( out_tree,
+      "backtracked_e", ev.pfp_true_E_, create );
 
-  set_object_output_branch_address< std::vector<float> >( out_tree,
-    "backtracked_px", ev.pfp_true_px_, create );
+    set_object_output_branch_address< std::vector<float> >( out_tree,
+      "backtracked_px", ev.pfp_true_px_, create );
 
-  set_object_output_branch_address< std::vector<float> >( out_tree,
-    "backtracked_py", ev.pfp_true_py_, create );
+    set_object_output_branch_address< std::vector<float> >( out_tree,
+      "backtracked_py", ev.pfp_true_py_, create );
 
-  set_object_output_branch_address< std::vector<float> >( out_tree,
-    "backtracked_pz", ev.pfp_true_pz_, create );
+    set_object_output_branch_address< std::vector<float> >( out_tree,
+      "backtracked_pz", ev.pfp_true_pz_, create );
+  }
 
   // Shower properties
   // For some ntuples, reconstructed shower information is excluded.
@@ -683,18 +689,20 @@ void set_event_output_branch_addresses(TTree& out_tree, AnalysisEvent& ev,
     "isinFV", ev.isinFV_, create );
 
   // MC truth information for the final-state primary particles
-  set_object_output_branch_address< std::vector<int> >( out_tree, "mc_pdg",
-    ev.mc_nu_daughter_pdg_, create );
+  if ( ev.is_mc_ ) {
+    set_object_output_branch_address< std::vector<int> >( out_tree, "mc_pdg",
+      ev.mc_nu_daughter_pdg_, create );
 
-  set_object_output_branch_address< std::vector<float> >( out_tree, "mc_E",
-    ev.mc_nu_daughter_energy_, create );
+    set_object_output_branch_address< std::vector<float> >( out_tree, "mc_E",
+      ev.mc_nu_daughter_energy_, create );
 
-  set_object_output_branch_address< std::vector<float> >( out_tree, "mc_px",
-    ev.mc_nu_daughter_px_, create );
+    set_object_output_branch_address< std::vector<float> >( out_tree, "mc_px",
+      ev.mc_nu_daughter_px_, create );
 
-  set_object_output_branch_address< std::vector<float> >( out_tree, "mc_py",
-    ev.mc_nu_daughter_py_, create );
+    set_object_output_branch_address< std::vector<float> >( out_tree, "mc_py",
+      ev.mc_nu_daughter_py_, create );
 
-  set_object_output_branch_address< std::vector<float> >( out_tree, "mc_pz",
-    ev.mc_nu_daughter_pz_, create );
+    set_object_output_branch_address< std::vector<float> >( out_tree, "mc_pz",
+      ev.mc_nu_daughter_pz_, create );
+  }
 }

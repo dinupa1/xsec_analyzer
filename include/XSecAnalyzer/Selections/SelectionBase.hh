@@ -22,7 +22,7 @@ public:
 
   virtual ~SelectionBase() = default;
 
-  void setup( TTree* out_tree, bool create_branches = true );
+  void setup( TTree* out_tree, bool is_mc, bool create_branches = true );
   void apply_selection( AnalysisEvent* event );
   void summary();
 
@@ -39,6 +39,8 @@ public:
   virtual void define_category_map() = 0;
 
 protected:
+
+  bool is_mc_;
 
   // Sets the branch address for output TTree variables managed by this
   // SelectionBase object

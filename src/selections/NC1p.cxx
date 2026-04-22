@@ -332,9 +332,13 @@ void NC1p::define_output_branches() {
   set_branch( &reco_ke_, "reco_ke" );
   set_branch( &reco_q2_, "reco_q2" );
   set_branch( &reco_costheta_, "reco_costheta" );
-  set_branch( &true_ke_, "true_ke" );
-  set_branch( &true_q2_, "true_q2" );
-  set_branch( &true_costheta_, "true_costheta" );
+  
+  if ( is_mc_ ) {
+    set_branch( &true_ke_, "true_ke" );
+    set_branch( &true_q2_, "true_q2" );
+    set_branch( &true_costheta_, "true_costheta" );
+  }
+
   set_branch( &trk_dis_, "trk_dis" );
   set_branch( &len_, "len" );
   set_branch( &theta_, "theta" );
