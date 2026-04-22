@@ -375,22 +375,24 @@ void set_event_output_branch_addresses(TTree& out_tree, AnalysisEvent& ev,
   set_output_branch_address( out_tree, "is_mc", &ev.is_mc_, create, "is_mc/O" );
 
   // Event weights
-  set_output_branch_address( out_tree, "spline_weight",
-    &ev.spline_weight_, create, "spline_weight/F" );
+  if ( ev.is_mc_ ) {
+    set_output_branch_address( out_tree, "spline_weight",
+      &ev.spline_weight_, create, "spline_weight/F" );
 
-  set_output_branch_address( out_tree, "tuned_cv_weight",
-    &ev.tuned_cv_weight_, create, "tuned_cv_weight/F" );
-  
-  set_output_branch_address( out_tree, "ppfx_cv_weight",
-    &ev.ppfx_cv_weight_, create, "ppfx_cv_weight/F" );
+    set_output_branch_address( out_tree, "tuned_cv_weight",
+      &ev.tuned_cv_weight_, create, "tuned_cv_weight/F" );
+    
+    set_output_branch_address( out_tree, "ppfx_cv_weight",
+      &ev.ppfx_cv_weight_, create, "ppfx_cv_weight/F" );
 
-  if (useNuMI) {
-    set_output_branch_address( out_tree, "normalisation_weight",
-      &ev.normalisation_weight_, create, "normalisation_weight/F" );
+    if (useNuMI) {
+      set_output_branch_address( out_tree, "normalisation_weight",
+        &ev.normalisation_weight_, create, "normalisation_weight/F" );
+    }
   }
 
   // If MC weights are available, prepare to store them in the output TTree
-  if ( ev.mc_weights_map_ ) {
+  if ( ev.is_mc_ && ev.mc_weights_map_ ) {
 
     // Make separate branches for the various sets of systematic variation
     // weights in the map

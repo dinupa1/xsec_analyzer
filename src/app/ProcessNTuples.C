@@ -115,6 +115,7 @@ void analyze( const std::string& input_filename,
 
   // Create a single AnalysisEvent object outside the loop to ensure stable memory addresses
   AnalysisEvent cur_event;
+  cur_event.is_mc_ = input_is_mc;
   OldNC1pTruth old_truth;
 
   // Temporary pointers for old format weights (moved outside the loop)
