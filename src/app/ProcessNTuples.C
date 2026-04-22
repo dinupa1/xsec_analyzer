@@ -68,6 +68,7 @@ void analyze( const std::string& input_filename,
   TFile* out_file = new TFile( output_filename.c_str(), "recreate" );
   out_file->cd();
   TTree* out_tree = new TTree( "stv_tree", "STV analysis tree" );
+  out_tree->SetDirectory( out_file );
 
   // Get the total POT from the subruns TTree. Save it in the output
   // TFile as a TParameter<float>. Real data doesn't have this TTree,
@@ -116,22 +117,6 @@ void analyze( const std::string& input_filename,
   AnalysisEvent cur_event;
   OldNC1pTruth old_truth;
 
-  // Initialize the weights map early if in NC1p format MC so that output branches can be created
-  if ( is_nc1p_format && input_is_mc ) {
-    cur_event.mc_weights_map_.reset( new std::map<std::string, std::vector<double>>() );
-    // Add a dummy TunedCentralValue weight with value 1.0
-    (*cur_event.mc_weights_map_)[ "TunedCentralValue_UBGenie" ] = { 1.0 };
-    (*cur_event.mc_weights_map_)[ "splines_general_Spline" ] = { 1.0 };
-  }
-
-  // Set up branch addresses once before the loop
-  if ( is_nc1p_format ) {
-    set_nc1p_event_branch_addresses( events_ch, cur_event, old_truth );
-  }
-  else {
-    set_event_branch_addresses( events_ch, cur_event );
-  }
-
   // Temporary pointers for old format weights (moved outside the loop)
   std::vector<std::string>* old_genie_names = nullptr;
   std::vector<std::vector<double>>* old_genie_weights = nullptr;
@@ -155,6 +140,37 @@ void analyze( const std::string& input_filename,
     }
   }
 
+  // Initialize the weights map early if in NC1p format MC so that output branches can be created
+  if ( is_nc1p_format && input_is_mc ) {
+    cur_event.mc_weights_map_.reset( new std::map<std::string, std::vector<double>>() );
+    
+    // Discovery step: get first entry to see all weight names
+    if ( events_ch.GetEntries() > 0 ) {
+      events_ch.GetEntry(0);
+      if ( old_genie_names ) {
+        for ( const auto& name : *old_genie_names ) (*cur_event.mc_weights_map_)[ name ] = {};
+      }
+      if ( old_g4_names ) {
+        for ( const auto& name : *old_g4_names ) (*cur_event.mc_weights_map_)[ name ] = {};
+      }
+      if ( old_flux_names ) {
+        for ( const auto& name : *old_flux_names ) (*cur_event.mc_weights_map_)[ name ] = {};
+      }
+    }
+
+    // Ensure CV weights are in the map
+    (*cur_event.mc_weights_map_)[ "TunedCentralValue_UBGenie" ] = {};
+    (*cur_event.mc_weights_map_)[ "splines_general_Spline" ] = {};
+  }
+
+  // Set up branch addresses once before the loop
+  if ( is_nc1p_format ) {
+    set_nc1p_event_branch_addresses( events_ch, cur_event, old_truth );
+  }
+  else {
+    set_event_branch_addresses( events_ch, cur_event );
+  }
+
   // Set the output TTree branch addresses once
   set_event_output_branch_addresses(*out_tree, cur_event, true );
 
@@ -168,15 +184,13 @@ void analyze( const std::string& input_filename,
 
     // Reset analysis variables for the current event
     cur_event.is_mc_ = false;
-    if ( cur_event.mc_weights_map_ ) cur_event.mc_weights_map_->clear();
-
-    // Reset weight pointers to nullptr each iteration
-    old_genie_names = nullptr;
-    old_genie_weights = nullptr;
-    old_g4_names = nullptr;
-    old_g4_weights = nullptr;
-    old_flux_names = nullptr;
-    old_flux_weights = nullptr;
+    // Clear only the contents of the weight vectors, not the map itself,
+    // to maintain stable memory addresses for the output branches
+    if ( cur_event.mc_weights_map_ ) {
+      for ( auto& pair : *cur_event.mc_weights_map_ ) {
+        pair.second.clear();
+      }
+    }
 
     // Reset old truth pointers
     old_truth.mc_pdg_float = nullptr;
