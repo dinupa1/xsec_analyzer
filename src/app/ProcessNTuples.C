@@ -109,15 +109,19 @@ void analyze( const std::string& input_filename,
   // generated only in active volume rather than full cryostat volume
   FiducialVolume AV = { 0.0, 256.0, -120.0, 120.0, 0.0, 1076.0 };
 
+  // Detect if the input file is MC or Data
+  bool input_is_mc = ( events_ch.GetBranch("mc_nupdg") != nullptr );
+
   // Create a single AnalysisEvent object outside the loop to ensure stable memory addresses
   AnalysisEvent cur_event;
   OldNC1pTruth old_truth;
 
-  // Initialize the weights map early if in NC1p format so that output branches can be created
-  if ( is_nc1p_format ) {
+  // Initialize the weights map early if in NC1p format MC so that output branches can be created
+  if ( is_nc1p_format && input_is_mc ) {
     cur_event.mc_weights_map_.reset( new std::map<std::string, std::vector<double>>() );
     // Add a dummy TunedCentralValue weight with value 1.0
     (*cur_event.mc_weights_map_)[ "TunedCentralValue_UBGenie" ] = { 1.0 };
+    (*cur_event.mc_weights_map_)[ "splines_general_Spline" ] = { 1.0 };
   }
 
   // Set up branch addresses once before the loop
@@ -191,7 +195,7 @@ void analyze( const std::string& input_filename,
     cur_event.run_number_ = run_id;
 
     // If in old format, perform truth data conversion/casting
-    if ( is_nc1p_format ) {
+    if ( is_nc1p_format && input_is_mc ) {
       cur_event.mc_nu_pdg_ = old_truth.mc_nupdg;
       cur_event.mc_nu_vx_ = old_truth.mc_nu_vtxx;
       cur_event.mc_nu_vy_ = old_truth.mc_nu_vtxy;
